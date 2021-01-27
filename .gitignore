@@ -1,3 +1,2 @@
-nginx_logs/access.log
-nginx_logs/error_log
-/app/core
+nginx_logs/
+
