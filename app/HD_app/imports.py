@@ -8,6 +8,8 @@ from django.utils.timesince import timesince
 from django.core.exceptions import ObjectDoesNotExist
 # from .models import *
 from django.db.models import F, Func, Avg
+from calendar import Calendar
+from django.db.models.functions import ExtractYear
 # from .forms import *
 from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.decorators import method_decorator

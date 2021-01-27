@@ -28,7 +28,7 @@ from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.models import User
 from django.shortcuts import HttpResponseRedirect
 from HD_app.additionals.validationprintservice import *
-
+from django.db.models import F, Func, Avg, Sum
 
 # warnings off - Usuwanie warningów przy komunikacji po ssl
 import requests
@@ -39,10 +39,33 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 from HD_app.additionals.subiekt import *
 subiekt = Subiekt()
 
-
+from django.db.models.functions import ExtractDay,ExtractHour
 # Email backend -------------------------------------------
 def get_user_data(self):
     return "%s %s [%s]" % (self.first_name, self.last_name, self.email)
+def get_current_month_efficiency(self):
+    current_datetime = datetime.datetime.now()
+    orders = Order2.objects.filter(
+        care__id=self.pk,
+        start_datetime__month=current_datetime.month,
+        start_datetime__year=current_datetime.year
+        ).annotate(
+            time=F('end_datetime')-F('start_datetime')
+        ).values(
+            "time"
+        ).annotate(
+            sum=Sum("time")
+        )
+    print("to sa ordersy")
+    print(list(orders))
+    max_efficiency = 8
+    return orders
+
+
+
+
+
+
 def count_orders(self):
     p = Profile.objects.get(user=self.id)
     if Order.objects.filter(care__id=self.id).exists():
@@ -58,6 +81,7 @@ def count_order_values(self):
         pass
 User.add_to_class("__str__", get_user_data)
 User.add_to_class("count_orders", count_orders)
+User.add_to_class("get_current_month_efficiency", get_current_month_efficiency)
 class EmailBackend(ModelBackend):
     def authenticate(self, request, username=None, password=None, **kwargs):
         UserModel = get_user_model()
@@ -258,8 +282,8 @@ class Address2(models.Model):
     is_default = models.BooleanField(_("Domyślna"), default=False)
     
     class Meta:
-        verbose_name = _("Adres2")
-        verbose_name_plural = _("Adresy2")
+        verbose_name = _("Adres")
+        verbose_name_plural = _("Adresy")
 
     def __str__(self):
         return f"{self.name}, {self.street}, {self.nr_dom}, {self.city}, {self.distance}km"
@@ -272,7 +296,7 @@ class Address2(models.Model):
         self._is_default = self.is_default
 
     def get_addresses(self):
-        return Address2.objects.filter(company_sfk=self.company_sfk)
+        return self.__class__.objects.filter(company_sfk=self.company_sfk)
 
     def get_fields(self):
         return [(field.verbose_name, field.value_to_string(self)) for field in self.__class__._meta.fields]
@@ -790,6 +814,7 @@ class Order2(models.Model):
     def get_view_fields(self):
         """ Pola widoczne na widoku """
         return [(field.verbose_name, field.value_to_string(self)) for field in self.__class__._meta.fields]
+
 class OrderCategory(models.Model):
     name = \
         models.CharField(\

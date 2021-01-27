@@ -1,9 +1,6 @@
 # Imports -------------------------------------------------
 from .imports import *
-from calendar import Calendar
-from django.db.models import F
-from django.db.models.functions import ExtractMonth
-from django.db.models.functions import ExtractYear
+
 
 # Klasy pomocnicze Subiekta API ---------------------------
 class SubiektFormOperations():
@@ -110,7 +107,14 @@ class DashboardView(LoginRequiredMixin,View):
             "get_not_completed_orders":self.get_not_completed_orders(),
             "get_my_current_month_orders_counter_in_progress":self.get_my_current_month_orders_counter_in_progress(),
             "get_my_current_month_orders_counter_spent":self.get_my_current_month_orders_counter_spent(),
-            "get_my_current_month_orders_counter_costs":self.get_my_current_month_orders_counter_costs()
+            "get_my_current_month_orders_counter_costs":self.get_my_current_month_orders_counter_costs(),
+            "get_orders_sum_costs":self.get_orders_sum_costs(),
+            "get_orders_sum_travel_costs":self.get_orders_sum_travel_costs(),
+            "get_orders_sum_costs_with_travel": self.get_orders_sum_costs_with_travel(),
+            "get_orders_counter": self.get_orders_counter(),
+            "get_orders_two_way_distance": self.get_orders_two_way_distance(),
+            "get_orders_sum_time":self.get_orders_sum_time(),
+            "user":User.objects.get(pk=request.user.pk)
         }
         return context 
 
@@ -333,7 +337,6 @@ class DashboardView(LoginRequiredMixin,View):
                 li.append(0)
         print(li)
         return li
-
     def get_my_current_month_orders_counter_status_all(self):
         current = datetime.datetime.now()
          # Queryset
@@ -345,7 +348,10 @@ class DashboardView(LoginRequiredMixin,View):
             ukończone=Count('pk', filter=Q(order_status__id=6))
         ).values("nieukończone","ukończone")
 
-        return qs[0]
+        try:
+            return qs[0]
+        except:
+            pass
     def get_month_orders_statuses(self):
         """ Zbiera dane o zleceniach do licznika """
         current = datetime.datetime.now()
@@ -387,7 +393,24 @@ class DashboardView(LoginRequiredMixin,View):
     def get_not_completed_orders(self):
         return self.get_objects().exclude(order_status__id=6)
 
-
+    def get_orders_sum_costs(self):
+        """ Zwraca sume kosztów wszytskich zleceń instancji"""
+        return sum([c.calculate_order() for c in self.get_objects()])
+    def get_orders_sum_travel_costs(self):
+        """ Zwraca sume kosztów z dojazdem wszytskich zleceń instancji"""
+        return sum([c.get_fuel_costs() for c in self.get_objects()])
+    def get_orders_sum_costs_with_travel(self):
+        """ Zwraca sume kiletrów instancji zleceń """
+        return sum([c.calculate_order_with_distance() for c in self.get_objects()])
+    def get_orders_counter(self):
+        """ Zwraca sume zleceń instacji """
+        return len(self.get_objects())
+    def get_orders_two_way_distance(self):
+        """ Zwraca sume kilometrową zleceń instancji """
+        return sum([c.get_two_way_distance() for c in self.get_objects()])
+    def get_orders_sum_time(self):
+        """ Zwraca sume czasu zleceń instancji """
+        return sum([(c.calculate_timedelta()/60)/60 for c in self.get_objects()])
 
 def home(request):
     """ Przekierowanie na dashboard """

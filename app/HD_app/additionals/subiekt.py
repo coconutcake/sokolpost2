@@ -50,14 +50,14 @@ class Subiekt():
         endpoint = self.get_endpoint(name)
         typ = self.get_type()
         self.close_obj()
-        print("{0} - Pełny endpoint do wysyłki: {1}".format(get_current_datetime(),endpoint))
+        #print("{0} - Pełny endpoint do wysyłki: {1}".format(get_current_datetime(),endpoint))
         return typ+endpoint
     def is_subiekt_up(self):
         pass
     def get_status_url(self):
         urls = self.return_json()['urls']
         c = [x['url'] for x in urls if x['name'] == "kontrahenci"]
-        print(c)
+        #print(c)
     def is_up(self):
         print("{0} - Sprawdzam status subiekta...".format(get_current_datetime()))
         try:

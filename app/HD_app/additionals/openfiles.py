@@ -6,7 +6,6 @@ class File():
         """Klasa operacji na każdych plikach"""
         # self.absolutepath=os.path.dirname(os.path.abspath(__file__))
         self.filepath = filepath
-        print(filepath)
     def content(self):
         self.f = open(self.filepath, "r")
         return self.f

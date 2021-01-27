@@ -19,7 +19,7 @@ python manage.py migrate \
 && python manage.py loaddata export/model_ordertype.json \
 && echo "+ Tworze rekordy modelu ImplemetationType..." \
 && python manage.py loaddata export/model_implementationtype.json \
-&& echo "+ Tworze rekordy modelu AgreementStatus..." \
+&& echo "+ Tworze rekordy modelu DocumentStatus..." \
 && python manage.py loaddata export/model_agreementstatus.json \
 && echo "+ Tworze rekordy modelu OrderStatus..." \
 && python manage.py loaddata export/model_orderstatus.json \
@@ -35,8 +35,8 @@ python manage.py migrate \
 && python manage.py loaddata export/distancecalcprofile.json \
 && echo "+ Tworze rekordy modelu OrderTempalte..." \
 && python manage.py loaddata export/ordertemplate.json \
-&& echo "+ Tworze rekordy modelu AgreementType..." \
-&& python manage.py loaddata export/agreementtype.json \
+&& echo "+ Tworze rekordy modelu DocumentType..." \
+&& python manage.py loaddata export/documenttype.json \
 && echo "+ Tworze token dla admina" \ 
 python manage.py shell < export/make_token.py
 

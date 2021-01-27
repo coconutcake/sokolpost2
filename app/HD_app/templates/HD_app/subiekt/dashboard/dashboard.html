@@ -154,7 +154,7 @@
           <div class="section-container">
             <div class="section-header">
             
-              <span><i class="fas fa-clipboard-check"></i> Moje zlecenia z miesiąca bierzącego</span>
+              <span><i class="fas fa-clipboard-check"></i> Moje zlecenia z miesiąca bieżącego</span>
               <hr>
 
 
@@ -170,24 +170,135 @@
         <div class="col-12 col-xl-4 subiekt-section-column">
 <div class="row section-container">
 <div class="col-12">
-          
-            <div class="section-header">
-            
-              <span><i class="fas fa-sort-numeric-up-alt"></i> Liczbowo</span>
-              <hr>
-            </div>
+
+<!-- TABS -->
+  <ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item">
+      <a class="nav-link active" id="order-status-doughnut-tab" data-toggle="tab" href="#order-status-doughnut" role="tab" aria-controls="order-status-doughnut" aria-selected="true"><i class="fas fa-chart-pie"></i> Stany</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="order-sheet-tab" data-toggle="tab" href="#order-sheet" role="tab" aria-controls="order-sheet" aria-selected="true"><i class="fas fa-clipboard-list"></i> Zestawienie</a>
+    </li>
+  </ul>
+                        
+</div>
+
+
+<div class="col-12">
+<!-- TABS: CONTENT-->
+  <div class="tab-content" id="myTabContent">
+  <!-- TAB -->
+    <div class="tab-pane fade show active" id="order-status-doughnut" role="tabpanel" aria-labelledby="order-status-doughnut-tab">
+      <div class="row">
+        <div class="col-12">
             <div class="section-content">
             <canvas id="counter-status-chart" width="400" height="200"></canvas>
             </div>
-
-</div>
-<div class="col-12 mt-2">
-            
             <div class="section-content">
             <canvas id="counter-implementationtype-chart" width="400" height="200"></canvas>
             </div>
+        </div>
+      </div>
+    </div>
+  <!-- TAB -->
+    <div class="tab-pane fade show" id="order-sheet" role="tabpanel" aria-labelledby="order-sheet-tab">
+      <div class="row">
+        <div class="col-12">
+            <div class="section-content">
+            <div class="row">
+                <!-- Wiersz -->
+                <div class="col-6">
+                  <span class="font-weight-bold"><i class="fas fa-sort-amount-up-alt"></i> Ilość zleceń</span>
+                </div>
+                <div class="col-6 text-right">
+                  <span>{{ get_orders_counter }}</span>
+                </div>
+                <div class="col-12">
+                  <hr class="m-0">
+                </div>
+              <!-- Wiersz -->
+                <div class="col-6">
+                  <span class="font-weight-bold"><i class="fas fa-dollar-sign"></i> Koszta klienta</span>
+                </div>
+                <div class="col-6 text-right">
+                  <span>{{ get_orders_sum_costs }}</span>
+                </div>
+                <div class="col-12">
+                  <hr class="m-0">
+                </div>
+              <!-- Wiersz -->
+                <div class="col-6">
+                  <span class="font-weight-bold"><i class="fas fa-dollar-sign"></i> Koszta klienta z dojazdem</span>
+                </div>
+                <div class="col-6 text-right">
+                  <span>{{ get_orders_sum_costs_with_travel }}</span>
+                </div>
+                <div class="col-12">
+                  <hr class="m-0">
+                </div>
+              <!-- Wiersz -->
+                <div class="col-6">
+                  <span class="font-weight-bold"><i class="fas fa-car"></i> Koszta dojazdu</span>
+                </div>
+                <div class="col-6 text-right">
+                  <span>{{ get_orders_sum_travel_costs }}</span>
+                </div>
+                <div class="col-12">
+                  <hr class="m-0">
+                </div>
+              <!-- Wiersz -->
+                <div class="col-6">
+                  <span class="font-weight-bold"><i class="fas fa-road"></i> Suma przebytych km</span>
+                </div>
+                <div class="col-6 text-right">
+                  <span>{{ get_orders_two_way_distance }}</span>
+                </div>
+                <div class="col-12">
+                  <hr class="m-0">
+                </div>
 
+              <!-- Wiersz -->
+                <div class="col-6">
+                  <span class="font-weight-bold"><i class="far fa-clock"></i> Suma czasu</span>
+                </div>
+                <div class="col-6 text-right">
+                  <span>{{ get_orders_sum_time }}</span>
+                </div>
+                <div class="col-12">
+                  <hr class="m-0">
+                </div>
+              <!-- Wiersz -->
+                <div class="col-6">
+                  <span class="font-weight-bold"><i class="far fa-clock"></i> Efektywność</span>
+                </div>
+                <div class="col-6 text-right">
+                  <span>{{ user.get_current_month_efficiency }}</span>
+                </div>
+                <div class="col-12">
+                  <hr class="m-0">
+                </div>
+
+            </div>
+            
+
+
+            </div>
+            <div class="section-content">
+            
+            
+
+
+
+            </div>
+        </div>
+      </div>
+    </div>
+
+
+
+  </div>
 </div>
+
 </div>
         </div>
 
