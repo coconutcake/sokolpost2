@@ -1,0 +1,35 @@
+{
+    "address": "10.1.1.83:44555",
+    "header": {
+        "Authorization": "Basic Z29iaXQ6U0JeXmVnYUBkbWlu",
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+    },
+    "https":1,
+    "urls": [
+        {
+            "name": "kontrahenci",
+            "url": "api/kontrahenci"
+        },
+        {
+            "name": "kontrahencicrm",
+            "url": "api/kontrahenci/crm"
+        },
+        {
+            "name": "status",
+            "url": "api/status"
+        },
+        {
+            "name": "accounts",
+            "url": "api/accounts"
+        },
+        {
+            "name":"uzytkownicy",
+            "url":"api/uzytkownicy"
+        },
+        {
+            "name":"firmy",
+            "url":"api/firmy"
+        }
+    ]
+}

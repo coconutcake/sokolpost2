@@ -1,0 +1,197 @@
+<!-- templates/home.html-->
+{% extends 'HD_app/newbase.html' %}
+{% load static %}
+{% load rest_framework %}
+{% block title %}Firmy | SOKÓŁ{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+
+<!-- Modal: Nowa firma -->
+<modal>
+  <div class="modal fade" id="add_company_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg " role="document">
+    <div class="modal-content bg-noisy p-1">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle"> 
+          Nowa firma</h5>
+        <button type="button" class="close close_modal_button" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="post" action="{% url 'companies' %}" id="new_company" enctype="multipart/form-data">
+          {% csrf_token %}
+          {{ form.as_p }}
+          <br>
+          
+       
+      </div>
+      <div class="modal-footer">
+        <input type="submit" value="Wyślij" class="btn btn-danger mt-3 shadow">
+        <button type="button" class="btn btn-secondary mt-3 shadow close_modal_button" data-dismiss="modal">Zamknij</button>
+      </form>
+      </div>
+    </div>
+    </div>
+  </div>
+</modal>
+
+
+<!-- Header -->
+<page_header>
+<div class="row p-2">
+  <div class="col-12 header-div">
+    <div class="d-flex justify-content-between">
+      <div class="" id="">
+        <h2 class=""><i class="fa text-danger fa-building-o" aria-hidden="true"></i>
+
+          Firmy</h2>
+      </div>
+      <div class="" id="">
+        <button class="animated bounceInDown btn btn-success shadow-sm open_modal_button" id="add_company_btn" type="button">
+          <i class="text-light rotate-center fa fa-plus" aria-hidden="true"></i> Nowa</button>
+      </div>
+    </div>
+  </div>
+</div>
+<hr class="mb-3 mt-0">
+</page_header>
+
+
+
+
+<!-- Content -->
+<!-- Firmy zaakceptowane -->
+<section id="sekcja_companies_accepted" style="display:none;">
+  <div class="section_header">
+    <h4 class="" >
+      <i class="fa fa-check text-success" aria-hidden="true"></i>
+       Zaakceptowane</h4><hr>
+</div>
+
+<!-- 1 search -->
+<div class="form-group">
+  <label for="ca_search">Szukaj:</label>
+  <input type="text" class="form-control input-sm" id="ca_search">
+</div>
+
+<div class="fresh-div-companies_accepted">
+  <div class="lista_firm">
+  {% if companies_accepted %}
+  {% for c in companies_accepted %}
+  <div class="zoom1">
+    <div id="ca" class="row company company_accepted shadow-sm rounded animated fadeInDown fast">
+      <div class="col-10">
+        <span class="font-weight-bold">
+          {% if c.thumb %}
+          <img class="rounded-circle border border-secondary shadow-sm thumb_min" src="{{ c.thumb.url }}"/>
+          {% endif %}
+          &nbsp;{{ c.name }}
+        </span>
+      </div>
+
+      <div class="col-2 text-right">
+        <!-- <span><i class="fa fa-check text-black" aria-hidden="true"></i></span> -->
+        <a href="{% url 'Company_detail' c.id %}"><button class="mb-1 btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'Company_detail' c.id %}"><i class="fa fa-pencil" aria-hidden="true"></i></button></a>
+      </div>
+      <div class="col-12 zlecenie_info">
+        <span style="display:none;">NIP: {{ c.nip }}</span>
+    </div>
+    </div>
+  </div>
+  {% endfor %}
+  {% endif %}
+</div>
+</div>
+</section>
+
+<!-- Firmy niezaakceptowane -->
+<section id="sekcja_companies_accepted" style="display:none;">
+  <div class="section_header">
+    <h4 class="" >
+      <i class="fa fa-pause text-warning" aria-hidden="true"></i>
+
+       Niezaakceptowane</h4><hr>
+</div>
+<!-- 1 search -->
+<div class="form-group">
+  <label for="cn_search">Szukaj:</label>
+  <input type="text" class="form-control input-sm" id="cn_search">
+</div>
+<div class="fresh-div-companies_not_accepted">
+  <div class="lista_firm">
+  {% if companies_not_accepted %}
+  {% for c in companies_not_accepted %}
+  <div class="zoom1">
+    <div id="cn" class="row company company_not_accepted shadow-sm rounded animated fadeInDown fast">
+      <div class="col-10">
+        <span class="font-weight-bold">
+          {% if c.thumb %}
+          <img class="rounded-circle border border-secondary shadow-sm thumb_min" src="{{ c.thumb.url }}"/>
+          {% endif %}
+          &nbsp;{{ c.name }}
+        </span>
+      </div>
+
+      <div class="col-2 text-right">
+        <!-- <span><i class="fa fa-pause text-black" aria-hidden="true"></i></span> -->
+        
+        <a href="{% url 'Company_detail' c.id %}"><button class="mb-1 btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'Company_detail' c.id %}"><i class="fa fa-pencil" aria-hidden="true"></i></button></a>
+      </div>
+      <div class="col-12 zlecenie_info">
+        <span style="display:none;">NIP: {{ c.nip }}</span>
+    </div>
+    </div>
+  </div>
+  {% endfor %}
+  {% endif %}
+</div>
+</div>
+</section>
+
+
+{% else %}
+
+<div class="container">
+  <div class="row p-1">
+    <div class="col-12">
+      <p>Nie jestes zalogowany!</p>
+      <img src="{% static 'img/gob_logo.png' %}" alt="logo"><br>
+      <span><a href="{% url 'login' %}">Zaloguj</a></span><br>
+      <span><a href="{% url 'register2' %}">Zarejestuj</a></span>
+    </div>
+  </div>
+</div>
+{% endif %}
+<script src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
+<script>
+
+//Kopiuj do schowka
+function copy() {
+  var copyText = document.getElementById("copy_input");
+  copyText.select();
+  copyText.setSelectionRange(0, 99999)
+  document.execCommand("copy");
+  console.log("Copied the text: " + copyText.value);
+}
+
+  //search
+  $("#ca_search").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    console.log(value)
+    $("#ca").filter(function() {
+        $(this).toggle($(this).find('span').text().toLowerCase().indexOf(value) > -1)
+    });
+    });
+  $("#cn_search").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    console.log(value)
+    $("#cn").filter(function() {
+        $(this).toggle($(this).find('span').text().toLowerCase().indexOf(value) > -1)
+    });
+    });
+</script>
+
+{% endblock %}

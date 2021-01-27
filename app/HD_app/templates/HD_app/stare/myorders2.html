@@ -1,0 +1,240 @@
+<!-- templates/home.html-->
+{% extends 'HD_app/newbase.html' %}
+{% load static %}
+{% load rest_framework %}
+{% block title %}Zlecenia | SOKÓŁ{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+
+
+
+
+<!-- Modal ADD order -->
+<div class="modal fade" id="add_order_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered " role="document">
+    <div class="modal-content bg-noisy p-1">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle"><i class="fa fa-plus color1" aria-hidden="true"></i> Dodawanie zlecenia</h5>
+        <button type="button" class="close close_modal_button" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+        <form id="add_order2" action="{% url 'orders2' %}" method="post">
+
+          {% csrf_token %}
+          {{ form.as_p }}
+            <!-- <input type="submit" value="Zapisz" class="btn btn-danger mt-3 shadow"> -->
+        
+
+
+      </div>
+      <div class="modal-footer">
+        <input type="submit" value="Zapisz" class="btn btn-danger mt-3 shadow">
+        <button type="button" class="btn btn-secondary mt-3 shadow close_modal_button" data-dismiss="modal">Zamknij</button>
+        
+      </form><!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+ 
+    </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal detail order -->
+<div class="modal fade" id="update_order_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered " role="document">
+    <div class="modal-content bg-noisy p-1">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle"><i class="fa fa-plus color1" aria-hidden="true"></i> Edycja zlecenia</h5>
+        <button type="button" class="close close_modal_button" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        
+        <form id="update_order" action="{% url 'orders2' %}" method="post">
+
+          {% csrf_token %}
+          {{ form.as_p }}
+            <!-- <input type="submit" value="Zapisz" class="btn btn-danger mt-3 shadow"> -->
+        
+
+
+      </div>
+      <div class="modal-footer">
+        
+        <input type="submit" value="Zapisz" class="btn btn-danger mt-3 shadow">
+        <button type="button" class="btn btn-secondary mt-3 shadow close_modal_button" data-dismiss="modal">Zamknij</button>
+        
+      </form><!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal show order -->
+<div class="modal fade" id="order_detail" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered " role="document">
+    <div class="modal-content bg-noisy p-1">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle"> Zlecenie</h5>
+        <button type="button" class="close close_modal_button" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        
+
+
+      </div>
+      <div class="modal-footer">
+        
+        <a id="modyfikuj" href=""><button type="button" class="btn btn-warning mt-3 shadow"><i class="fa fa-pencil" aria-hidden="true"></i> Modifikuj</button></a>
+        <button type="button" class="btn btn-secondary mt-3 shadow close_modal_button" data-dismiss="modal">Zamknij</button>
+        
+     
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Header -->
+<div class="row p-2">
+  <div class="col-12">
+    <div class="d-flex justify-content-between">
+
+      <div class="header-div" id="">
+        <h2 class="mb-4"><i class="fa fa-clipboard" aria-hidden="true"></i>
+Moje zlecenia</h2>
+      </div>
+      <div class=""><button class="btn btn-success p-3 shadow-sm open_modal_button" id="add_order_btn" type="button">
+        <i class="fa fa-plus" aria-hidden="true"></i> Dodaj</button>
+</div>
+
+    </div>
+    <hr class="m-0">
+  </div>
+</div>
+
+
+
+<div class="row">
+    <div class="col-12 pl-4 pr-4">
+
+  {% if myorders %}
+  <p>Masz aktywne zlecenia</p>
+  {% else %}
+  <p>Nie masz jeszcze żadnych zleceń</p>
+  {% endif %}
+
+{% if mycompany %}
+{{ mycompany }}
+{% endif %}
+
+{% if myorders2 %}
+{% for o in myorders2 %}
+<p>{{ o }}</p>
+{% endfor %}
+{% endif %}
+
+<div class="fresh-div">
+  {% if myorders %}
+  {% for order in myorders|dictsort:"order_status.name" %}
+
+    {% if order.order_status.id == 5 or order.order_status.id == 6 or order.order_status.id == 7  %}
+      <div class="row text-dark bg-success rounded mt-1 p-2 shadow border border-secondary">
+    {% else %}
+      <div class="row text-dark bg-warning rounded mt-1 p-2 shadow border border-secondary">
+    {% endif %}
+    <div class="col-8 col-sm-8">
+      <i class="fa fa-user align-middle" aria-hidden="true"></i> 
+      <b class="align-middle">{{ order.care }}</b><br>
+    </div>
+    {% comment %} <div class="col-4 col-sm-3 border-left">
+      {{ order.title }} 
+    </div> {% endcomment %}
+    {% comment %} <div class="col col-sm-3 d-none d-sm-block border-left">
+      {{ order.created_date|date:'' }} 
+    </div> {% endcomment %}
+    <div class="col-4 col-sm-4 text-right">
+     
+    {% if order.order_status.id == 3 %}
+    <i class='mr-1 fa fa-refresh fa-spin fa-1x fa-fw'></i>
+    {% endif %}
+    
+    {% if order.order_status.id == 5 or order.order_status.id == 6 or order.order_status.id == 7 %}
+    <i class='mr-1 fa fa-check' aria-hidden='true'></i>
+    {% endif %}
+      {% comment %} <a href="{% url 'order_detail' order.id %}"><button class="btn btn-warning shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-pencil" aria-hidden="true"></i>              Edytuj</button></a>
+      <button class="show_order_btn btn shadow-sm btn-secondary btn-sm" apiurl="{% url 'order_api-list' %}" id="{{ order.id }}" url="{% url 'orders1' %}"><i class="fa fa-info" aria-hidden="true"></i> Szczegóły</button>
+      <a href="{% url 'order_delete' order.id %}"><button class="btn btn-danger shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_delete' order.id %}"><i class="fa fa-trash" aria-hidden="true"></i></button></a> {% endcomment %}
+
+    </div>
+  
+  </div> 
+
+    <div class="row border rounded bg-light p-3">
+
+
+    <div class="col-12 col-sm-6 text-left text-black bg-light">
+
+      <p><a href="{% if order.attachment %}{{ order.attachment.url }}{% endif %}"><i class="fa fa-paperclip" aria-hidden="true"></i>
+
+ <b>Załącznik</b></a></p>
+
+ <span><b>Firma:
+  {% if order.user.profile.thumb %}
+  <img class="rounded-circle border border-secondary shadow-sm thumb_min" src="{{ order.user.profile.thumb.url }}"/> -
+  {% else %}
+  <!-- <img class="rounded-circle border border-secondary shadow-sm thumb_min" src="{% static 'img/logogb.jpg' %}"/> -->
+  {% endif %}
+   
+</b>{{ order.user.profile.company_name }}</span><br>
+ <span><b>Tytuł: </b>{{ order.title }}</span><br>
+ 
+      <span><b>Opis: </b>{{ order.description }}</span>
+      <hr>
+    </div>
+    <div class="col-12 bg-light col-sm-6">
+      <span><b>Komunikat: </b>{{ order.komunikat }}</span><br>
+      <span><b>Data: </b>{{ order.created_date|date:'' }}</span>
+    </div>
+    </div>
+
+    
+
+
+
+  {% endfor %}
+  {% endif %}
+
+
+  </div> 
+</div>
+</div>
+
+{% else %}
+
+<div class="container">
+  <div class="row p-1">
+    <div class="col-12">
+      <p>Nie jestes zalogowany!</p>
+      <img src="{% static 'img/gob_logo.png' %}" alt="logo"><br>
+      <span><a href="{% url 'login' %}">Zaloguj</a></span><br>
+      <span><a href="{% url 'register2' %}">Zarejestuj</a></span>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+
+<script>
+
+</script>
+
+
+{% endblock %}

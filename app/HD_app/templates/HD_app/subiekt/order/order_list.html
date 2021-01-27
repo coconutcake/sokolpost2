@@ -1,0 +1,224 @@
+
+<!-- KOLUMNY -->
+      <div class="row ls ls_columns">
+          <div class="col-6 col-md-2 d-none d-md-block">
+            <span>Firma</span>
+          </div>
+          <div class="col-6 col-md-2 d-none d-md-block">
+            <span>Nazwa</span>
+          </div>
+          <div class="col-6 col-md-2 d-none d-md-block">
+            <span>Koszt/+Dojazd</span>
+          </div>
+          <div class="col-6 col-md-2 d-none d-md-block">
+            <span>Opiekun</span>
+          </div>
+          <div class="col-6 col-md-2 d-none d-md-block">
+            <span>Status</span>
+          </div>
+          <div class="col-6 col-md-2 d-none d-md-block">
+            <span>Utworzono</span>
+          </div>
+
+          <div class="w-100"></div>
+      </div>
+<!-- LISTA -->
+    <div class="ls subiekt-list" id="subiekt-orders" name="order">
+    {% if data %}
+        {% for obj in data %}
+            <div class="row ls_elem animated fadeInDown fast markon" name="order" pk="{{ obj.pk }}">
+
+            <div class="col-12 col-md-2 first_elem">
+                <input type="checkbox" class="mark" url="" name="order" pk="{{ obj.pk }}">&nbsp;
+                <span class="ls-spans subiekt_detail_get_modal_button font-weight-bold" keyid="pk" url="{% url 'Order_detail' obj.pk %}" type="GET" pk="{{ obj.pk }}" data-toggle="modal" data-target="#modal_window" name="pk" pk="{{ obj.pk }}"><i class="fas fa-building"></i> {{ obj.document.get_subiekt_company_name }}</span>
+            </div>
+
+            <div class="col-6 d-md-none">
+              <span>Imie</span>
+            </div>
+            <div class="col-6 col-md-2 elem middle_elem">
+              <span class="">{{ obj.name }}</span>
+            </div>
+
+            <div class="col-6 d-md-none">
+              <span>Koszt/+Dojazd</span>
+            </div>
+            <div class="col-6 col-md-2 elem middle_elem">
+              <span>{{ obj.calculate_order }} PLN / {{ obj.calculate_order_with_distance }} PLN</span>
+            </div>
+
+            <div class="col-6 d-md-none">
+              <span>Opiekun</span>
+            </div>
+            <div class="col-6 col-md-2 elem middle_elem">
+              <span>{{ obj.care }}</span>
+            </div>
+
+            <div class="col-6 d-md-none">
+              <span>Status</span>
+            </div>
+            <div class="col-6 col-md-2 elem middle_elem">
+              <span>{{ obj.order_status }}</span>
+            </div>
+
+            <div class="col-6 d-md-none">
+              <span>Utworzono</span>
+            </div>
+            <div class="col-6 col-md-2 elem middle_elem">
+              <span>{{ obj.created_date|date:"Y-m-d" }} - {{ obj.end_datetime|timeuntil:obj.start_datetime }}</span>
+            </div>
+
+
+
+
+            </div>
+
+
+        {% endfor %}
+    {% else %}
+        <span>Brak danych</span>
+    {% endif %}
+
+    <div class="col-12 col-sm-6">
+    </div>
+    </div>
+
+
+<script>
+  // Required Mark sripts
+    function get_checked_pks(name){
+      var $name = name
+      var $list = [];
+      var $checked = $(document).find(".mark[name='"+name+"']:checked")
+      console.log("TO SA CHECKI")
+      console.log($checked)
+      console.log("KONIEC")
+      $.each($(".mark[name='"+name+"']:checked"), function(){
+        $list.push($(this).attr("pk"));
+      });
+      return $list;
+      }
+    function get_elements_to_mark(target,pks){
+      var $target = target
+      var $name = name
+      var $pks = pks
+      var $elems = [];
+      $.each($pks, function( index, value ) {
+        var $pk = parseInt(value);
+        var $rawelem = $target+"[pk='"+$pk+"']";
+        var $elem = $($rawelem);
+        $elems.push($elem)
+      });
+      return $elems;
+      }
+
+    function mark_elements(targets){
+      var $targets = targets
+      $.each($targets, function(index,value) {
+        $(this).addClass("marked");
+      });
+      }
+    function unmark_elements(targets){
+      var $targets = targets
+      $.each($targets, function(index,value) {
+        console.log($(this))
+        $(this).removeClass("marked");
+      });
+      }
+    function get_unchecked_pks(name){
+      var $name = name
+      var $list = [];
+      $.each($(".mark[name='"+name+"']:not(:checked)"), function(){
+        $list.push($(this).attr("pk"));
+      });
+      return $list;
+      }
+    function set_counter(target,list){
+      var $target = target
+      console.log("MARKED: "+list.length);
+      $target.text("");
+      if(list.length != "0"){
+        $target.text("Zaznaczone: "+list.length);
+      }
+      }
+      $(".mark").on("change",function(){
+      var $th = $(this);
+      var $pk = $th.attr("pk");
+      var $url = $th.attr("url");
+      var $name = $th.attr("name")
+      var $checked_pks = get_checked_pks($name);
+      var $unchecked_pks = get_unchecked_pks($name);
+      var $mark_counter = $(".mark_counter");
+      var $markons = ".markon[name='"+$name+"']";
+      var $to_mark = get_elements_to_mark($markons,$checked_pks)
+      var $to_unmark = get_elements_to_mark($markons,$unchecked_pks)
+      mark_elements($to_mark)
+      unmark_elements($to_unmark)
+      set_counter($mark_counter,$checked_pks);
+      });
+</script>
+
+<!-- MODAL -->
+  <script>
+
+    function dissmis_modal(modal){
+      $(modal).modal("hide");
+    }
+
+    function correct_checkboxes(){
+        $("input[type='checkbox']").each(function(){
+          $(this).removeClass("form-control");
+        });
+      }
+
+    function populate_modal_body(modal_body,content){
+      modal_body.html(content);
+    }
+
+    $(".modal_button").on('click',function(){
+      var $th = $(this);
+      var $url = $th.attr("url");
+      var $pk = $th.attr("pk");
+      var $data = {"pk":$pk}
+      var $type = $th.attr("type");
+      var $data_target = $th.attr("data-target");
+      var $modal_body = $($data_target+" div.modal-body");
+      console.log($modal_body)
+      $.ajax({
+        url:$url,
+        data:$data,
+        type:$type,
+        success: function(content){
+          console.log(content)
+            populate_modal_body($modal_body,content);
+            correct_checkboxes();
+        }
+      });
+    });
+
+    $(".subiekt_detail_get_modal_button").on('click',function(){
+      console.log("click")
+      var $th = $(this);
+      var $url = $th.attr("url");
+      var $pk = $th.attr("pk");
+      var $keyid = $th.attr("keyid")
+      console.log($keyid)
+      var $id = {}
+      $id[$keyid] = $pk
+      var $data = {"data":JSON.stringify($id)}
+      var $type = $th.attr("type");
+      var $data_target = $th.attr("data-target");
+      var $modal_body = $($data_target+" div.modal-body");
+      console.log($modal_body)
+      $.ajax({
+        url:$url,
+        data:$data,
+        type:$type,
+        success: function(content){
+          console.log(content)
+            populate_modal_body($modal_body,content);
+            correct_checkboxes();
+        }
+      });
+    });
+  </script>

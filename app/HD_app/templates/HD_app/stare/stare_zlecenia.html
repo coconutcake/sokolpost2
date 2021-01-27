@@ -1,0 +1,164 @@
+<section id="sekcja_zlecenia" style="display:none;">
+    <div class="row">
+        <div id="" class="col-xs-12 col-sm-12 col-md-6 col-lg-6 mt-3">
+            <div class="section_header">
+                <h4 class=""><i class="fa fa-hourglass-start text-danger" aria-hidden="true"></i> W realizacji</h4>
+            </div>
+            <div class="form-group">
+                <label for="r_search">Szukaj:</label>
+                <input type="text" class="form-control input-sm" id="r_search"></input>
+              </div>
+            <hr>
+    
+            <div id="live_wrealizacji">
+            {% if user.is_staff %}
+            {% if myorders %}
+            {% for order in myorders|dictsort:"order_status.name" %}
+                    <div id="wrealizacjidiv">
+                    <div style="display:none;" id="{{ order.id }}{{ order.title }}" class="ih5 rounded border border-secondary order wrealizacji row bg-warning m-1 mb-2 p-2 shadow">
+                    <div class="col-8">
+                      <i class="fa fa-user align-middle" aria-hidden="true"></i> 
+                      <span class="align-middle"><b>{{ order.user.first_name }} {{ order.user.last_name }}</b></span><br>
+                      <span>Firma: 
+                        {% if order.user.profile.thumb %}
+                        <img class="rounded-circle border border-secondary shadow-sm thumb_min" src="{{ order.user.profile.thumb.url }}"/>
+                        {% else %}
+                        <!-- <img class="rounded-circle border border-secondary shadow-sm thumb_min" src="{% static 'img/logogb.jpg' %}"/> -->
+                        {% endif %}
+                        {{ order.user.profile.company_name }} </span><br>
+                      <span>Opis: {{ order.title }} </span>
+                    </div>
+                    <div class="col text-right">
+                      <span>{{ order.start_datetime|date:'' }}</span>
+                      {% if order.attachment %}
+                    <a href="{{ order.attachment.url }}"><button class="mb-1 btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-file" aria-hidden="true"></i>
+                      </button></a>
+                      {% endif %}
+                      <a href="{% url 'order_detail' order.id %}"><button class="mb-1 btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-pencil" aria-hidden="true"></i></button></a>
+                      <a href="{% url 'order_delete' order.id %}"><button class="mb-1 btn btn-danger shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_delete' order.id %}"><i class="fa fa-trash" aria-hidden="true"></i></button></a>
+                    </div>
+                  </div> 
+                </div>
+                {% endfor %}
+            {% endif %}
+    
+            {% else %}
+    
+            {% if myorders2 %}
+            {% for order in myorders2|dictsort:"order_status.name" %}
+                    <div id="wrealizacjidiv">
+    
+                    <div style="display:none;" id="{{ order.id }}{{ order.title }}" class="ih5 rounded border border-secondary order wrealizacji row bg-warning m-1 mb-2 p-2 shadow">
+                    <div class="col-8">
+                      <i class="fa fa-user align-middle" aria-hidden="true"></i> 
+                      <span class="align-middle"><b>{{ order.user }}</b></span><br>
+                      <span class="align-middle">Opiekun: <b>{{ order.care }}</b></span><br>
+                      <span>Firma: 
+                        {% if order.user.profile.thumb %}
+                        <img class="rounded-circle border border-secondary shadow-sm thumb_min" src="{{ order.user.profile.thumb.url }}"/>
+                        {% else %}
+                        <!-- <img class="rounded-circle border border-secondary shadow-sm thumb_min" src="{% static 'img/logogb.jpg' %}"/> -->
+                        {% endif %}
+                        {{ order.user.profile.company_name }} </span><br>
+                      <span>Opis: {{ order.title }} </span>
+                    </div>
+    
+                    <div class="col text-right">
+                      <span>{{ order.start_datetime|date:'' }}</span>
+                      {% if order.attachment %}
+                    <a href="{{ order.attachment.url }}"><button class="mb-1 btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-file" aria-hidden="true"></i>
+                      </button></a>
+                      {% endif %}
+                      <a href="{% url 'order_detail' order.id %}"><button class="mb-1 btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-pencil" aria-hidden="true"></i></button></a>
+                      <a href="{% url 'order_delete' order.id %}"><button class="mb-1 btn btn-danger shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_delete' order.id %}"><i class="fa fa-trash" aria-hidden="true"></i></button></a>
+                    </div>
+                  </div> 
+                </div>
+            {% endfor %}
+            {% endif %}
+            
+            {% endif %}
+    </div>
+            </div>
+        <div id="" class="col-xs-12 col-sm-12 col-md-6 col-lg-6 mt-3">
+            <div class="section_header">
+                <h4 class=""><i class="fa fa-check text-success" aria-hidden="true"></i>
+                    Zrealizowane</h4>
+    
+            </div>
+            <div class="form-group">
+                <label for="z_search">Szukaj:</label>
+                <input type="text" class="form-control input-sm" id="z_search"></input>
+              </div>
+            <hr>
+    
+        <div id="live_zrealizowane">
+            {% if user.is_staff %}
+            {% if my_completed_orders %}
+            {% for order in my_completed_orders|dictsort:"order_status.name" %}
+                <div id="zrealizowanediv">
+                    <div style="display:none;" id="{{ order.id }}{{ order.title }}" class="ih5 order rounded border border-secondary zrealizowane row bg-success m-1 mb-2 p-2 shadow">
+                    <div class="col-8">
+                      <i class="fa fa-user align-middle" aria-hidden="true"></i> 
+                      <span class="align-middle"><b>{{ order.user }}</b></span><br>
+                      <span>Firma: 
+                        {% if order.user.profile.thumb %}
+                        <img class="rounded-circle border border-secondary shadow-sm thumb_min" src="{{ order.user.profile.thumb.url }}"/>
+                        {% else %}
+                        <!-- <img class="rounded-circle border border-secondary shadow-sm thumb_min" src="{% static 'img/logogb.jpg' %}"/> -->
+                        {% endif %}
+                        {{ order.user.profile.company_name }} </span><br>
+                      <span>Opis: {{ order.title }} </span>
+                    </div>
+    
+                    <div class="col text-right">
+                      <span>{{ order.start_datetime|date:'' }}</span>
+                      {% if order.attachment %}
+                    <a href="{{ order.attachment.url }}"><button class="mb-1 btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-file" aria-hidden="true"></i>
+                      </button></a>
+                      {% endif %}
+                      <a href="{% url 'order_detail' order.id %}"><button class="mb-1 btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-pencil" aria-hidden="true"></i></button></a>
+                      <a href="{% url 'order_delete' order.id %}"><button class="mb-1 btn btn-danger shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_delete' order.id %}"><i class="fa fa-trash" aria-hidden="true"></i></button></a>
+                    </div>
+                  </div> 
+                </div>
+                  {% endfor %}
+                {% endif %}
+    
+            {% else %}
+    
+            {% if my_completed_orders2 %}
+            {% for order in my_completed_orders2|dictsort:"order_status.name" %}
+                <div id="zrealizowanediv">
+                    <div style="display:none;" id="{{ order.id }}{{ order.title }}" class="ih5 order rounded border border-secondary zrealizowane row bg-success m-1 mb-2 p-2 shadow">
+                    <div class="col-8">
+                      <i class="fa fa-user align-middle" aria-hidden="true"></i> 
+                      <span class="align-middle"><b>{{ order.user }}</b></span><br>
+                      <span>Firma: 
+                        {% if order.user.profile.thumb %}
+                        <img class="rounded-circle border border-secondary shadow-sm thumb_min" src="{{ order.user.profile.thumb.url }}"/>
+                        {% else %}
+                        <!-- <img class="rounded-circle border border-secondary shadow-sm thumb_min" src="{% static 'img/logogb.jpg' %}"/> -->
+                        {% endif %}
+                        {{ order.user.profile.company_name }} </span><br>
+                      <span>Opis: {{ order.title }} </span>
+                    </div>
+    
+                    <div class="col text-right">
+                      <span>{{ order.start_datetime|date:'' }}</span>
+                      {% if order.attachment %}
+                    <a href="{{ order.attachment.url }}"><button class="mb-1 btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-file" aria-hidden="true"></i>
+                      </button></a>
+                      {% endif %}
+                      <a href="{% url 'order_detail' order.id %}"><button class="mb-1 btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-pencil" aria-hidden="true"></i></button></a>
+                      <a href="{% url 'order_delete' order.id %}"><button class="mb-1 btn btn-danger shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_delete' order.id %}"><i class="fa fa-trash" aria-hidden="true"></i></button></a>
+                    </div>
+                  </div> 
+                </div>
+                  {% endfor %}
+                {% endif %}
+            {% endif %}
+            </div>
+        </div>
+        </div>
+    </section>

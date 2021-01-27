@@ -1,0 +1,107 @@
+<!-- templates/home.html-->
+{% extends 'HD_app/base.html' %}
+{% load static %}
+{% load rest_framework %}
+{% block title %}Dodaj nowego klienta{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+
+
+    <div class="row p-3">
+    <div class="col-12 col-md-6 mb-5 p-3">
+        <h1><i class="fa fa-plus color1" aria-hidden="true"></i> Dodaj klienta</h1>
+        <hr>
+        <form class="forms" id="add_customer" action="{% url 'customers' %}" method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+           
+            <input type="submit" value="Zapisz" class="btn btn-danger mt-3 shadow">
+        </form>
+    </div>
+    <div class="col-12 col-md-6 p-3">
+      <h1><i class="fa fa-list color1" aria-hidden="true"></i>
+        Lista klientów</h1>
+      <hr class="mb-0 pb-0">
+
+      <!-- Searchbox -->
+      {% comment %} <div class="searchbox input-group input-group mb-5 mt-5" >
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="inputGroup-sizing-sm">Szukaj</span>
+        </div>
+        <input object="Customer" searchby="name" url="name/" populatediv="customer_lst" type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm">
+      </div> {% endcomment %}
+      <!--  -->
+
+    <!-- Searchbox -->
+      <div class="searchbox input-group input-group mb-5 mt-5" >
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="inputGroup-sizing-sm">Szukaj</span>
+        </div>
+        <input searchby="name" apiurl="api/customer" populatediv="customer_lst" type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm">
+      </div>
+      <!--  -->
+
+      <div class="fresh-div mt-2" id="customer_lst">
+      {% if customers %}
+        {% for c in customers.all %}
+
+        <div class="d-flex justify-content-center m-1 pt-3 pb-3 bg-light rounded border shadow-sm">
+          <div class="col text-secondary">
+          <i class="fa fa-address-book" aria-hidden="true"></i>
+            
+            <span id="{{ c.id }}"> ID / {{ c.id }}</span>
+            <p id="{{ c.id }}"><b>{{ c.name|upper }}</b></p>
+            <i class="fa fa-road" aria-hidden="true"></i>
+            <span id="{{ c.id }}">{{ c.city }}</span>
+            
+          
+            
+          </div>
+
+          <div class="col text-right">
+
+            <button class="mb-2 show_customer btn shadow-sm btn-sm btn-secondary" id="{{ c.id }}" url="{% url 'customer_api-list' %}"><i class="fa fa-info-circle" aria-hidden="true"></i></button></a>
+            
+            <a href="{% url 'customer_detail' c.id %}">
+            <button class="mb-2 show_btn btn shadow-sm btn-sm btn-warning" id="{{ c.id }}" url="{% url 'customer_detail' c.id %}"><i class="fa fa-pencil" aria-hidden="true"></i> Zmień</button></a>
+            </a>
+
+            <a href="{% url 'customer_delete' c.id %}">
+            <button class="mb-2 cancel_order btn shadow-sm btn-sm btn-danger" id="{{ c.id }}" url="{% url 'customer_delete' c.id %}"><i class="fa fa-trash" aria-hidden="true"></i> Usuń</button>
+            
+            </a>
+          </div>
+        </div>
+        
+        {% endfor %}
+      {% endif %}
+
+
+      </div>
+  </div>
+</div>
+
+{% else %}
+
+<div class="container">
+  <div class="row p-1">
+    <div class="col-12">
+      <p>Nie jestes zalogowany!</p>
+      <img src="{% static 'img/gob_logo.png' %}" alt="logo"><br>
+      <span><a href="{% url 'login' %}">Zaloguj</a></span><br>
+      <span><a href="{% url 'register2' %}">Zarejestuj</a></span>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+{% endif %}
+
+{% endblock %}

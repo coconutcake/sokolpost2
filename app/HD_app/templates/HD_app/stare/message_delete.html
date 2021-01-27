@@ -1,0 +1,55 @@
+<!-- templates/home.html-->
+{% extends 'HD_app/newbase.html' %}
+{% load static %}
+{% load rest_framework %}
+{% block title %}Wiadomość{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+
+
+
+    <div class="row p-3">
+      <div class="col-12">
+      <div class="p-3">
+      {% if object %}
+      <div class="">
+      <h1 class="data" name="name" id="{{ object.id }}"><b>{{ object.name }}</b></h1><hr>
+      <span>ID / </span><span class="data" name="id" id="{{ object.id }}">{{ object.id }}</p>
+      <span>Adresat / </span><span class="data" name="id" id="{{ object.receipt }}">{{ object.receipt }}</p>
+      <span>Sender / </span><span class="data" name="id" id="{{ object.sender }}">{{ object.sender }}</p>
+      <br>
+
+      </div>
+        
+      {% endif %}
+      <form method="post">{% csrf_token %}
+        <p>Czy napewno chcesz usunąć "{{ object }}"?</p>
+        <input type="submit" value="Usuń">
+    </form>
+
+      </div>
+    </div>
+  </div>
+
+
+
+
+{% else %}
+
+<div class="container">
+  <div class="row p-1">
+    <div class="col-12">
+      <p>Nie jestes zalogowany!</p>
+      <img src="{% static 'img/gob_logo.png' %}" alt="logo"><br>
+      <span><a href="{% url 'login' %}">Zaloguj</a></span><br>
+      <span><a href="{% url 'register2' %}">Zarejestuj</a></span>
+    </div>
+  </div>
+</div>
+
+{% endif %}
+
+
+{% endblock %}

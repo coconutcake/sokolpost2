@@ -1,0 +1,342 @@
+<!-- templates/home.html-->
+{% extends 'HD_app/newbase.html' %}
+{% load static %}
+{% load rest_framework %}
+{% block title %}Dodaj nowego klienta{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+
+<!-- Header -->
+<page_header>
+<div class="row p-2">
+  <div class="col-12 header-div">
+    <div class="d-flex justify-content-between">
+      <div class="" id="">
+        <h2 class="">Umowy</h2>
+      </div>
+      {% if user.is_staff %}
+      <div class="" id="">
+      <button class="animated bounceInDown fast btn btn-success shadow-sm open_modal_button" id="add_agreement_btn" type="button">
+        <i class="rotate-center text-light fa fa-plus" aria-hidden="true"></i> Dodaj umowe
+      </button>
+    </div>
+    {% endif %}
+    </div>
+  
+  </div>
+</div>
+<hr class="mb-3 mt-0">
+</page_header>
+
+{% if user.is_staff %}
+<!-- Modal ADD order -->
+<div class="modal fade" id="add_agreement_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered " role="document">
+    <div class="modal-content bg-noisy p-1">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle"><i class="fa fa-plus color1" aria-hidden="true"></i> Dodawanie umowy</h5>
+        <button type="button" class="close close_modal_button" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="add_agreement" action="{% url 'agreements' %}" method="post">{% csrf_token %}
+          {{ form.as_p }}
+          <button class="btn btn-danger" type="submit" value="Save">Dodaj</button>
+      </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="row p-3">
+      <div class="col-12 p-3 ih">
+        <hr>
+
+        <div class="row animated fadeInDown">
+          <div class="col-12 col-sm-4 mt-3">
+            <label><b>Klient:</b></label>
+            <hr class="m-0">
+            <input class="ih form-control shadow-sm" id="agreements_search_by_customer" placeholder="Szukaj wg klienta">
+          </div>
+          <div class="col-12 col-sm-4 mt-3">
+            <label><b>Nazwa:</b></label>
+            <hr class="m-0">
+            <input class="ih form-control shadow-sm" id="agreements_search_by_name" placeholder="Szukaj wg nazwy">
+          </div>
+          <div class="col-12 col-sm-4 mt-3">
+            <label><b>Status:</b></label>
+            <hr class="m-0">
+
+            <select class="form-control shadow-sm" id="agreements_search_by_status">
+              <option></option>
+              {% if status %}
+              {% for s in status %}
+              <option>{{ s }}</option>
+              {% endfor %}
+              {% endif %}
+
+            </select>
+          </div>
+          </div>
+
+
+      </div>
+    </div>
+
+    <hr>
+    <div class="d-flex justify-content-center pt-3">
+      <span class="animated fadeIn slower"><i class="fa fa-1x fa-arrow-down" aria-hidden="true"></i>
+      </span><span class="animated fadeInDown ml-2 mr-2 "><i class="fa fa-1x fa-arrow-down" aria-hidden="true"></i>
+      </span><span class="animated fadeIn slower"><i class="fa fa-1x fa-arrow-down" aria-hidden="true"></i>
+      </span></div>
+
+    {% endif %}
+    
+    <div class="row mb-1 p-3 ">
+      <div class="col">
+      <div class="agreements animated fadeIn slow" id="customer_lst">
+
+{% if user.is_staff %}
+
+      {% if agreements %}
+        {% for c in agreements %}
+        <div class="d-flex justify-content-center mt-2 ">
+          <div class="col">
+
+
+            <div customer="{{ c.company }}" name="{{ c.company.name  }}" status="{{ c.status }}" class="wynik row rounded mt-1 p-2 shadow-sm border border-secondary">
+              <div class="col-12 col-lg-6">
+               <span class="text-dark"><b><i class="fa fa-user" aria-hidden="true"></i>
+ {{ c.company.name }}</b></span> | 
+               <span class="text-secondary" id="{{ c.id }}">{{ c.name }}</span>
+              </div>
+              <div class="col-12 col-lg-3 mt-1">
+               {% if c.status.id == 1 %}
+               <span class="p-1 mt-1 bg-success rounded border-bottom border-secondary shadow-sm text-light" id="{{ c.status }}"><i class="fa fa-check-circle" aria-hidden="true"></i>
+{{ c.status }}</span>
+               {% endif %}
+               {% if c.status.id == 2 %}
+               <span class="p-1 mt-1 bg-danger rounded border-bottom border-secondary shadow-sm text-light" id="{{ c.status }}"><i class="fa fa-times" aria-hidden="true"></i>
+
+{{ c.status }}</span>
+               {% endif %}
+               {% if c.status.id == 3 %}
+               <span class="p-1 mt-1 bg-secondary rounded border-bottom border-secondary shadow-sm text-light" id="{{ c.status }}"><i class="fa fa-check-circle" aria-hidden="true"></i>
+{{ c.status }}</span>
+               {% endif %}
+              </div>
+            
+            
+            
+          
+          <div class="col-12 col-lg-3 text-right">
+            <a href="{% url 'agreement_detail' c.id %}">
+            <button class="show_btn btn shadow-sm btn-sm btn-light" id="{{ c.id }}" url="{% url 'agreement_detail' c.id %}"><i class="fa fa-pencil" aria-hidden="true"></i> Zmień</button></a>
+            <button class="btn btn-sm btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample{{ c.id }}" aria-expanded="false" aria-controls="collapseExample">
+              Wiecej...
+            </button>
+            
+            <a href="{% url 'agreement_delete' c.id %}"><button class="btn btn-danger shadow-sm btn-sm" id="{{ c.id }}" url="{% url 'agreement_delete' c.id %}"><i class="fa fa-trash" aria-hidden="true"></i></button></a>
+          </div>
+        </div>
+
+
+
+          
+
+
+
+
+
+        <div id="collapseExample{{ c.id }}" class="row collapse mb-5 border bg-light rounded shadow-sm p-3">
+          <div class="col-6 p-2  border-left color1 rounded">
+            <b>Klient: </b><br><span class="text-secondary">{{ c.company.name }}</span>
+          </div>
+          <div class="col-6 p-2 border-left rounded">
+            <b>Opiekun: </b><br><span class="text-secondary">{{ c.company.care }}</span>
+          </div>
+          <div class="col-6 p-2 border-left">
+            <b>Data zawarcia: </b><br><span class="text-secondary">{{ c.start_date|date:'' }}</span>
+          </div>
+          <div class="col-6 p-2 border-left">
+            <b>Data ukończenia: </b><br><span class="text-secondary">{{ c.end_date|date:'' }}</span>
+          </div>
+          <div class="col-6 p-2 border-left">
+            <b>Pakiet: </b><br><span class="text-secondary">{{ c.pakiet }}</span>
+          </div>
+          <div class="col-6 p-2 border-left">
+            <b>Abonament: </b><br><span class="text-secondary">{{ c.subscription|floatformat:2 }} zł</span>
+          </div>
+          <div class="col-6 p-2 border-left">
+            <b>Ilość godzin: </b><br><span class="text-secondary">{{ c.hours|floatformat:0 }}</span>
+          </div>
+          <div class="col-6 p-2 border-left">
+            <b>Stawka/h: </b><br><span class="text-secondary">{{ c.rate|floatformat:2 }} zł</span>
+          </div>
+        </div>
+      </div>
+      <!-- <hr> -->
+      
+    </div>
+    {% endfor %}
+      {% endif %}
+
+
+      {% else %}
+
+
+      {% if myagreements %}
+        {% for c in myagreements %}
+        <div class="d-flex justify-content-center mt-2 ">
+          <div class="col">
+
+
+            <div customer="{{ c.company }}" name="{{ c..company.name  }}" status="{{ c.status }}" class="wynik row rounded mt-1 p-2 bg-1 shadow-sm border border-secondary">
+              <div class="col-12 col-lg-6">
+               <span class="text-dark"><b><i class="fa fa-user" aria-hidden="true"></i>
+ {{ c.company.name }}</b></span> | 
+               <span class="text-secondary" id="{{ c.id }}">{{ c.name }}</span>
+              </div>
+              <div class="col-12 col-lg-3 mt-1">
+               {% if c.status.id == 1 %}
+               <span class="p-1 mt-1 bg-success rounded border-bottom border-secondary shadow-sm text-light" id="{{ c.status }}"><i class="fa fa-check-circle" aria-hidden="true"></i>
+{{ c.status }}</span>
+               {% endif %}
+               {% if c.status.id == 2 %}
+               <span class="p-1 mt-1 bg-danger rounded border-bottom border-secondary shadow-sm text-light" id="{{ c.status }}"><i class="fa fa-times" aria-hidden="true"></i>
+
+{{ c.status }}</span>
+               {% endif %}
+               {% if c.status.id == 3 %}
+               <span class="p-1 mt-1 bg-secondary rounded border-bottom border-secondary shadow-sm text-light" id="{{ c.status }}"><i class="fa fa-check-circle" aria-hidden="true"></i>
+{{ c.status }}</span>
+               {% endif %}
+              </div>
+            
+            
+            
+      
+          <div class="col-12 col-lg-3 text-right">
+            <a href="{% url 'agreement_detail' c.id %}">
+            <button class="show_btn btn shadow-sm btn-sm btn-light" id="{{ c.id }}" url="{% url 'agreement_detail' c.id %}"><i class="fa fa-pencil" aria-hidden="true"></i> Zmień</button></a>
+            <button class="btn btn-sm btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample{{ c.id }}" aria-expanded="false" aria-controls="collapseExample">
+              Wiecej...
+            </button>
+            
+            <a href="{% url 'agreement_delete' c.id %}"><button class="btn btn-danger shadow-sm btn-sm" id="{{ c.id }}" url="{% url 'agreement_delete' c.id %}"><i class="fa fa-trash" aria-hidden="true"></i></button></a>
+          </div>
+        </div>
+
+
+
+      
+        <div id="collapseExample{{ c.id }}" class="row collapse mb-5 border bg-light rounded shadow-sm p-3">
+          <div class="col-6 p-2  border-left color1 rounded">
+            <b>Klient: </b><br><span class="text-secondary">{{ c.company.name }}</span>
+          </div>
+          <div class="col-6 p-2 border-left rounded">
+            <b>Opiekun: </b><br><span class="text-secondary">{{ c.company.care }}</span>
+          </div>
+          <div class="col-6 p-2 border-left">
+            <b>Data zawarcia: </b><br><span class="text-secondary">{{ c.start_date|date:'' }}</span>
+          </div>
+          <div class="col-6 p-2 border-left">
+            <b>Data ukończenia: </b><br><span class="text-secondary">{{ c.end_date|date:'' }}</span>
+          </div>
+          <div class="col-6 p-2 border-left">
+            <b>Pakiet: </b><br><span class="text-secondary">{{ c.pakiet }}</span>
+          </div>
+          <div class="col-6 p-2 border-left">
+            <b>Abonament: </b><br><span class="text-secondary">{{ c.subscription|floatformat:2 }} zł</span>
+          </div>
+          <div class="col-6 p-2 border-left">
+            <b>Ilość godzin: </b><br><span class="text-secondary">{{ c.hours|floatformat:0 }}</span>
+          </div>
+          <div class="col-6 p-2 border-left">
+            <b>Stawka/h: </b><br><span class="text-secondary">{{ c.rate|floatformat:2 }} zł</span>
+          </div>
+        </div>
+      </div>
+      <!-- <hr> -->
+      
+    </div>
+    {% endfor %}
+      {% endif %}
+
+    {% endif %}
+  </div>
+</div>
+
+
+{% else %}
+
+<div class="container">
+  <div class="row p-1">
+    <div class="col-12">
+      <p>Nie jestes zalogowany!</p>
+      <img src="{% static 'img/gob_logo.png' %}" alt="logo"><br>
+      <span><a href="{% url 'login' %}">Zaloguj</a></span><br>
+      <span><a href="{% url 'register2' %}">Zarejestuj</a></span>
+    </div>
+  </div>
+</div>
+
+{% endif %}
+
+<script src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
+
+<script>
+var timer;
+$(document).ready(function(){
+  $("#agreements_search_by_customer").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    console.log(value)
+        $("div.wynik").filter(function() {
+          $(this).toggle($(this).attr('customer').toLowerCase().indexOf(value) > -1)
+        });
+
+  });
+  $("#agreements_search_by_name").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    console.log(value)
+        $("div.wynik").filter(function() {
+          $(this).toggle($(this).attr('name').toLowerCase().indexOf(value) > -1)
+        });
+
+  });
+  $("#agreements_search_by_status").on("change", function() {
+    var value = $(this).val().toLowerCase();
+    console.log(value)
+    $("div.wynik").filter(function() {
+      $(this).toggle($(this).attr('status').toLowerCase().indexOf(value) > -1)
+    });
+  });
+});
+</script>
+
+<!-- <script>
+  
+  var $apilink = "{% url 'agreement_api-list' %}"
+  var $icontains = "?name__icontains="
+
+  $(document).on('keyup','#agreements_search',function( e ) {  
+    var $th = $(this).val();
+    var $completelink = $apilink+$icontains+$th
+    
+    $.getJSON($completelink, function(result){
+      console.log($completelink)
+      console.log(result)
+      $('.agreements').html("<p>Klient: "+result.)
+
+    });
+
+  });
+
+</script> -->
+
+
+{% endblock %}

@@ -1,0 +1,381 @@
+<!-- templates/home.html-->
+{% extends 'HD_app/newbase.html' %}
+{% load static %}
+{% load rest_framework %}
+{% block title %}Zlecenia serwisowe | Sokół{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+{% if user.is_staff %}
+  
+<!-- Header -->
+<page_header>
+<div class="row p-2">
+  <div class="col-12 header-div">
+    <div class="d-flex justify-content-between">
+      <div class="" id="">
+        <h2 class=""><i class="fa fa-cog text-danger" aria-hidden="true"></i>
+Zlecenia serwisowe</h2>
+        
+      </div>
+      <div class="" id="">
+        <button class="animated bounceInDown btn btn-success shadow-sm open_modal_button" id="add_service_order_btn" type="button">
+          <i class="text-light rotate-center fa fa-plus" aria-hidden="true"></i> Dodaj zlecenie</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+<hr class="mb-3 mt-0">
+</page_header>
+
+<div class="divitor">&nbsp;</div>
+
+<!-- Modale -->
+<modals id="sekcja_modale">
+<!-- Modal ADD order -->
+<div class="modal fade" id="add_service_order_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content bg-noisy p-1">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle"><i class="fa fa-cog text-danger" aria-hidden="true"></i> Dodawanie zlecenia serwisowego</h5>
+        <button type="button" class="close close_modal_button" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="add_service_order" action="{% url 'service_orders1' %}" method="post">
+          {% csrf_token %}
+          {{ form.as_p }}
+            <!-- <input type="submit" value="Zapisz" class="btn btn-danger mt-3 shadow"> -->
+      </div>
+      <div class="modal-footer">
+        <input type="submit" value="Zapisz" class="btn btn-danger mt-3 shadow">
+        <button type="button" class="btn btn-secondary mt-3 shadow close_modal_button" data-dismiss="modal">Zamknij</button>
+      </form><!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal detail order -->
+<div class="modal fade" id="update_order_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered " role="document">
+    <div class="modal-content bg-noisy p-1">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle"><i class="fa fa-plus color1" aria-hidden="true"></i> Edycja zlecenia</h5>
+        <button type="button" class="close close_modal_button" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="update_order" action="{% url 'orders1' %}" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          {{ form.as_p }}
+            <!-- <input type="submit" value="Zapisz" class="btn btn-danger mt-3 shadow"> -->
+      </div>
+      <div class="modal-footer">
+        <input type="submit" value="Zapisz" class="btn btn-danger mt-3 shadow">
+        <button type="button" class="btn btn-secondary mt-3 shadow close_modal_button" data-dismiss="modal">Zamknij</button>
+      </form><!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal show order -->
+<div class="modal fade" id="order_detail" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered " role="document">
+    <div class="modal-content bg-noisy p-1">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle"> Zlecenie</h5>
+        <button type="button" class="close close_modal_button" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      </div>
+      <div class="modal-footer">
+        <a id="modyfikuj" href=""><button type="button" class="btn btn-warning mt-3 shadow"><i class="fa fa-pencil" aria-hidden="true"></i> Modifikuj</button></a>
+        <button type="button" class="btn btn-secondary mt-3 shadow close_modal_button" data-dismiss="modal">Zamknij</button>
+      </div>
+    </div>
+  </div>
+</div>
+</modals>
+
+
+<!-- Service Ordery -->
+{% if user.is_staff %}
+<!-- Nowe zlecenia -->
+<section id="sekcja_zlecenia_serwisowe" style="display:none;">
+  <!-- <div class="section_header">zlecenie
+    <h4 class="" ><i class="fa fa-bar-chart" aria-hidden="true"></i>
+        Lista zleceń</h4><hr>
+</div> -->
+
+<div class="row">
+<div class="col-12 col-md-12">
+  <div class="section_header">
+    <h4 class=""><i class="fa fa-hourglass-start text-danger" aria-hidden="true"></i> W realizacji</h4><hr>
+  </div>
+
+<!-- 1 search -->
+  <div class="form-group">
+    <label for="os_search">Szukaj:</label>
+    <input type="text" class="form-control input-sm" id="os_search">
+  </div>
+
+<!-- 1 -->
+<div class="lista_zlecen lista_w_realizacji">
+  <div id="lista_zlecen_serwisowych_w_realizacji">
+
+        {% if user.is_staff %}
+        {% if myserviceorders_per_company %}
+        {% for order in myserviceorders_per_company %}
+        <div class="zoom1">
+        <div class="row zlecenie shadow-sm rounded zlecenie_serwisowe_w_realizacji animated fadeInDown fast">
+          
+          <div class="col-7 col-sm-9 col-md-10">
+            
+            <span class="font-weight-bold" 
+            data-toggle="tooltip2" 
+            data-html="true" 
+            title=
+            "<div class='x'>
+              <div class='mt-2'>
+                  <img class='thumb_min_c shadow-sm' src='{{ order.company.thumb.url }}'>
+              </div>
+              <div class='mt-2'>
+                <b><span class='bg-danger rounded p-1 shadow-sm'>{{ order.company.name }}</span></b><br>
+              </div>
+              <div class='mt-2'>
+                <span>NIP: {{ order.company.nip }}</span><br>
+                <span>{{ order.company.adres }}</span><br>
+                <span>Opiekun: {{ order.company.care }}</span>
+              </div>">
+              {% if order.company %}
+                {% if order.company.thumb %}
+                <img class="rounded-circle border border-secondary shadow-sm thumb_min_a" src="{{ order.company.thumb.url }}"/>
+                {% endif %}
+              
+                <span class="company_span">{{ order.company }}</span></span>
+                
+                <hr>
+          </div>
+
+          <div class="col-5 col-sm-3 col-md-2 text-right">
+            <!-- {% if order.attachment %}
+          <a href="{{ order.attachment.url }}"><button data-toggle="tooltip" data-html="true" data-placement="top" title="Pobierz dokument" class="mb-1 btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-file" aria-hidden="true"></i>
+            </button></a>
+            {% endif %} -->
+            <a href="{% url 'serviceorder_detail' order.id %}"><button data-toggle="tooltip" data-html="true" data-placement="top" title="Edytuj" class="mb-1 btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-pencil" aria-hidden="true"></i></button></a>
+            <a href="{% url 'serviceorder_delete' order.id %}"><button data-toggle="tooltip" data-html="true" data-placement="top" title="Usuń" class="mb-1 btn btn-danger shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_delete' order.id %}"><i class="fa fa-trash" aria-hidden="true"></i></button></a>
+          </div>
+
+          <div class="col">
+
+              <span>NIP: {{ order.company.nip }}</span>
+           {% endif %}    
+          </div>
+
+
+          <div class="col-4 zlecenie_status text-right">
+            <span>
+              <i class="fa fa-refresh fa-spin fa-1x fa-fw"></i></span>
+            </div>
+
+            <div class="col-12 zlecenie_info">
+            
+              <span>{{ order.name }}</span> - <span>{{ order.created_date|date:'' }}</span><br>
+              <span>Typ: {{ order.order_type }}</span> - <span><b>{{ order.category }}</b></span>
+              <hr>
+              <div class="zlecenie_info_1 rounded">
+                <span class="font-weight-bold" 
+                data-toggle="tooltip2" 
+                data-html="true" 
+                title=
+                "<div class='x'>
+                  <div class='mt-2'>
+                      <img class='thumb_min_c shadow-sm' src='{{ order.company.care.profile.thumb.url }}'>
+                  </div>
+                  <div class='mt-2'>
+                    <b><span class='bg-danger rounded p-1 shadow-sm'>{{ order.company.care.first_name }} {{ order.company.care.last_name }}</span></b><br>
+                    <b><span class=''>{{ order.company.care.email }}</span></b><br>
+                  </div>
+                  ">Opiekun IT: 
+                  {% if order.company.care.profile.thumb %}
+                  <img class="rounded-circle border border-secondary shadow-sm thumb_min" src="{{ order.company.care.profile.thumb.url }}"/>
+                  {% endif %}
+                  {{ order.company.care.first_name }}</span><br>
+                  
+              <span><i class="fa fa-arrow-up" aria-hidden="true"></i> Start: {{ order.start_datetime|date:'d-M h:m' }}</span>
+              
+              <!-- <span><i class="fa fa-arrow-down" aria-hidden="true"></i>
+                Koniec: {{ order.end_datetime|date:'d-M h:m' }}</span><br> -->
+
+                <!-- <span><i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                  Komunikat: {% if order.komunikat %}<span class="zlecenie_komunikat">{{ order.komunikat }}</span>{% endif %}</span><br> -->
+                  
+                </div>
+                <hr>
+                <div class="row">
+              </div>
+          </div>
+
+
+        </div>
+      </div>
+        {% endfor %}
+        {% endif %}
+        {% endif %}
+
+  </div>
+  </div>
+</div>
+
+
+
+
+
+</div>
+</section>
+{% endif %}
+  
+
+
+
+<script src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
+<script src="{% static 'js/jquery-ui.min.js' %}"></script>
+<script>
+
+  $(".completed").click(function(){
+    var $target = $(this).attr('data-target')
+    $(".completed").removeClass('shadow border-dark border bg-dark');
+    $(this).addClass('shadow border-dark border bg-dark')
+    $(".collapse").collapse('hide');
+    $($target).collapse('toggle');
+  });
+
+  // Nofity ----------------------------------------------------------
+  function updateDiv(target) {
+    $(target).load(window.location.href + " " + target);
+  };
+  
+  function success_sound() {
+    var obj = document.createElement("audio");
+    obj.src = "{% static 'sounds/success.wav' %}";
+    obj.play();
+    console.log("success played!")
+  };
+  function get_value(link){
+    $.get(link, {},
+    function get_this(returnedHtml) {
+      console.log("To jest returned initial: "+returnedHtml)
+      $flag = returnedHtml
+    });
+  };
+ var $flag = 0
+  get_value("http://127.0.0.1:8000/orders_length/");
+  console.log("To jest flaga init: "+$flag)
+  function get_value_notify(link, target){
+    $.get(link, {},
+    function (returnedHtml) {
+      console.log(returnedHtml)
+      $flag2 = parseInt(returnedHtml)
+      if ($flag2 > $flag){
+        console.log("Flaga 1: "+$flag+" Flaga 2: "+$flag2)
+        $.notify({
+          title: '<b>Nowe zlecenie!</b>',
+          icon: 'fa fa-plus',
+          message: '<hr>Masz nowe zlecenie!' 
+        },{
+          type: 'warning',
+          offset: 30,
+          delay: 5000,
+          animate: {
+            enter: 'animated bounceInDown',
+            exit: 'animated bounceOutUp'
+          },
+          placement: {
+            from: "top",
+            align: "center"
+          },
+        });
+        $flag = $flag2
+
+        success_sound();
+        // $(target).html(returnedHtml);
+      }
+    });
+  }
+      
+
+  //$(document).on('click', 'button.completed', function (event) {
+   // event.preventDefault();
+    //console.log('clicked')
+    //$('html, body').animate({
+    //    scrollTop: $(window).scrollTop() + 500
+    //}, 300);
+//});
+
+
+      //W realizacji search
+    $("#os_search").on("keyup", function() {
+      var value = $(this).val().toLowerCase();
+      console.log(value)
+      $("#lista_zlecen_serwisowych_w_realizacji .zlecenie_serwisowe_w_realizacji").filter(function() {
+          $(this).toggle($(this).find('span').text().toLowerCase().indexOf(value) > -1)
+      });
+      });
+
+      $("#os1_search").on("keyup", function() {
+        var value = $(this).val().toLowerCase();
+        console.log(value)
+        $("#lista_zlecen_serwisowych_ukonczone .zlecenie_serwisowe_ukonczone").filter(function() {
+            $(this).toggle($(this).find('span').text().toLowerCase().indexOf(value) > -1)
+        });
+        });
+
+
+
+//FullCalendar -------------------------------------------------------
+var calendar = ''
+document.addEventListener('DOMContentLoaded', function() {
+  var calendarEl = document.getElementById('calendar');
+
+  calendar = new FullCalendar.Calendar(calendarEl, {
+    
+    plugins: [ 'dayGrid' ],
+    defaultView: 'dayGridWeek',
+    events: [
+    {% if myorders %}
+      {% for order in myorders %}
+    {
+      title:"{{ order.title }}",
+      start: "{{ order.start_datetime|date:'Y-m-d H:m' }}",
+      end: "{{ order.end_datetime|date:'Y-m-d H:m' }}",
+    },
+    {% endfor %}
+    {% endif %}
+    ]
+  });
+  calendar.render();
+});
+</script>
+{% endif %}
+{% else %}
+
+<div class="container">
+  <div class="row p-1">
+    <div class="col-12">
+      <p>Nie jestes zalogowany!</p>
+      <img src="{% static 'img/gob_logo.png' %}" alt="logo"><br>
+      <span><a href="{% url 'login' %}">Zaloguj</a></span><br>
+      <span><a href="{% url 'register2' %}">Zarejestuj</a></span>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

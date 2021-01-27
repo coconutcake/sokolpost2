@@ -1,0 +1,160 @@
+<!-- FORMULARZ -->
+              <section class="modal_section">
+                <!-- TITLE -->
+                  <div class="row section_title">
+                    <div class="col m-0 p-0">
+                      <h2><i class="fas fa-envelope"></i> Nowa wiadomość</h2>
+                    </div>
+                  </div>
+
+                <!-- FORM CONTAINER-->
+                  <div class="row mt-3">
+                    <div class="col m-0 p-0">
+                        <!-- TABS -->
+                          <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            <li class="nav-item">
+                              <a class="nav-link active" id="primary-tab" data-toggle="tab" href="#primary" role="tab" aria-controls="primary" aria-selected="true">Podstawowe</a>
+                            </li>
+                          </ul>
+                        <!-- TABS: CONTENT-->
+                          <div class="tab-content" id="myTabContent">
+                          <!-- TABS: PODSTAWOWE-->
+                            <div class="tab-pane fade show active" id="primary" role="tabpanel" aria-labelledby="primary-tab">
+                              <div class="row">
+                                <div class="col-12">
+                                <form action="{% url 'Message_add' %}" method="post" id="message-add-form">
+                                  {% csrf_token %}
+                                  {% for field in create_form.visible_fields %}
+
+                                  <div class="field-group">
+                                      
+                                      
+
+
+                                    <label>{{ field.label }}</label> 
+                                     {% if field.name == "receipt" %}
+                                      <ul>
+                                        <li class="">
+                                          <input type="text" autocomplete="off" class="input-sm form-control" id="quick_search" target="#id_receipt li" elems="label" placeholder="Szybkie szukanie odbiorcy.."></input> 
+                                        </li>
+                                      </ul>
+                                     {% endif %}
+                                    {{ field }}
+                                    {{ field.errors }}
+                                    {% if field.help_text %}
+                                        <span class="helptext">&nbsp;{{ field.help_text }}  </span>
+                                    {% endif %}
+                                    </div>             
+                                {% endfor %}
+                                </form>
+                                </div>
+                              </div>
+                            </div>
+                            
+                          </div>
+                        <!-- SUBMITION -->
+                          <div class="mt-4">
+                            <a value="Zapisz" url="{% url 'Message_add' %}" successurl="{% url 'Message_add' %}" modal="#modal_window" href="#" class="btn btn-sm btn-primary btn-block mt-3 shadow-sm subiekt-create-new-from-form" forms="#message-add-form"><i class="fas fa-paper-plane"></i>&nbsp;Wyślij</a>
+                          </div>
+                      </form>
+                    </div>
+                  </div>
+              </section>
+
+<!-- JS-->
+  <script>
+    function correct_checkboxes(){
+        $("input[type='checkbox']").each(function(){
+          $(this).removeClass("form-control");
+        });
+      }
+    function populate_modal_body(modal_body,content){
+      modal_body.html(content);
+    }
+    function dissmis_modal(modal){
+      $(modal).modal("hide");
+    }
+    function redirect(url){
+        window.location.replace(url);
+    }  
+  </script>
+
+<!-- JS AJAX: POST -->
+  <script>
+  // Serailizery --------------------------------------
+    // --- Forms serializer
+    
+  // --- !Subiekt CREATE-NEW
+    $("a.subiekt-create-new-from-form").on('click',function(){
+      console.log("click")
+      var $th = $(this);
+      var $target = $th.attr("forms");
+      var $url = $th.attr("url");
+      var $success_url = $th.attr("successurl");
+      var $forms = $($target);
+      var $modal_window = $th.attr("modal")
+      var $modal_body = $("div.modal-body");
+      var $data = [];
+
+      $($forms).each(function( index ) {
+        var $id = $(this).attr("id")
+        var $content = $(this).serialize()
+        var $obj = {}
+        $obj[$id] = $content
+        $data.push($obj)
+      });
+
+      console.log({"data": JSON.stringify($data)})
+
+      $.ajax({
+        url: $url,
+        data: {"data": JSON.stringify($data)},
+        type:"POST",
+        success: function (data) {
+            console.log(data)
+            if(data.status != 200){
+                populate_modal_body($modal_body,data);
+                correct_checkboxes();
+            } else {
+                dissmis_modal($modal_window)
+                populate_modal_body($modal_body,data);
+                correct_checkboxes();
+            }        
+        }
+      });
+    });
+  </script>
+
+  <script>
+    $("#id_receipt li").hide();
+  // Szybkie szukanie po adresatach
+       $("#quick_search").on("keyup", function () {
+
+        $("#id_receipt li").show();
+          var value = $(this).val().toLowerCase();
+          console.log(value)
+          var $target = $(this).attr("target")
+          var $elems = $(this).attr("elems")
+          $($target).filter(function () {
+            $(this).toggle($(this).find($elems).text().toLowerCase().indexOf(value) > -1)
+            console.log($(this).toggle($(this).find($elems).text().toLowerCase().indexOf(value) > -1))
+          });
+          });
+  </script>
+
+  <script>
+$("input[name='name']").focus(function() {
+
+  console.log("focused!")
+  $target = "#id_receipt li"
+  $elems = $($target+" input:checkbox:not(:checked)")
+  $elems_checked = $($target+" input:checkbox:checked")
+  console.log($elems)
+  $parents = $elems.parents("li")
+  $parents_checked = $elems_checked.parents("li")
+
+  $($parents).hide(300);
+  $($parents_checked).show(300);
+
+  });
+  </script>

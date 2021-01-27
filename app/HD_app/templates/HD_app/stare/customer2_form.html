@@ -1,0 +1,11 @@
+<form method="post">{% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Save">
+</form>
+
+
+{% if customers %}
+    {% for c in customers %}
+    <p> {{ c }}</p>
+    {% endfor %}
+{% endif %}

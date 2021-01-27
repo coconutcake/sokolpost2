@@ -1,0 +1,1 @@
+[{"model": "HD_app.ordercategory", "pk": 1, "fields": {"name": "Odp\u0142atna", "description": "Us\u0142uga odp\u0142atna"}}, {"model": "HD_app.ordercategory", "pk": 2, "fields": {"name": "Gwarancyjna", "description": ""}}]

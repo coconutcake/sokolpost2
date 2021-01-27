@@ -1,0 +1,680 @@
+<!-- templates/home.html-->
+{% extends 'HD_app/newbase.html' %}
+{% load static %}
+{% load rest_framework %}
+{% block title %}Filtr wg zleceń dla umów z klientami{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+<!-- RAPORTY -->
+<section class="sec">
+  <!-- TITLE -->
+    <div class="row section_title">
+      <div class="col col-12 col-sm-6 col-md-8 col-lg-9 section_header">
+        <h2><i class="fa text-danger fa-square-root-alt" aria-hidden="true"></i>&nbsp;Filtr zleceń i umowy</h2>
+      </div>
+      <div class="col col-12 col-sm-6 col-md-4 col-lg-3 text-right section_quicksearch">
+        <div class="d-flex justify-content-end">
+          <input type="text" class="form-control input-sm" id="k_search" placeholder="Szybkie szukanie..."></input>
+        </div>
+      </div>
+      <div class="col">
+        <hr class="hr_title">
+      </div>
+    </div>
+
+  <!-- SEARCH-->
+    <div class="row justify-content-end subsection">
+      <div class="col-12">
+        <span><i class="fa text-danger fa-square-root-alt" aria-hidden="true"></i>&nbsp;Filtruj wg istniejących zleceń
+        </span>
+        <hr>
+      </div>
+
+    <div class="col-12">
+      <form class="" action="{% url 'Raport_agree_1_filteredByTime' %}" method="get">
+        <div class="row form-group mb-0">
+          <div class="col-12 col-lg-6">
+            <label>Od:</label>
+            <input class="datepicker shadow-sm form-control input-sm mb-1" name="s" type="text" placeholder="Start...">
+            <label>do:</label>
+            <input class="datepicker shadow-sm form-control input-sm mb-1" name="e" type="text" placeholder="Stop...">
+          </div>
+          <div class="col-12 col-lg-6">
+            <label>Opiekun:</label>
+            <select class="form-control input-sm mb-1" name="w" id="id_user">
+              <option value="0" selected>*Wszyscy</option>
+              {% for w in workers %}
+              <option value="{{ w.id }}">{{ w }}</option>
+              {% endfor %}
+            </select>
+            <label>Typ:</label>
+            <select class="form-control input-sm mb-1" name="t" id="id_order_type">
+              <option value="0" selected>*Wszystkie</option>
+              {% for t in order_types %}
+              <option value="{{ t.id }}">{{ t }}</option>
+              {% endfor %}
+            </select>
+            <label>Firma:</label>
+            <select class="form-control input-sm mb-1" name="c" id="id_company">
+              <option value="0" selected>*Wszystkie</option>
+              {% for c in companies %}
+              <option value="{{ c.id }}">{{ c }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col">
+            <hr>
+            <button type="submit" class="btn btn-sm btn-primary shadow-sm mb-1"><i class="fa fa-search"
+                aria-hidden="true"></i>
+              Szukaj</button>
+          </div>
+        </div>
+
+      </form>
+    </div>
+    <div class="w-100"></div>
+    </div>
+
+
+  <!-- LISTA -->
+    <div class="col-12 p-3">
+    {% if agreements %}
+    {% for a in agreements %}
+
+    <div class="row">
+      <div class="col">
+        <div class="row bg-color5 justify-content-start  ih agree" id="{{ a.id }}" style="display:none;">
+          <div class="col-12 col-sm-6 bg-bg-1 ">
+            <div class="d-inline-flex p-1 pl-2 bg-bg-1 text-light">
+              <span><i class="fas fa-building text-light" aria-hidden="true"></i>&nbsp;<b
+                  class="text-uppercase text-light">{{ a.company.name }}</b></span><br>
+            </div>
+            <div class="d-inline-flex p-1 pl-2 bg-bg-1 text-light">
+              <span><i class="fas fa-scroll text-warning"></i>&nbsp;<b class="text-warning">{{ a.name }}</b></span><br>
+            </div>
+          </div>
+          <div class="col-12 col-sm-6 bg-bg-1 text-right">
+            <span><a class="btn btn-sm shadow-sm mt-1 mb-1 rozlicz_all" id="{{ a.id }}"><i
+                  class="fas fa-coins text-danger"></i> Rozlicz w czasie</a></span>
+            <span><a class="btn btn-sm btn-primary shadow-sm mt-1 mb-1 text-light print-btn"
+                agreement="{{ a.id }}">Drukuj</a></span>
+
+          </div>
+
+          <div class="col-12"></div>
+
+          <!-- TITLE -->
+            <a class="" data-toggle="collapse" href="#agree_{{ a.id }}" role="button" aria-expanded="false"
+              aria-controls="agree_{{ a.id }}">
+              <div class="col-12" data-toggle="collapse" href="#agree_{{ a.id }}" role="button" aria-expanded="false"
+              aria-controls="agree_{{ a.id }}">
+                <div class="row collapsemenu d-flex justify-content-between">
+                  <div class="col d-flex-inline collapsemenu_elem">
+                    <span><i class="fas fa-home"></i><b> Ogólne</b></span>
+                  </div>
+                  <div class="col text-right collapsemenu_elem">
+                    <a class="btn btn-sm btn-dark mt-1 mb-1 shadow-sm" data-toggle="collapse" href="#agree_{{ a.id }}" role="button"
+                      aria-expanded="false" aria-controls="orders_o_{{ a.id }}">
+                      <i class="fas fa-arrow-down"></i>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </a>
+
+          <div class="col-12 collapse collapsecontent" id="agree_{{ a.id }}">
+            <div class="row ls">
+              <div class="col ls_elem">
+                <div class="row shadow-sm">
+                  <!-- Queries -->
+                  <div
+                    class="border border-bottom col-6 {% now 'Y-m-d' as todays_date %}{% if a.status.name == 'Aktywna' and todays_date < a.end_date|date:'Y-m-d' %}bg-success-light{% else %}bg-danger-light{% endif %}">
+                    <span><i class="fas fa-heartbeat text-danger"></i> Status</span>
+                  </div>
+
+                  <div
+                    class="border border-bottom col-6 {% now 'Y-m-d' as todays_date %}{% if a.status.name == 'Aktywna' and todays_date < a.end_date|date:'Y-m-d' %}bg-success-light{% else %}bg-danger-light{% endif %} text-right">
+                    <span>{% now "Y-m-d" as todays_date %}{% if a.status.name == "Aktywna" and todays_date < a.end_date|date:"Y-m-d" %}<i
+                        class="fas fa-check text-success"></i>&nbsp;<b
+                        class="text-success">{{ a.status.name }}</b>{% else %}<i
+                        class="fas fa-times text-danger"></i>&nbsp;<b class="text-danger">{{ a.status.name }} -
+                        Przedawniona </b>{% endif %}</span>
+                  </div>
+
+                  <div class="border border-bottom col-6">
+                    <span><i class="fas fa-box-open text-danger"></i> Pakiet:</span>
+                  </div>
+
+                  <div class="border border-bottom col-6 text-right">
+                    <span>{{ a.pakiet.name }}</span>
+                  </div>
+                  <div class="border border-bottom col-6">
+                    <span><i class="fas fa-box-open text-danger"></i> Godziny w pakiecie:</span>
+                  </div>
+
+                  <div class="border border-bottom col-6 text-right">
+                    <span>{{ a.pakiet.included_hours }}h * {{ a.getDefaultRate.price }} = </span><span class="text-success font-weight-bold"><i class="fas fa-coins"></i> {{ a.calculateRatesWithHours }} PLN</span>
+                  </div>
+
+                  <div class="border border-bottom col-6">
+                    <span><i class="far fa-clock text-danger"></i> Zakres trwania umowy:</span>
+                  </div>
+
+                  <div class="border border-bottom col-6 text-right">
+                    <span>{{ a.end_date|timeuntil:a.start_date }}</span>
+                  </div>
+
+                  <div class="border border-bottom col-6">
+                    <span><i class="fas fa-history text-danger"></i> Zakonczenie umowy:</span>
+                  </div>
+
+                  <div class="border border-bottom col-6 text-right">
+                    <span>{{ a.end_date }} | za {{ a.until_expire }} dni</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="col-12"></div>
+
+
+
+
+          <!-- TITLE -->
+          <a class="" data-toggle="collapse" href="#orders_o_{{ a.id }}" role="button" aria-expanded="false"
+            aria-controls="orders_o_{{ a.id }}">
+            <div class="col-12" data-toggle="collapse" href="#orders_o_{{ a.id }}" role="button" aria-expanded="false"
+            aria-controls="orders_o_{{ a.id }}">
+              <div class="row d-flex justify-content-between collapsemenu">
+                <div class="col d-flex-inline">
+                  <span><i class="fas fa-user-alt"></i><b> Opiekunowie</b></span>
+                </div>
+                <div class="col text-right">
+                  <a class="btn btn-sm btn-dark mt-1 mb-1 shadow-sm" data-toggle="collapse" href="#orders_o_{{ a.id }}"
+                    role="button" aria-expanded="false" aria-controls="orders_o_{{ a.id }}">
+                    <i class="fas fa-arrow-down"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </a>
+
+
+
+
+          <!-- LISTA -->
+          <div class="col-12 collapsecontent">
+            <div class="ls collapse" id="orders_o_{{ a.id }}">
+              {% for w in workers_with_orders %}
+
+              <div class="row worker ls_elem" id="{{ w.id }}">
+                <div class=" col-4 font-weight-bold">
+                  <span><i class="fas fa-user text-danger"></i> {{ w.first_name }}</span>
+                </div>
+
+                <div class="col">
+
+                  <div class="col">
+                    <div class="text-right">
+
+
+                      <span><i class="fas fa-coins text-dark"></i></span>
+                      <span class="calc_u font-weight-bold text-dark" agreement="{{ a.id }}"
+                        worker="{{ w.id }}"></span><span class="font-weight-bold text-dark">&nbsp;PLN</span><span> / </span>
+                      <span><i class="fas fa-coins text-danger"></i></span>
+                      <span class="calc_ud font-weight-bold text-danger" agreement="{{ a.id }}"
+                        worker="{{ w.id }}"></span><span class="font-weight-bold text-danger">&nbsp;PLN</span><span> / </span>
+                      <span><i class="fas fa-stopwatch text-dark"></i></span>
+                      <span class="calc_th font-weight-bold text-dark" agreement="{{ a.id }}"
+                        worker="{{ w.id }}"></span><span class="font-weight-bold text-dark">h</span>
+                      <!--<a href="" class="btn btn-sm btn-primary text-light mt-1 mb-1 raport-btn" worker="{{ w.id }}"
+                        agreement="{{ a.id }}">Raport</a> -->
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+
+              {% endfor %}
+
+
+            </div>
+          </div>
+
+
+          <!-- TITLE -->
+          <a class="" data-toggle="collapse" href="#orders_a_{{ a.id }}" role="button" aria-expanded="false"
+            aria-controls="orders_a_{{ a.id }}">
+            <div class="col-12" data-toggle="collapse" href="#orders_a_{{ a.id }}" role="button" aria-expanded="false"
+            aria-controls="orders_a_{{ a.id }}">
+              <div class="row collapsemenu d-flex justify-content-between">
+                <div class="col d-flex-inline">
+                  <span><i class="fas fa-ticket-alt"></i><b> Lista Zleceń</b></span>
+                </div>
+                <div class="col text-right">
+                  <a class="btn btn-sm btn-dark mt-1 mb-1 shadow-sm" data-toggle="collapse" href="#orders_a_{{ a.id }}"
+                    role="button" aria-expanded="false" aria-controls="orders_a_{{ a.id }}">
+                    <i class="fas fa-arrow-down"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </a>
+
+          <!-- LISTA -->
+          <div class="col-12 collapsecontent">
+            <div class="ls collapse orders" id="orders_a_{{ a.id }}">
+              {% if orders %}
+              {% for o in orders|dictsort:"care.first_name" %}
+              {% if o.agreement.id == a.id %}
+
+
+              <div class="row shadow-sm mb-3 ls_elem">
+                <div class="col">
+                  <div class="row justify-content-start ih" style="display:none;">
+                    <div class="col-12 col-sm-6 bg-danger">
+                      <div class="d-inline-flex p-1 pl-2 text-warning">
+                        <span><i class="fas fa-ticket-alt text-warning"></i>&nbsp;<b>{{ o.name }}</b></span><br>
+                      </div>
+                      <div class="d-inline-flex p-1 pl-2 text-dark">
+                        <span><i class="fas fa-building text-dark"
+                            aria-hidden="true"></i>&nbsp;<b>{{ o.agreement.company.name }}</b></span>
+                      </div>
+                    </div>
+                    <div class="col text-right bg-danger">
+                      {% if o.order_status.name == "Zrealizowane - rozliczone" %}
+                      <span><button class="btn btn-sm btn-success shadow-sm mt-1 mb-1" disabled><i
+                            class="fas fa-check"></i> Rozliczone</button></a></span>
+                      {% else %}
+                      <span><a class="btn btn-sm btn-primary shadow-sm mt-1 mb-1 text-light rozlicz" id="{{ o.id }}"><i
+                            class="fas fa-coins text-light"></i> Rozlicz</a></span>
+                      {% endif %}
+                      <span><a href="{% url 'Order_detail' o.id %}"><button
+                            class="btn btn-sm btn-warning shadow-sm mt-1 mb-1">Edycja</button></a></span>
+                      <span><a href="{% url 'Order_delete' o.id %}"><button
+                            class="btn btn-sm btn-danger shadow-sm mt-1 mb-1">Usuń</button></a></span>
+                    </div>
+                  </div>
+
+
+                  <!-- Kolumny i dane -->
+                  <div class="row">
+                    <div class="col-6 col-xl-2 border">
+                      <span>Data / Realizujący:</span>
+                    </div>
+                    <div class="col-6 border d-xl-none">
+                      <span>&nbsp;{{ o.start_datetime|date:"Y-m-d" }} / </span><br />
+                      <span>{{ o.care.first_name }} {{ o.care.last_name }}</span>
+                    </div>
+
+                    <div class="col-12 col-xl-4 border">
+                      <span>Czynności:</span>
+                    </div>
+                    <div class="col-12 border d-xl-none">
+                      <span class="opis-text font-weight-bold">&nbsp;{{ o.description }}</span>
+                    </div>
+
+                    <div class="col-6 col-xl-1 border">
+                      <span>Kategoria:</span>
+                    </div>
+                    <div class="col-6 border d-xl-none">
+                      <span>&nbsp;{{ o.order_type.name }}</span>
+                    </div>
+
+                    <div class="col-6 col-xl-2 border">
+                      <span>Koszt</span>/<span class="text-danger">+dojazd:</span>
+                    </div>
+                    <div class="col-6 border d-xl-none">
+                      <span class="calculate_order text-dark font-weight-bold" worker="{{ o.care.id }}"
+                        id="{{ a.id }}"><i class="fas fa-coins text-dark"></i> {{ o.calculate_order }} PLN</span><br><span
+                        class="font-weight-bold text-danger"><i class="fas fa-coins text-danger"></i>
+                        {{ o.calculate_order_with_distance }} PLN</span>
+                    </div>
+
+
+                    <div class="col-6 col-xl-1 border">
+                      <span>Km:</span>
+                    </div>
+                    <div class="col-6 border d-xl-none">
+                      <span>&nbsp;{{ o.address.distance }}</span>
+                    </div>
+
+                    <div class="col-6 col-xl-2 border">
+                      <span>Czas:</span>
+                    </div>
+                    <div class="col-6 border d-xl-none">
+                      <span>{{ o.end_datetime|timeuntil:o.start_datetime }}</span>
+                    </div>
+                  </div>
+
+                  <!-- Large -->
+                  <div class="row">
+                    <div class="col-6 col-lg-2 d-none d-xl-block border">
+                      <span>&nbsp;{{ o.start_datetime|date:"Y-m-d" }} / </span>
+                      <span class="font-weight-bold"><br><i class="fas fa-user text-danger"></i> {{ o.care.first_name }}
+                        {{ o.care.last_name }}</span>
+                    </div>
+                    <div class="col-6 col-lg-4 d-none d-xl-block border">
+                      <span class="opis-text font-weight-bold">&nbsp;{{ o.description }}</span>
+                    </div>
+                    <div class="col-6 col-lg-1 d-none d-xl-block border">
+                      <span>&nbsp;{{ o.order_type.name }}</span>
+                    </div>
+                    <div class="col-6 col-lg-2 d-none d-xl-block border">
+                      <span class="calculate_order text-dark font-weight-bold" worker="{{ o.care.id }}"
+                        id="{{ a.id }}"><i class="fas fa-coins text-dark"></i> {{ o.calculate_order }} PLN</span><br><span
+                        class="font-weight-bold text-danger"><i class="fas fa-coins text-danger"></i>
+                        {{ o.calculate_order_with_distance }} PLN</span>
+                    </div>
+                    <div class="col-6 col-lg-1 d-none d-xl-block border">
+                      <span>&nbsp;{{ o.address.distance }}</span>
+                    </div>
+                    <div class="col-6 col-lg-2 d-none d-xl-block border">
+                      <span>{{ o.end_datetime|timeuntil:o.start_datetime }}</span>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              {% endif %}
+              {% endfor %}
+
+
+              <!-- SUMY -->
+              <div class="row collapse_sumy justify-content-end">
+                <div class="col-12 col-md-6 col-xl-7 font-weight-bold">
+                  <h3>RAZEM:</h3>
+                </div>
+                <div class="col-12 col-md-2 col-xl-2 font-weight-bold">
+                  <i class="fas fa-coins text-dark"></i><span class="text-dark">&nbsp;{{ suma }}&nbsp;PLN</span><br><i
+                    class="fas fa-coins text-danger"></i><span
+                    class="text-danger">&nbsp;{{ suma_km_costs|floatformat:2 }}&nbsp;PLN</span>
+                </div>
+                <div class="col-12 col-md-2 col-xl-1  text-dark font-weight-bold"><span><i
+                      class="fas fa-road"></i> </span><span class="calc_km"
+                    agreement="{{ a.id }}">{{ suma_km }}</span><span>&nbsp;km</span>
+                </div>
+                <div class="col-12 col-md-2 col-xl-2  text-dark font-weight-bold"><span><i
+                      class="fas fa-stopwatch"></i> </span><span class="calc_time"
+                    agreement="{{ a.id }}">{{ suma_czas }}</span><span>&nbsp;h</span>
+                </div>
+              </div>
+
+
+
+              {% else %}
+              <span>Brak wpisanych zleceń</span>
+              {% endif %}
+
+
+              <div class="col-12 col-sm-6">
+
+
+              </div>
+            </div>
+          </div>
+
+
+        </div>
+
+        {% endfor %}
+
+
+
+      </div>
+    </div>
+    {% else %}
+    <span>Brak wpisanych umów</span>
+    {% endif %}
+
+
+
+
+
+    <div class="col-12 col-sm-6">
+
+    </div>
+  </div>
+</section>
+
+<!-- JS -->
+<script src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
+<script>
+  // URL
+  var $rozlicz_url = "{% url 'JSON_rozlicz_zlecenie' %}"
+
+  function secondsTohours(time) {
+    var $t = (time / 60) / 60
+    return $t
+  }
+
+  function timeToSeconds(time) {
+    time = time.split(/:/);
+    return time[0] * 3600 + time[1] * 60 + time[2];
+  }
+
+  function calculate_timedelta(x, y) {
+    $list_target = x
+    $span_target = y
+    $lista = []
+
+    $(x).each(function () {
+      $lista.push(this.id)
+    });
+
+    for (x = 0; x < $lista.length; x++) {
+      $wartosci = []
+      $("#" + $lista[x] + y).each(function () {
+        $wartosci.push(timeToSeconds($(this).text()))
+      });
+      var $sum = $wartosci.reduce((pv, cv) => {
+        return pv + ((parseFloat(cv) / 60) / 60) / 100;
+      }, 0);
+    }
+    for (x = 0; x < $lista.length; x++) {
+      $total = []
+      $("#" + $lista[x] + " span" + y).each(function () {
+        $(this).remove()
+      });
+      $("#" + $lista[x] + $list_target).empty().append("<span>" + $sum + " h.</span>")
+    }
+
+  }
+
+  function sum_all(span_class) {
+    $(span_class).each(function (index) {
+      var $th = $(this);
+      var $array = $th.text().split(" ");
+      var $arr = $array.filter(item => item);
+      console.log($arr);
+      var $sum = $array.reduce((pv, cv) => {
+        return pv + (parseFloat(cv) || 0);
+      }, 0);
+      console.log($sum);
+    });
+  }
+  // Zbierz parametry uri
+  var getUrlParameter = function getUrlParameter(sParam) {
+    var sPageURL = window.location.search.substring(1),
+      sURLVariables = sPageURL.split('&'),
+      sParameterName,
+      i;
+    for (i = 0; i < sURLVariables.length; i++) {
+      sParameterName = sURLVariables[i].split('=');
+      if (sParameterName[0] === sParam) {
+        return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+      }
+    }
+  };
+
+  // FUNC: Rozlicz zlecenie (AJAX)
+  function rozlicz_zlecenie(id, url) {
+    console.log("Rozliczam zlecenie: " + id + " ...")
+    var $ids = parseInt(id);
+    $.ajax({
+      url: url,
+      dataType: 'json',
+      data: {
+        'order': $ids
+      },
+      success: function (data) {
+        console.log(data);
+        alert("Zlecenie o id: " + data.id + " uzyskało nowy status. Kliknij Ok aby przeładowac strone")
+        window.location.reload(true);
+      }
+
+    });
+  };
+  // CLICK: Rozlicz wszystkie zlecenia umowy
+  $(".rozlicz_all").on("click", function () {
+    var $ids = $(this).attr("id");
+    console.log("Wybrano umowe id: " + $ids)
+    var $s = getUrlParameter('s');
+    var $e = getUrlParameter('e');
+    console.log("Rozliczam umowe: " + $ids + ", od: " + $s + " do: " + $e + " ...")
+  });
+  // CLICK: Rozlicz pojedyńcze zlecenie
+  $(".rozlicz").on("click", function () {
+    var $ids = $(this).attr("id");
+    console.log("Kliknięto zlecenie: " + $ids)
+    if (confirm('Czy napewno chcesz rozliczyć zlecenie ?')) {
+      rozlicz_zlecenie($ids, $rozlicz_url);
+    };
+  });
+  // Zablokuj/Odblokuj button rozliczania umow gdy uri
+  var $s = getUrlParameter('s');
+  var $e = getUrlParameter('e');
+  if (typeof $s == 'undefined' || typeof $e == 'undefined') {
+    console.log("Brak zdefiniowanych zakresów w uri. Blokuje rozliczanie umów...")
+    $(".rozlicz_all").prop("disabled", true);
+    $(".rozlicz_all").removeClass("btn-primary");
+    $(".rozlicz_all").removeClass("text-light");
+    $(".rozlicz_all").addClass("text-dark");
+    $(".rozlicz_all").addClass("btn-secondary");
+    $('.rozlicz_all').attr('disabled', 'disabled');
+  } else {
+    console.log("Wykryto zakres filtra w uri. Odblokowuje rozliczanie umów...")
+    $(".rozlicz_all").prop("disabled", false);
+    $(".rozlicz_all").addClass("btn-primary");
+    $(".rozlicz_all").addClass("text-light");
+    $(".rozlicz_all").removeClass("btn-secondary");
+    $(".rozlicz_all").removeClass("text-dark");
+  }
+</script>
+
+<!-- JS: Chart -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@0.7.0"></script>
+<script>
+  // Chart
+  var $agreements = [{% for a in agreements %}parseInt('{{ a.id|escapejs }}'), {% endfor %}]
+  {% for a in agreements %}
+  var workers = [{% for w in workers_with_orders %} {% if w.id in orders_u and a.id in orders_au %}'{{ w|escapejs }}', {% endif %} {% endfor %}]
+  console.log(workers)
+
+  // Order value per user
+  var $orders_values = [] 
+  {% for w in workers_with_orders %} 
+  {% if w.id in orders_u and a.id in orders_au %}
+  var $wlist = [] 
+  {% for o in orders %} 
+  {% if o.care.id == w.id and w.id in orders_u and a.id in orders_au and o.agreement.id == a.id %}
+  var $ord = {{ o.calculate_order | escapejs }}
+  $wlist.push($ord) 
+  {% endif %} 
+  {% endfor %}
+  var $sum = $wlist.reduce((pv, cv) => {
+    return pv + cv;
+  }, 0);
+  $orders_values.push($sum) 
+  {% endif %} 
+  {% endfor %}
+  console.log($orders_values)
+  {% endfor %}
+</script>
+
+<!-- JS: Dodaj href do Raport btn -->
+<script>
+  $("a.raport-btn").each(function (index) {
+    var $th = $(this);
+    var $s = getUrlParameter('s');
+    var $e = getUrlParameter('e');
+    var $urla = "{% url 'Raport_1_order_agreement_filteredByTime' %}" + "?" + "s=" + $s + "&e=" + $e + "&u=" + $th
+      .attr("worker") + "&a=" + $th.attr("agreement")
+    $(this).attr("href", $urla)
+  });
+</script>
+
+
+<!-- JS: Suma zlecen -->
+<script>
+  var $s = (typeof getUrlParameter('s') === 'undefined') ? "" : $s;
+  var $e = (typeof getUrlParameter('e') === 'undefined') ? "" : $e;
+  var $target = "span.calc_u" 
+  var $target_ud = "span.calc_ud" 
+  var $target_th = "span.calc_th" 
+  {% for a in agreements %}
+  var $aid = {{ a.id }} 
+  {% for w in workers_with_orders %}
+  var $wid = {{ w.id }}
+  var $urlt = "{% url 'JSON_sumuj_zlecenia' %}" + "?a=" + $aid + "&s=" + $s + "&e=" + $e + "&u=" + $wid
+  $.getJSON($urlt, function (data) {
+    console.log(data)
+    $($target + "[agreement='" + $aid + "'][worker='" + data.worker + "']").empty().html(data.suma_u)
+    $($target_ud + "[agreement='" + $aid + "'][worker='" + data.worker + "']").empty().html(data.suma_ud)
+    $($target_th + "[agreement='" + $aid + "'][worker='" + data.worker + "']").empty().html(data.suma_th)
+    // Usuwanie wiersza opiekuna bez zleceń dla umowy
+      if ($($target + "[agreement='" + $aid + "'][worker='" + data.worker + "']").text() == "0"){
+        console.log("Wykryłem opiekuna bez zleceń dla umowy: "+$aid+". Usuwam wiersz opiekuna...")
+        console.log($("div.worker[id='"+data.worker+"']"))
+        $("div.worker[id='"+data.worker+"']").remove();
+      }
+  }); 
+  {% endfor %} 
+  {% endfor %}
+</script>
+
+
+<script>
+  $("a.print-btn").click(function () {
+    print($(".agree[id='" + $(this).attr("agreement") + "']").html())
+  });
+</script>
+
+<!-- JS span opis-->
+<script>
+  $('span.opis-text').each(function () {
+    var $th = $(this)
+    var html = $th.html().split("\n");
+    $th.empty();
+    for (step = 0; step < html.length; step++) {
+      $th.append("<span>" + html[step] + "<span><br>")
+    }
+  });
+</script>
+
+{% else %}
+<div class="container">
+  <div class="row p-1">
+    <div class="col-12">
+      <p>Nie jestes zalogowany!</p>
+      <img src="{% static 'img/gob_logo.png' %}" alt="logo"><br>
+      <span><a href="{% url 'login' %}">Zaloguj</a></span><br>
+      <span><a href="{% url 'register2' %}">Zarejestuj</a></span>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+
+
+</script>
+
+
+{% endblock %}

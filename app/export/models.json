@@ -1,0 +1,1 @@
+[{"model": "HD_app.profiletype", "pk": 1, "fields": {"name": "Klient", "description": "Profil klienta"}}, {"model": "HD_app.profiletype", "pk": 2, "fields": {"name": "Pracownik", "description": "Profil pracownika"}}, {"model": "HD_app.profile", "pk": 1, "fields": {"user": 1, "typ": null}}]

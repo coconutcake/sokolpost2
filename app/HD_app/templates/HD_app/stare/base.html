@@ -1,0 +1,553 @@
+{% load static %}
+{% load rest_framework %}
+<!doctype html>
+<html lang="pl">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+  </link>
+  <link rel="stylesheet" href="{% static 'css/jquery-ui.css' %}">
+  </link>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  </link>
+  <link rel="stylesheet" href="{% static 'css/owl.carousel.min.css' %}">
+  </link>
+  <link rel="stylesheet" href="{% static 'css/owl.theme.default.min.css' %}">
+  </link>
+  <link rel="stylesheet" href="{% static 'css/animate.css' %}">
+  </link>
+  <link rel="stylesheet" href="{% static 'css/jquery.datetimepicker.min.css' %}">
+  </link>
+  <!-- <link rel="stylesheet" href="{% static 'css/cocotools.css' %}"></link> -->
+  <link href="{% static 'fullcalendar/core/main.css' %}" rel='stylesheet' />
+  <link href="{% static 'fullcalendar/daygrid/main.css' %}" rel='stylesheet' />
+
+
+  <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
+    integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <title>
+      {% block title %}{% endblock %}
+    </title>
+</head>
+
+<body style="display:none;" class="mt-3 bg-noisy">
+
+  <div class="container">
+
+    {% block registration %}
+    {% endblock registration %}
+
+    <!-- NAVIGATION: BEGIN -->
+    <div class="row">
+      <div class="col mb-3">
+        {% if user.is_authenticated %}
+        {% if request.user.is_superuser %}
+        <nav class="navbar navbar-expand-lg navbar-light bg-service-navbar p-5 shadow rounded">
+          <a class="navbar-brand" href="{% url 'home' %}">
+            <img class="" src="{% static 'img/logo.png' %}" width="30" height="30"
+              class="d-inline-block align-top rounded border" alt="" />
+            <span class="align-middle ml-2 mr-2 font-weight-bold">Sokół</span>
+          </a>
+          <div class="collapse navbar-collapse" id="navbarNavDropdown">
+            <ul class="navbar-nav">
+              <li class="nav-item active">
+                <a class="nav-link" href="{% url 'home' %}">Home <span class="sr-only">(current)</span></a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'profile' %}">Profil</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'orders1' %}">Moje zlecenia</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'agreements' %}">Umowy</a>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
+                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Dodaj
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                  
+                  <hr>
+                  <a class="dropdown-item" href="{% url 'ordertypes' %}">Typ zlecenia</a>
+                  <a class="dropdown-item" href="{% url 'implementations' %}">Typ realizacji</a>
+                </div>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
+                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Token API
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                  {% comment %} <a class="dropdown-item" href="{% url 'orders' %}">Zlecenie</a> {% endcomment %}
+                  {% if token %}
+                  <a id="token_btn" class="dropdown-item">Pokaż token</a>
+                  {% else %}
+                  <a class="dropdown-item" href="{% url 'token' %}">Token</a>
+                  {% endif %}
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div class="d-flex justify-content-end">
+            <div class="collapse navbar-collapse" id="navbarNavDropdown">
+              <a class="" href="{% url 'logout' %}"><button class="btn btn-outline-light shadow" type="submit">Wyloguj
+                  {{ user.username }}</button></a>
+            </div>
+            <button class="navbar-toggler ml-2" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
+              aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+          </div>
+        </nav>
+      </div>
+    </div>
+
+    <!-- NAVIGATION: END -->
+    {% else %}
+    <nav class="navbar navbar-expand-lg navbar-light bg-service-navbar-customer p-5 shadow rounded">
+      <a class="navbar-brand" href="{% url 'home' %}">
+        <img src="{% static 'img/logo.png' %}" width="30" height="30" class="d-inline-block align-top rounded border"
+          alt="" />
+        <span class="align-middle ml-2 mr-2 font-weight-bold">Sokół</span>
+      </a>
+      <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul class="navbar-nav">
+          <li class="nav-item active">
+            <a class="nav-link" href="{% url 'home' %}">Home <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'profile' %}">Profil</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'orders2' %}">Moje zlecenia</a>
+          </li>
+        </ul>
+      </div>
+      <div class="d-flex justify-content-end">
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+          <a class="" href="{% url 'logout' %}"><button class="btn btn-outline-light shadow" type="submit">Wyloguj
+              {{ user.username }}</button></a>
+        </div>
+        <button class="navbar-toggler ml-2" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
+          aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      </div>
+    </nav>
+  </div>
+  </div>
+
+  {% endif %}
+
+  {% else %}
+
+  
+
+
+
+  {% endif %}
+
+  <div class="mt-4">
+    {% block content %}
+    {% endblock content %}
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
+      aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content bg-noisy">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="divalert d-flex align-items-center text-center p-2"></div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="close_modal_button btn btn-secondary" id="close_modal_button"
+              data-dismiss="modal">Zamknij</button>
+            <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <script src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
+  <script src="{% static 'js/jquery-ui.min.js' %}"></script>
+  <script src="{% static 'js/csrf.js' %}"></script>
+  <script src="{% static 'js/inputmask.min.js' %}"></script>
+  <script src="{% static 'js/jquery.inputmask.min.js' %}"></script>
+  <script src="{% static 'js/popper.min.js' %}"></script>
+  <script src="{% static 'js/bootstrap.min.js' %}"></script>
+  <script src="{% static 'js/owl.carousel.min.js' %}"></script>
+  <script src="{% static 'js/jquery.datetimepicker.full.js' %}"></script>
+  <script src="{% static 'fullcalendar/core/main.js' %}"></script>
+  <script src="{% static 'fullcalendar/daygrid/main.js' %}"></script>
+  <script src="{% static 'js/owls.js' %}"></script>
+  <script src="{% static 'js/search.js' %}"></script>
+  <script src="{% static 'js/bootstrap-notify.js' %}"></script>
+  
+  <script src="https://momentjs.com/downloads/moment.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.js"></script> 
+
+  <!-- <script src="{% static 'js/cocotools.js' %}"></script> -->
+
+  <script>
+    $(document).ready(function () {
+
+      $('[tip="tooltip"]').tooltip({
+        trigger: "hover"
+      });  
+
+
+      $(".ih").each(function(index) {
+        $(this).delay(70*index).show(300);
+      });
+
+      $(".ih2").each(function(index) {
+        $(this).delay(40*index).addClass('animated fadeInDown fast').show(300);
+      });
+      $(".ih3").each(function(index) {
+        $(this).delay(40*index).addClass('animated bounceIn fast').show(300);
+      });
+      $(".ih4").each(function(index) {
+        $(this).delay(100*index).addClass('animated fadeInDown fast').show(500);
+      });
+      $(".ih5").each(function(index) {
+        $(this).delay(100*index).addClass('animated fadeInDown').show(500);
+      });
+      $(".ih6").each(function(index) {
+        $(this).delay(100*index).addClass('animated bounceInDown').show(500);
+      });
+      $(".ih7").each(function(index) {
+        $(this).delay(100*index).addClass('animated fadeInDown').show(500);
+      });
+
+
+
+      $('body').hide().fadeIn(200);
+      $("navbar a").click(function(e) {
+        e.preventDefault();
+        $link = $(this).attr("href");
+        $("body").fadeOut(150,function(){
+          window.location =  $link; 
+        });
+      });
+
+
+
+      //Globale -----------------------------------------------------------
+      var user = "{{ user.username }}"
+      var token = "{{ token }}"
+      var loc = window.location.href;
+      var $origin = document.location.origin;
+
+      //Dodawanie klas css ------------------------------------------------
+      $('textarea, input, select').addClass('shadow-sm');
+      $("select, input[type='text']").addClass('register-form color1')
+      $("textarea").addClass('bg-textarea')
+      jQuery('input[name="start_datetime"], input[name="end_datetime"]').datetimepicker({
+        format: 'Y-m-d H:m',
+      });
+      jQuery('input[name="start_date"], input[name="end_date"], .dates').datetimepicker({
+        format: 'Y-m-d',
+      });
+      $( function() {
+        $( ".datepicker" ).datepicker({
+          dateFormat: 'yy-mm-dd',
+        });
+      } );
+
+
+      //Buttony -----------------------------------------------------------
+      $('#add_order_btn').on('click', function () {
+        $('#add_order_modal').modal('show');
+      });
+      $('#add_customer_btn').on('click', function () {
+        $('#add_customer_modal').modal('show');
+      });
+      $('#add_agreement_btn').on('click', function () {
+        $('#add_agreement_modal').modal('show');
+      });
+      $(document).on('click', '.open_modal_button', function () {
+        open_sound();
+      });
+      $(document).on('click', '.close_modal_button', function () {
+        close_sound();
+      });
+
+      //FORMULARZE AJAX ----------------------------------------------------
+
+      // Dodawanie umowy
+      $('#add_agreement').submit(function (e) {
+        $('h5.modal-title').text("")
+        purge('div.divalert');
+
+        e.preventDefault();
+        $form = $(this)
+        var url = $form.attr('action');
+        var formData = new FormData(this);
+        $.ajax({
+          url: url,
+          type: 'POST',
+          data: formData,
+          success: function (data) {
+            if (data.status == "OK") {
+              $('#add_agreement_modal').modal('hide')
+              success_sound();
+              purge('div.divalert');
+              $('h5.modal-title').text("Dodano")
+              $('div.divalert').hide().fadeIn(200).append(
+                "<i class='fa fa-check fa-3x text-success animated bounceIn' aria-hidden='true' style='text-shadow: 1px 1px #424242;'></i>\
+              &nbsp;&nbsp;Umowa wprowadzona!");
+              //$('#exampleModalCenter').modal('show');
+              //$('#add_agreement_modal').modal('show')
+              $('#exampleModalCenter').modal('show');
+              updateDiv('div.agreements')
+            }
+          },
+          error: function () {
+            console.log("[ERROR] - Błąd dodawania");
+            purge('div.divalert');
+            $('h5.modal-title').text("Błąd")
+            $('div.divalert').hide().fadeIn(200).append(
+              "<i class='fa fa-check fa-3x text-danger animated bounceIn' aria-hidden='true' style='text-shadow: 1px 1px #424242;'></i>&nbsp;&nbsp;Błąd!"
+              );
+            $('#exampleModalCenter').modal('show');
+          },
+          cache: false,
+          contentType: false,
+          processData: false
+        });
+      });
+
+      // Dodawanie zlecenia
+      $('#add_order').submit(function (e) {
+        $('h5.modal-title').text("")
+        purge('div.divalert');
+
+        e.preventDefault();
+        $form = $(this)
+        var url = $form.attr('action');
+        var formData = new FormData(this);
+        $.ajax({
+          url: url,
+          type: 'POST',
+          data: formData,
+          success: function (data) {
+            if (data.status == "OK") {
+              $('#add_order_modal').modal('hide')
+              get_value_notify("http://127.0.0.1:8000/orders_length/", "div.here")
+              success_sound();
+              purge('div.divalert');
+              $('h5.modal-title').text("Dodano")
+              $('div.divalert').hide().fadeIn(200).append(
+                "<i class='fa fa-check fa-3x text-success animated bounceIn' aria-hidden='true' style='text-shadow: 1px 1px #424242;'></i>\
+              &nbsp;&nbsp;Zlecenie wprowadzone!");
+              //$('#exampleModalCenter').modal('show');
+              updateDiv('div.fresh-div')
+            }
+          },
+          error: function () {
+            console.log("[ERROR] - Błąd dodawania");
+            purge('div.divalert');
+            $('h5.modal-title').text("Błąd")
+            $('div.divalert').hide().fadeIn(200).append(
+              "<i class='fa fa-check fa-3x text-danger animated bounceIn' aria-hidden='true' style='text-shadow: 1px 1px #424242;'></i>&nbsp;&nbsp;Błąd!"
+              );
+            $('#exampleModalCenter').modal('show');
+          },
+          cache: false,
+          contentType: false,
+          processData: false
+        });
+      });
+
+      // Dodanie zlecenia przez klienta
+      $('#add_order2').submit(function (e) {
+        
+        purge('div.divalert');
+
+        e.preventDefault();
+        $form = $(this)
+        var url = $form.attr('action');
+        var formData = new FormData(this);
+        $.ajax({
+          url: url,
+          type: 'POST',
+          data: formData,
+          success: function (data) {
+            $('#add_order_modal').modal('hide')
+            updateDiv('div.fresh-div')
+            success_sound();
+            purge('div.divalert');
+            
+            $('div.divalert').hide().fadeIn(200).append(
+              "<i class='fa fa-check fa-3x text-success animated bounceIn' aria-hidden='true' style='text-shadow: 1px 1px #424242;'></i>\
+            &nbsp;&nbsp;Zlecenie wprowadzone!");
+            $('#exampleModalCenter').modal('show');
+            if (data.status == "OK") {
+              
+            }
+          },
+          error: function () {
+            console.log("[ERROR] - Błąd dodawania");
+            purge('div.divalert');
+            
+            $('div.divalert').hide().fadeIn(200).append(
+              "<i class='fa fa-check fa-3x text-danger animated bounceIn' aria-hidden='true' style='text-shadow: 1px 1px #424242;'></i>&nbsp;&nbsp;Błąd!"
+              );
+            $('#exampleModalCenter').modal('show');
+          },
+          cache: false,
+          contentType: false,
+          processData: false
+        });
+      });
+
+      // Dodawanie typu zlecenia
+      $('#add_ordertype').submit(function (e) {
+        console.log("----------------------")
+        console.log("[SUBMIT] add_ordertype")
+        e.preventDefault();
+        $form = $(this)
+        var url = $form.attr('action');
+        var formData = new FormData(this);
+        $.ajax({
+          url: url,
+          type: 'POST',
+          data: formData,
+          success: function (data) {
+            if (data.status == "OK") {
+              var obj = document.createElement("audio");
+              obj.src = "{% static 'sounds/success.wav' %}";
+              obj.play();
+              console.log("[OK] Dodano typ zlecenia!")
+              $('div.divalert').empty();
+              $('h5.modal-title').text("Wprowadzono typ zlecenia")
+              $('div.divalert').hide().fadeIn(200).append(
+                "<i class='fa fa-check fa-3x text-success animated bounceIn' aria-hidden='true' style='text-shadow: 1px 1px #424242;'></i>&nbsp;&nbsp;Typ Zlecenia wprowadzony!"
+                );
+              $('#exampleModalCenter').modal('show');
+              $('input[type="text"]').val("");
+              $('textarea').val("")
+              updateDiv('div.fresh-div')
+            } else if (data.status == "COM1") {
+              console.log(data.status);
+            }
+          },
+          error: function () {
+            console.log("[ERROR] - Błąd dodawania");
+            $('div.divalert').empty();
+            $('h5.modal-title').text("Błąd")
+            $('div.divalert').hide().fadeIn(200).append(
+              "<i class='fa fa-check fa-3x text-danger animated bounceIn' aria-hidden='true' style='text-shadow: 1px 1px #424242;'></i>&nbsp;&nbsp;Błąd!"
+              );
+            $('#exampleModalCenter').modal('show');
+          },
+          cache: false,
+          contentType: false,
+          processData: false
+        });
+      });
+
+      // Dodawanie implementacji
+      $('#add_implementation').submit(function (e) {
+        console.log("----------------------")
+        console.log("[SUBMIT] add_implementation")
+        e.preventDefault();
+        $form = $(this)
+        var url = $form.attr('action');
+        var formData = new FormData(this);
+        $.ajax({
+          url: url,
+          type: 'POST',
+          data: formData,
+          success: function (data) {
+            if (data.status == "OK") {
+              var obj = document.createElement("audio");
+              obj.src = "{% static 'sounds/success.wav' %}";
+              obj.play();
+              console.log("[OK] Dodano typ realizacji!")
+              $('div.divalert').empty();
+              $('h5.modal-title').text("Wprowadzono typ zlecenia")
+              $('div.divalert').hide().fadeIn(200).append(
+                "<i class='fa fa-check fa-3x text-success animated bounceIn' aria-hidden='true' style='text-shadow: 1px 1px #424242;'></i>&nbsp;&nbsp;Typ realizacji dodany!"
+                );
+              $('#exampleModalCenter').modal('show');
+              $('input[type="text"]').val("");
+              $('textarea').val("")
+              updateDiv('div.fresh-div')
+            } else if (data.status == "COM1") {
+              console.log(data.status);
+            }
+          },
+          error: function () {
+            console.log("[ERROR] - Błąd dodawania");
+            $('div.divalert').empty();
+            $('h5.modal-title').text("Błąd")
+            $('div.divalert').hide().fadeIn(200).append(
+              "<i class='fa fa-check fa-3x text-danger animated bounceIn' aria-hidden='true' style='text-shadow: 1px 1px #424242;'></i>&nbsp;&nbsp;Błąd!"
+              );
+            $('#exampleModalCenter').modal('show');
+          },
+          cache: false,
+          contentType: false,
+          processData: false
+        });
+      });
+
+      // Dzwięki ---------------------------------------------------------
+      function success_sound() {
+        var obj = document.createElement("audio");
+        obj.src = "{% static 'sounds/success.wav' %}";
+        obj.play();
+        console.log("success played!")
+      };
+      function open_sound() {
+        var obj = document.createElement("audio");
+        obj.src = "{% static 'sounds/modal_open2.wav' %}";
+        obj.play();
+      };
+      function close_sound() {
+        var obj = document.createElement("audio");
+        obj.src = "{% static 'sounds/clicked01.wav' %}";
+        obj.play();
+      };
+      
+      // Fukcje ----------------------------------------------------------
+      function purge(div) {
+        var $div = div
+        $($div).empty();
+        console.log($div + " purged!")
+      };
+
+
+
+      function updateDiv(target) {
+        $(target).load(window.location.href + " " + target);
+      };
+      
+  
+
+
+      // Initial ---------------------------------------------------------
+      setInterval(function(){
+        
+        updateDiv('div.fresh-div');
+        console.log("update tick...")
+       
+    }, 3000);
+
+    });
+  </script>
+</body>
+</html>

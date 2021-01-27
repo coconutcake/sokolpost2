@@ -1,0 +1,146 @@
+/* //----------------------------------------------------//
+////////////////////////////////////////////////////////
+////////// COCOTOOLS by Mateusz Ignatowicz /////////////
+////////// Github: coconutcake             /////////////
+////////////////////////////////////////////////////////
+//----------------------------------------------------// */
+
+
+/* 0. General use */
+
+.initiallyHidden {
+    display: none;
+}
+
+.op-0 {
+    opacity: 0;
+}
+
+.op-1 {
+    opacity: 1;
+}
+
+
+/* 1. //Coconavi */
+
+.navbar {
+    border-bottom: 0;
+    padding: 40px 0;
+    transition-duration: 0.6s;
+}
+
+.navbar-default .navbar-brand,
+.navbar-brand>span,
+.navbar-default .navbar-nav>li>a,
+a:visited {
+    color: rgb(88, 88, 88);
+    font-weight: bold;
+}
+
+a:hover {
+    color: rgb(34, 202, 132)!important;
+    transition-duration: 0.2s;
+    transition-timing-function: linear;
+}
+
+a {
+    color: rgb(88, 88, 88);
+}
+
+.navbar-scroll {
+    background: #ffffff;
+    padding: 15px 0;
+    box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.4);
+    border-bottom: 10px solid rgb(34, 202, 132);
+    transition-duration: 0.5s;
+    transition-timing-function: cubic-bezier(.91, .01, .1, 1);
+}
+
+.nav-dropdown-scroll {
+    background: #e7eaea;
+    box-shadow: 0px 10px 9px rgba(0, 0, 0, 0.4);
+}
+
+.navbar-brand {
+    color: rgb(48, 48, 48);
+}
+
+.navbar-brand>span {
+    font-size: 2rem;
+    transition-duration: 0.5s;
+    transition-timing-function: cubic-bezier(.91, .01, .1, 1);
+}
+
+.navbar-brand-scroll>span {
+    font-size: 1rem;
+}
+
+
+/* Coconavi:logo */
+
+.logo {
+    width: 60px;
+    transition-duration: 0.5s;
+    transition-timing-function: cubic-bezier(.91, .01, .1, 1);
+}
+
+.logo-sm {
+    width: 40px!important;
+    transition-duration: 0.5s!important;
+    transition-timing-function: cubic-bezier(.91, .01, .1, 1);
+    animation: spinning .5s cubic-bezier(.91, .01, .1, 1);
+}
+
+
+/* Animations */
+
+@keyframes spinning-a {
+    0% {
+        transform: scale(1, 0);
+    }
+    100% {
+        transform: scale(1.0, 1.0);
+    }
+}
+
+@keyframes spinning {
+    0% {
+        transform: scale(1, 0);
+    }
+    3% {
+        transform: scale(1.0, 1.0);
+    }
+    15% {
+        transform: scale(1.0, 0);
+    }
+    24% {
+        transform: scale(1.0, 1.0);
+    }
+    32% {
+        transform: scale(1.0, 0);
+    }
+    47% {
+        transform: scale(1.0, 1.0);
+    }
+    73% {
+        transform: scale(1.0, 0);
+    }
+    100% {
+        transform: scale(1.0, 1.0);
+    }
+}
+
+
+/* bg */
+
+.bg_dark {
+    background: rgb(48, 48, 48);
+    transition-duration: 0.5s;
+    transition-timing-function: cubic-bezier(.91, .01, .1, 1);
+}
+
+.bg_dark_08 {
+    background: rgba(37, 37, 37, 0.8);
+    transition-duration: 0.5s;
+    transition-timing-function: cubic-bezier(.91, .01, .1, 1);
+}

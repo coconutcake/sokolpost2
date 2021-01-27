@@ -1,0 +1,333 @@
+<!-- FORMULARZ -->
+    <section class="modal_section">
+    <!-- TITLE -->
+        <div class="row section_title">
+        <div class="col m-0 p-0">
+            {% for header in modal_sections.headers %}
+            {% if header.name == "detail" %}
+                <h2>{% autoescape off %}{{ header.icon }} {{ header.text }}{% endautoescape %}</h2>
+            {% endif %}
+            {% endfor %}
+        </div>
+        </div>
+
+    <!-- FORM CONTAINER-->
+        <div class="row mt-3">
+        <div class="col m-0 p-0">
+
+            <form method="POST" action="{% url 'SubiektCompany_detail' %}" pk="{{ form.instance.id }}" id="Company_detail_form">
+            {% csrf_token %}
+            <!-- TABS -->
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                
+                {% for i,v in modal_sections.items %}
+                    {% if i == "tabs" %}
+                        {% for tab in v %}
+                            <li class="nav-item">
+                                <a class="nav-link {% if tab.active == True %}active{% endif %}" id="{{ tab.tab_id }}-tab" data-toggle="tab" href="#{{ tab.tab_id }}" role="tab" aria-controls="{{ tab.tab_id }}" aria-selected="true">{% if tab.icon %}{% autoescape off %}{{ tab.icon }}{% endautoescape %}{% endif %} {{ tab.tab_name }}</a>
+                            </li> 
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+                                
+                </ul>
+                <!-- TABS: CONTENT-->
+                <div class="tab-content" id="myTabContent">
+                    {% for i,v in modal_sections.items %}
+                        {% if i == "tabs" %}
+                            {% for tab in v %}
+                            <div class="tab-pane fade show {% if tab.active == True %}active{% endif %}" id="{{ tab.tab_id }}" role="tabpanel" aria-labelledby="{{ tab.tab_id }}-tab">
+                                <div class="row">
+                                    <div class="col-12">
+
+                                        {% if tab.tab_id == "adresy" %}
+                                            <div class="row mb-4">
+
+                                                <!-- wg querysetu -->
+                                                <div class="col-12" id="address-delete-form">
+                                                    {% if addresses %}
+                                                        {% for a in addresses %}
+                                                            <div class="row">
+                                                                <div class="col-10">
+                                                                    <input type="checkbox" id="address_{{ a.id }}" name="address" value="{{ a.id }}">
+                                                                    <label for="address_{{ a.id }}">{{ a.name }}</label>
+                                                                </div>
+                                                                <div class="col-2 text-right">
+                                                                    <a class="btn btn-sm btn-primary text-light" data-toggle="collapse" href="#address__{{ a.id }}" role="button" aria-expanded="false" aria-controls="collapseExample"><i class="fas fa-arrow-down"></i></a>
+                                                                </div>
+                                                                <div class="col-12">
+                                                                    <hr class="m-0">
+                                                                </div>
+                                                                <div class="col-12">
+                                                                    <div class="collapse" id="address__{{ a.id }}">
+                                                                        <div class="card card-body rounded-0">
+                                                                            {% for field,value in a.get_fields %}
+                                                                                <div class="row">
+                                                                                    <!-- #1 -->
+                                                                                    <div class="col-6">
+                                                                                        <span class="font-weight-bold">{{ field }}</span>
+                                                                                    </div>
+                                                                                    <div class="col-6 text-right">
+                                                                                        <span>{{ value }}</span>
+                                                                                    </div>
+                                                                                    <div class="col-12">
+                                                                                        <hr class="m-0">
+                                                                                    </div>
+                                                                                </div>
+                                                                            {% endfor %}
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        {% endfor %}
+                                                        <a value="Delete" successurl="{% url 'SubiektCompany_add' %}" modal="#modal_window" url="{% url 'Address_delete_ajax' %}" div-to-map="#address-delete-form" href="#" class="btn btn-sm btn-danger btn-block mt-3 shadow-sm subiekt-get-list-from-div"><i class="fas fa-save text-light"></i>&nbsp;Usuń wybrane</a>
+                                                    {% endif %}
+                                                </div>
+                                                <!-- # wg formularza -->
+                                                {% comment %} <div class="col-12" id="address-delete-form">
+                                                    {% if address_delete_form %}
+                                                        {{ address_delete_form }}
+                                                        <a value="Delete" successurl="{% url 'SubiektCompany_add' %}" modal="#modal_window" url="{% url 'Address_delete_ajax' %}" div-to-map="#address-delete-form" href="#" class="btn btn-sm btn-danger btn-block mt-3 shadow-sm subiekt-get-list-from-div"><i class="fas fa-save text-light"></i>&nbsp;Usuń wybrane</a>
+                                                    {% endif %}
+                                                </div> {% endcomment %}
+                                            </div>
+                                        {% endif %}
+
+
+
+
+                                        {% if tab.tab_id == "dokumenty" %}
+                                            <div class="row mb-4">
+
+                                                <!-- # wg querysetu-->
+                                                <div class="col-12" id="document-delete-form">
+                                                    {% if documents %}
+                                                        {% for a in documents %}
+                                                            <div class="row">
+                                                                <div class="col-10">
+                                                                    <input type="checkbox" id="document_{{ a.id }}" name="document" value="{{ a.id }}">
+                                                                    <label for="document_{{ a.id }}">Dokument: {{ a.name }}</label>
+                                                                </div>
+                                                                <div class="col-2 text-right">
+                                                                    <a class="btn btn-sm btn-primary text-light" data-toggle="collapse" href="#document__{{ a.id }}" role="button" aria-expanded="false" aria-controls="collapseExample"><i class="fas fa-arrow-down"></i></a>
+                                                                </div>
+                                                                <div class="col-12">
+                                                                    <hr class="m-0">
+                                                                </div>
+                                                                <div class="col-12">
+                                                                    <div class="collapse" id="document__{{ a.id }}">
+                                                                        <div class="card card-body rounded-0">
+                                                                             {% for field,value in a.get_fields %}
+                                                                                <div class="row">
+                                                                                    <!-- #1 -->
+                                                                                    <div class="col-6">
+                                                                                        <span class="font-weight-bold">{{ field }}</span>
+                                                                                    </div>
+                                                                                    <div class="col-6 text-right">
+                                                                                        <span>{{ value }}</span>
+                                                                                    </div>
+                                                                                    <div class="col-12">
+                                                                                        <hr class="m-0">
+                                                                                    </div>
+                                                                                </div>
+                                                                            {% endfor %}
+
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        {% endfor %}
+                                                        <a value="Delete" successurl="{% url 'SubiektCompany_add' %}" modal="#modal_window" url="{% url 'Document_delete_ajax' %}" div-to-map="#document-delete-form" href="#" class="btn btn-sm btn-danger btn-block mt-3 shadow-sm subiekt-get-list-from-div"><i class="fas fa-save text-light"></i>&nbsp;Usuń wybrane</a>
+                                                    {% endif %}
+
+                                                    <!-- # wg formularza -->
+                                                    {% comment %} {% if document_delete_form %}
+                                                        {% for field in document_delete_form %}
+                                                        <div class="row">
+                                                            <div class="col-12">
+                                                                {{ field }} 
+                                                            </div>
+                                                        </div>                                     
+                                                        {% endfor %}
+                                                        <a value="Delete" successurl="{% url 'SubiektCompany_add' %}" modal="#modal_window" url="{% url 'document_delete_ajax' %}" div-to-map="#document-delete-form" href="#" class="btn btn-sm btn-danger btn-block mt-3 shadow-sm subiekt-get-list-from-div"><i class="fas fa-save text-light"></i>&nbsp;Usuń wybrane</a>
+                                                    {% endif %} {% endcomment %}
+
+                                                </div>
+                                            </div>
+                                        {% endif %}
+
+
+                                        {% for field in form %}
+                                            {% if tab.fields %}
+                                                {% if field.name in tab.fields %}
+                                                    <div class="field-group">
+                                                    <label>{{ field.label }}</label> {{ field }}
+                                                    {{ field.errors }}
+                                                    {% if field.help_text %}
+                                                        <span class="helptext">&nbsp;{{ field.help_text }}  </span>
+                                                    {% endif %}
+                                                    </div>
+                                                {% endif %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            <!-- SUBMITION -->
+                <div class="mt-4">
+                <!--
+                <a value="Zapisz" successurl="{% url 'SubiektCompany_add' %}" modal="#modal_window" href="#" class="btn btn-sm btn-primary btn-block mt-3 shadow-sm ajax_post" form="#Company_detail_form"><i class="fas fa-save text-light"></i>&nbsp;Zapisz</a>
+                --></div>
+
+            </form>
+        </div>
+        </div>
+    </section>
+
+<!-- JS-->
+  <script>
+    function correct_checkboxes(){
+        $("input[type='checkbox']").each(function(){
+          $(this).removeClass("form-control");
+        });
+      }
+    function populate_modal_body(modal_body,content){
+      modal_body.html(content);
+    }
+    function dissmis_modal(modal){
+      $(modal).modal("hide");
+    }
+    function redirect(url){
+        window.location.replace(url);
+    }  
+  </script>
+
+<!-- JS AJAX: POST -->
+  <script>
+    $("a.ajax_post").on('click',function(){
+      console.log("CLICK");
+      var $th = $(this);
+      var $target = $th.attr("form");
+      var $success_url = $th.attr("successurl");
+      var $form = $($target);
+      var $url = $form.attr("action");
+      var $method = $form.attr("method")
+      var $modal_window = $th.attr("modal");
+      var $data = $form.serialize();
+      var $modal_body = $("div.modal-body");
+      $.ajax({
+        url: $url,
+        data: $data,
+        type:$method,
+        success: function (data) {
+            console.log(data)
+            if(data.status=="OK"){
+                dissmis_modal($modal_window);
+                redirect($success_url);
+            } else {
+                populate_modal_body($modal_body,data);
+                correct_checkboxes();
+            }        
+        }
+      });
+    });
+
+    $("a.ajax_delete").on('click',function(){
+        console.log("CLICK");
+        if (confirm('Czy napewno chcesz usunąć?')) {
+        var $th = $(this);
+        var $success_url = $th.attr("successurl");
+        var $url = $th.attr("url");
+        var $method = "POST"
+        var $modal_window = $th.attr("modal");
+        var $pk = {"pk":$th.attr("pk")}
+        var $modal_body = $("div.modal-body");
+        $.ajax({
+            url: $url,
+            data: $pk,
+            type:$method,
+            success: function (data) {
+                console.log(data)
+                if(data.status=="OK"){
+                    dissmis_modal($modal_window);
+                    redirect($success_url);
+                } else {
+                    populate_modal_body($modal_body,data);
+                    correct_checkboxes();
+                }        
+            }
+        });
+        } else {
+            console.log('Canceled');
+        }    
+    });
+  </script>
+
+  <script>
+      // Dodawanie klas css datepicker ---------------
+      function set_datetime_fields(){
+        $('textarea, input[type="text"], select').addClass('shadow-sm');
+        $("textarea").addClass('bg-textarea')
+        jQuery('input[name="start_datetime"], input[name="end_datetime"]').datetimepicker({
+          format: 'Y-m-d H:i',
+          step: 15,
+        });
+        jQuery('input[name="start_date"], input[name="end_date"], .dates').datetimepicker({
+          format: 'Y-m-d',
+        });
+
+        $(function () {
+          $(".datepicker").datepicker({
+            dateFormat: 'yy-mm-dd',
+          });
+        });
+      }
+      set_datetime_fields()
+</script>
+
+<script>
+    $(".subiekt-get-list-from-div").on('click',function(){
+    var $th = $(this);
+    var $target = $th.attr("div-to-map");
+    var $modal_window = $th.attr("modal")
+    var $url = $th.attr("url");
+    var $divs = $($target);
+    var $data = [];
+
+    $($divs).each(function( index ) {
+        var $id = $(this).attr("id")
+        var $content = $(this).find("input,select,textarea").serialize()
+        var $obj = {}
+        $obj[$id] = $content
+        $data.push($obj)
+    });
+    var $serialized_data = {"data": JSON.stringify($data)};
+    console.log("Dane zostały serializowane:")
+    console.log($serialized_data)
+        if(confirm("Czy napewno chcesz wykonać ta operacje?")){
+            $.ajax({
+                url: $url,
+                data: $serialized_data,
+                type:"POST",
+                success: function (data) {
+                    console.log(data)
+                    if(data.status=="OK"){
+                        dissmis_modal($modal_window);
+                        redirect($success_url);
+                    } else {
+                        alert("Błąd")
+                    }        
+                }
+            });
+        return true;
+        } else { return false; }
+        //redirect($uri)
+    
+
+});
+</script>

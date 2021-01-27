@@ -1,0 +1,332 @@
+<!-- templates/home.html-->
+{% extends 'HD_app/newbase.html' %}
+{% load static %}
+{% load rest_framework %}
+{% block title %}Wiadomości | SOKÓŁ{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+<!-- Header -->
+<page_header>
+<div class="row p-2">
+  <div class="col-12 header-div">
+    <div class="d-flex justify-content-between">
+      <div class="" id="">
+        <h2 class=""><i class="fa text-danger fa-commenting" aria-hidden="true"></i>
+          Wiadomości</h2>
+      </div>
+      <div class="" id="">
+        <button class="animated bounceInDown btn btn-success shadow-sm open_modal_button" id="new_message_btn" type="button">
+          <i class="text-light rotate-center fa fa-plus" aria-hidden="true"></i> Nowa</button>
+      </div>
+    </div>
+  </div>
+</div>
+<hr class="mb-3 mt-0">
+</page_header>
+
+<!-- Modal: Nowa wiadomość -->
+<modal>
+  <div class="modal fade" id="newmessage_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg " role="document">
+    <div class="modal-content bg-noisy p-1">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle"> <i class="fa fa-commenting-o text-danger" aria-hidden="true"></i>
+          Nowa wiadomość</h5>
+        <button type="button" class="close close_modal_button" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="post" action="{% url 'messages' %}" id="new_message" enctype="multipart/form-data">
+          {% csrf_token %}
+          {{ form.as_p }}
+          <br>
+          <input type="submit" value="Wyślij" class="btn btn-danger mt-3 shadow">
+        </form>
+      </div>
+      <div class="modal-footer">
+        
+        <button type="button" class="btn btn-secondary mt-3 shadow close_modal_button" data-dismiss="modal">Zamknij</button>
+  
+      </div>
+    </div>
+    </div>
+  </div>
+</modal>
+
+<!-- Modal: unread -->
+  <div class="fresh-div-unread-m">
+{% if unread_messages %}
+{% for m in unread_messages %}
+<modal>
+<div class="modal fade" id="messages_modal_message_ur_{{ m.id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg " role="document">
+  <div class="modal-content bg-noisy p-1">
+    <div class="modal-header">
+      <h5 class="modal-title" id="exampleModalLongTitle"> <i class="fa fa-commenting-o text-danger" aria-hidden="true"></i>
+        {{ m.name }}</h5>
+      <button type="button" class="close close_modal_button" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="row p-2">
+
+        <div class="col-12">
+          <span><i class="fa fa-arrow-down" aria-hidden="true"></i>
+            Od: {% if m.sender.profile.thumb %}<img class="thumb_min" src="{{ m.sender.profile.thumb.url }}"/>{% endif %}{{ m.sender }}</span><br>
+          <span><i class="fa fa-arrow-up" aria-hidden="true"></i> Do: {% if m.receipt.profile.thumb %}<img class="thumb_min" src="{{ m.receipt.profile.thumb.url }}"/>{% endif %}{{ m.receipt }}</span>
+        </div>
+        <div class="col-12 mt-2">
+          <hr>
+          {{ m.description }}
+         
+          {% if m.attachment %}<a href="{{ attachment.url }}">{{ attachment.name }}</a>{% endif %}
+        </div>
+
+      </div>
+  
+  
+    
+    </div>
+    <div class="modal-footer">
+      
+      <button type="button" class="btn readms btn-secondary mt-3 shadow close_modal_button" data-dismiss="modal">Odpisz</button>
+      <button type="button" class="btn btn-secondary mt-3 shadow close_modal_button" data-dismiss="modal">Zamknij</button>
+
+    </div>
+  </div>
+  </div>
+</div>
+</modal>
+{% endfor %}
+{% endif %}
+</div>
+
+<!-- Modal: read -->
+<div class="fresh-div-read-m">
+{% if read_messages %}
+{% for m in read_messages %}
+<modal>
+<div class="modal fade" id="messages_modal_message_r_{{ m.id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg " role="document">
+  <div class="modal-content bg-noisy p-1">
+    <div class="modal-header">
+      <h5 class="modal-title" id="exampleModalLongTitle"> <i class="fa fa-commenting-o text-danger" aria-hidden="true"></i>
+        {{ m.name }}</h5>
+      <button type="button" class="close close_modal_button" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="row p-2">
+
+        <div class="col-12">
+          <span><i class="fa fa-arrow-down" aria-hidden="true"></i>
+            Od: {% if m.sender.profile.thumb %}<img class="thumb_min" src="{{ m.sender.profile.thumb.url }}"/>{% endif %}{{ m.sender }}</span><br><hr>
+          <span><i class="fa fa-arrow-up" aria-hidden="true"></i> Do: {% if m.receipt.profile.thumb %}<img class="thumb_min" src="{{ m.receipt.profile.thumb.url }}"/>{% endif %}{{ m.receipt }}</span>
+        </div>
+        <div class="col-12 mt-2">
+          <hr>
+          {{ m.description }}
+         
+          {% if m.attachment %}<a href="{{ attachment.url }}">{{ attachment.name }}</a>{% endif %}
+        </div>
+
+      </div>
+  
+  
+    
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary mt-3 shadow close_modal_button" data-dismiss="modal">Zamknij</button>
+    </div>
+  </div>
+  </div>
+</div>
+</modal>
+{% endfor %}
+{% endif %}
+</div>
+
+<!-- Modal: sent -->
+<div class="fresh-div-sent-m">
+{% if sent_messages %}
+{% for m in sent_messages %}
+<modal>
+<div class="modal fade" id="messages_modal_message_s_{{ m.id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg " role="document">
+  <div class="modal-content bg-noisy p-1">
+    <div class="modal-header">
+      <h5 class="modal-title" id="exampleModalLongTitle"> <i class="fa fa-commenting-o text-danger" aria-hidden="true"></i>
+        {{ m.name }}</h5>
+      <button type="button" class="close close_modal_button" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="row p-2">
+
+        <div class="col-12">
+          <span><i class="fa fa-arrow-down" aria-hidden="true"></i>
+            Od: {% if m.sender.profile.thumb %}<img class="thumb_min" src="{{ m.sender.profile.thumb.url }}"/>{% endif %}{{ m.sender }}</span><br><hr>
+          <span><i class="fa fa-arrow-up" aria-hidden="true"></i> Do: {% if m.receipt.profile.thumb %}<img class="thumb_min" src="{{ m.receipt.profile.thumb.url }}"/>{% endif %}{{ m.receipt }}</span>
+        </div>
+        <div class="col-12 mt-2">
+          <hr>
+          {{ m.description }}
+         
+          {% if m.attachment %}<a href="{{ attachment.url }}">{{ attachment.name }}</a>{% endif %}
+        </div>
+
+      </div>
+  
+  
+    
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary mt-3 shadow close_modal_button" data-dismiss="modal">Zamknij</button>
+    </div>
+  </div>
+  </div>
+</div>
+</modal>
+{% endfor %}
+{% endif %}
+</div>
+
+
+
+
+
+<!-- Content -->
+<!-- Unread -->
+<section id="sekcja_unread_messages" style="display:none;">
+  <div class="section_header">
+    <h4 class="" >
+      <i class="fa fa-commenting-o" aria-hidden="true"></i>
+       Nieodczytane</h4><hr>
+</div>
+
+<div class="fresh-div-unread">
+  {% if unread_messages %}
+  {% for m in unread_messages %}
+  <div class="message message_ur rounded" id="message_ur_{{ m.id }}">
+    <div class="row justify-content-between">
+    <div class="col">
+      <span><b>"{{ m.name }}"</b> | </span>
+      <span>Od: {% if m.sender.profile.thumb %}<img class="thumb_min" src="{{ m.sender.profile.thumb.url }}"/>{% endif %}{{ m.sender }}</span>
+    </div>
+    <div class="col-3 text-right">
+      <a style="z-index:99;" href="{% url 'message_delete' m.id %}"><button class="btn btn-sm btn-danger">Usuń</button></a>
+    </div>
+  </div>
+  </div>
+  {% endfor %}
+  {% endif %}
+</div>
+</section>
+
+<section>
+  <div class="section_header">
+    <h4 class="" >
+      <i class="fa fa-commenting" aria-hidden="true"></i> Przeczytane</h4><hr>
+</div>
+
+<div class="fresh-div-read">
+{% if read_messages %}
+{% for m in read_messages %}
+<div class="message message_r rounded" id="message_r_{{ m.id }}">
+  <div class="row">
+  <div class="col">
+    <span><b>"{{ m.name }}"</b> | </span>
+    <span>Od: {% if m.sender.profile.thumb %}<img class="thumb_min" src="{{ m.sender.profile.thumb.url }}"/>{% endif %}{{ m.sender }}</span>
+  </div>
+  <div class="col-3 text-right">
+    <a style="z-index:99;" href="{% url 'message_delete' m.id %}"><button class="btn btn-sm btn-danger">Usuń</button></a>
+  </div>
+</div>
+</div>
+{% endfor %}
+{% endif %}
+</div>
+</section>
+<section>
+  <div class="section_header">
+    <h4 class="" >
+      <i class="fa fa-paper-plane-o" aria-hidden="true"></i>
+       Wysłane</h4>
+       <hr>
+</div>
+
+<div class="fresh-div-sent">
+{% if sent_messages %}
+{% for m in sent_messages %}
+<div class="message message_s rounded" id="message_s_{{ m.id }}">
+  <div class="row">
+  <div class="col">
+    <span><b>"{{ m.name }}"</b> | </span>
+    <span>Od: {% if m.sender.profile.thumb %}<img class="thumb_min" src="{{ m.sender.profile.thumb.url }}"/>{% endif %}{{ m.sender }}</span>
+  </div>
+  <div class="col-3 text-right">
+    <a style="z-index:99;" href="{% url 'message_delete' m.id %}"><button class="btn btn-sm btn-danger">Usuń</button></a>
+  </div>
+</div>
+</div>
+{% endfor %}
+{% endif %}
+</div>
+</section>
+
+
+
+
+<!-- <div class="row">
+<div class="col">
+
+<div class="d-flex justify-content-center mt-5">
+  <div class="col-4 text-center border-bottom border-danger m-2 ih4">
+    <h2 class="ih p-2 text-danger">{% if umowy %}{{ umowy }}{% else %}Brak umów{% endif %}</h2><span>Umowy</span>
+    <hr>
+  </div>
+  <div class="col-4 text-center border-bottom border-warning m-2 ih4">
+    <h2 class="ih p-2 text-warning">{% if w_realizacji %}{{ w_realizacji }}{% else %}0{% endif %}</h2><span>Zlecenia w realizacji</span>
+    <hr>
+  </div>
+  <div class="col-4 text-center border-bottom border-success m-2 ih4">
+    <h2 class="ih p-2 text-success">{% if zrealizowane %}{{ zrealizowane }}{% else %}0{% endif %}</h2><span>Zlecenia zakończone</span>
+    <hr>
+  </div>
+
+</div>
+</div>
+</div> -->
+
+{% else %}
+
+<div class="container">
+  <div class="row p-1">
+    <div class="col-12">
+      <p>Nie jestes zalogowany!</p>
+      <img src="{% static 'img/gob_logo.png' %}" alt="logo"><br>
+      <span><a href="{% url 'login' %}">Zaloguj</a></span><br>
+      <span><a href="{% url 'register2' %}">Zarejestuj</a></span>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<script>
+//Kopiuj do schowka
+function copy() {
+  var copyText = document.getElementById("copy_input");
+  copyText.select();
+  copyText.setSelectionRange(0, 99999)
+  document.execCommand("copy");
+  console.log("Copied the text: " + copyText.value);
+}
+</script>
+
+{% endblock %}

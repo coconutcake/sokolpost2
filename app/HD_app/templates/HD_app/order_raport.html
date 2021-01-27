@@ -1,0 +1,431 @@
+<!-- templates/home.html-->
+{% extends 'HD_app/newbase.html' %}
+{% load static %}
+{% load rest_framework %}
+{% block title %}Filtr zleceń{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+
+
+<!-- RAPORTY -->
+  <section class="sec">
+    <!-- TITLE -->
+      <div class="row section_title">
+        <div class="col col-12 col-sm-6 col-md-8 col-lg-9 section_header">
+          <h2><i class="fa fa-square-root-alt" aria-hidden="true"></i>&nbsp;GOBIT - Raport serwisowy</h2>
+        </div>
+         <div class="col col-12 col-sm-6 col-md-4 col-lg-3 section_quicksearch">
+          <div class="d-flex justify-content-end">
+           <a class="btn btn-sm btn-dark mt-1 mb-1 shadow-sm btn-print" target="sec" href="#"><i class="fas fa-print"></i> Drukuj</a>
+          </div>
+        </div>
+        
+        <div class="col-12"><hr class="hr_title"></div>
+      </div>
+
+
+
+      <div class="row">
+        <div class="col-12">
+          <span class="zakres-span" id="s"></span> <span class="zakres-span" id="e"></span>
+        </div>
+        <div class="col-12">
+          <hr style="margin:0">
+        </div>
+      </div>
+
+
+      <div class="row">
+        <div class="col-12 col-lg-6">
+          <span class="zakres-span" id="w">Pracownik:</span>
+        </div>
+        <div class="col-12 col-lg-6">
+          <span class="zakres-span" id="w">{% if workers %}{% for w in workers %}<i class="fas fa-user-alt text-danger"></i> {{ w }}{% endfor %}{% else %}Brak{% endif %}</span>
+        </div>
+        <div class="col-12">
+          <hr style="margin:0">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-12 col-lg-6">
+          <span class="zakres-span" id="t">Typy zleceń:</span>
+        </div>
+        <div class="col-12 col-lg-6">
+          <span class="zakres-span" id="t">{% if order_types %}{% for t in order_types %}{{ t }}, {% endfor %}{% else %}Brak{% endif %}</span>
+        </div>
+        <div class="col-12">
+          <hr style="margin:0">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-12 col-lg-6">
+          <span class="zakres-span" id="t">Firma:</span>
+        </div>
+        <div class="col-12 col-lg-6">
+          <span class="zakres-span" id="t">{% if companies %}{% for c in companies %}<i class="fas fa-building"></i> {{ c }}{% endfor %}{% else %}Brak{% endif %}</span>
+        </div>
+        <div class="col-12">
+          <hr style="margin:0">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-12 col-lg-6">
+          <span class="zakres-span" id="t">Umowa:</span>
+        </div>
+        <div class="col-12 col-lg-6">
+          <span class="zakres-span" id="t">{% if agreements %}{% for a in agreements %}<i class="fas fa-scroll"></i> {{ a }}{% endfor %}{% else %}Brak{% endif %}</span>
+        </div>
+        <div class="col-12">
+          <hr style="margin:0">
+        </div>
+      </div>
+
+
+     
+
+
+
+    <!-- LISTA: ZLECENIA -->
+      <div class="col-12 mt-5">
+        <div class="ls_raport" id="order_">
+        
+          {% if orders %}
+          {% for o in orders|dictsort:"care.first_name" %}
+          
+          <!-- Zlecenie -->
+            <div class="row ls_elem_raport mb-3">
+
+            <!-- Nagłówek zlecenia -->
+              <div class="col">
+                <div class="row justify-content-start ih" style="display:none;">
+                  <div class="col-12 col-sm-6 {% if o.order_status.id == 6 %}bg-success{% else %}bg-danger{% endif %}">
+                    <div class="d-inline-flex p-1 pl-2 text-warning">
+                      <span><i class="fas fa-ticket-alt text-warning"></i>&nbsp;<b>{{ o.name }}</b></span><br>
+                    </div>
+                    <div class="d-inline-flex p-1 pl-2 text-dark">
+                      <span><i class="fas fa-building text-dark" aria-hidden="true"></i>&nbsp;<b>{{ o.agreement.company.name }}</b></span>
+                    </div>
+                  </div>
+                <div class="col text-right {% if o.order_status.id == 6 %}bg-success{% else %}bg-danger{% endif %}">
+                
+                </div> 
+              </div>
+
+            <!-- Kolumny i dane -->
+              <div class="row">
+                <div class="col-6 col-xl-2 border">
+                  <span>Data / Realizujący:</span>
+                </div>
+                <div class="col-6 border d-xl-none ">
+                  <span>&nbsp;{{ o.start_datetime|date:"Y-m-d" }} / </span><br />
+                  <span>{{ o.care.first_name }} {{ o.care.last_name }}</span>
+                </div>
+
+                <div class="col-12 col-xl-4 border">
+                  <span>Czynności:</span>
+                </div>
+                <div class="col-12 border d-xl-none">
+                  <span class="opis-text font-weight-bold">&nbsp;{{ o.description }}</span>
+                </div>
+
+                <div class="col-6 col-xl-1 border">
+                  <span>Kategoria:</span>
+                </div>
+                <div class="col-6 border d-xl-none">
+                  <span>&nbsp;{{ o.order_type.name }}</span>
+                </div>
+
+                <div class="col-6 col-xl-2 border">
+                  <span class="text-dark">Koszt</span>/<span class="text-danger">+dojazd</span>
+                </div>
+                <div class="col-6 border d-xl-none">
+                  <span class="calculate_order text-dark font-weight-bold" worker="{{ o.care.id }}" id="{{ a.id }}"><i class="fas fa-coins text-dark"></i> {{ o.calculate_order }} PLN</span><br><span class="font-weight-bold text-danger"><i class="fas fa-coins text-danger"></i> {{ o.calculate_order_with_distance }} PLN</span>
+                </div>
+
+                <div class="col-6 col-xl-1 border">
+                  <span>Km:</span>
+                </div>
+                <div class="col-6 border d-xl-none">
+                  <span>&nbsp;{{ o.address.distance }}</span>
+                </div>
+
+                <div class="col-6 col-xl-2 border">
+                  <span>Czas:</span>
+                </div>
+                <div class="col-6 border d-xl-none">
+                  <span>{{ o.end_datetime|timeuntil:o.start_datetime }}</span>
+                </div>
+              </div>
+
+              <!-- Large -->
+                <div class="row">
+                  <div class="col-6 col-lg-2 d-none d-xl-block border">
+                    <span>&nbsp;{{ o.start_datetime|date:"Y-m-d" }} / </span>
+                    <span class="font-weight-bold"><br><i class="fas fa-user text-danger"></i> {{ o.care.first_name }} {{ o.care.last_name }}</span>
+                  </div>
+                  <div class="col-6 col-lg-4 d-none d-xl-block border">
+                    <span class="opis-text font-weight-bold">&nbsp;{{ o.description }}</span>
+                  </div>
+                  <div class="col-6 col-lg-1 d-none d-xl-block border">
+                    <span>&nbsp;{{ o.order_type.name }}</span>
+                  </div>
+                  <div class="col-6 col-lg-2 d-none d-xl-block border">
+                    <span class="calculate_order text-dark font-weight-bold" worker="{{ o.care.id }}" id="{{ a.id }}"><i class="fas fa-coins text-dark"></i> {{ o.calculate_order }} PLN</span><br><span class="font-weight-bold text-danger"><i class="fas fa-coins text-danger"></i> {{ o.calculate_order_with_distance }} PLN</span>
+                  </div>
+                  <div class="col-6 col-lg-1 d-none d-xl-block border">
+                    <span>&nbsp;{{ o.address.distance }}</span>
+                  </div>
+                  <div class="col-6 col-lg-2 d-none d-xl-block border">
+                    <span>{{ o.end_datetime|timeuntil:o.start_datetime }}</span>
+                  </div>
+                </div>
+              
+              
+
+            </div>
+      </div>
+          {% endfor %}
+                <!-- SUMY -->
+                  <div class="row mt-5 border">
+
+                    <div class="col-12 text-center section_header bg-light p-2">
+                      <h3>Rozliczanie raportu</h3>
+                    </div>
+
+                    <div class="col-12">
+                      <div class="row">
+
+                        <div class="col-12 col-lg-4 bg-light border-top border-right">
+                          <div class="subsection_header text-center border-bottom p-2">
+                            <h5>Parametry umowy</h5>
+                          </div>
+                          <div class="row subsection_content">
+                            <div class="col-6">
+                              <span>Kwota umowy:</span>
+                            </div>
+                            <div class="col-6 text-right">
+                              <span>{{ agreements.0.pakiet.abonament }}&nbsp;PLN</span>
+                            </div>
+                          </div>
+                          <div class="row subsection_content">
+                            <div class="col-6">
+                              <span>Ilość godzin w abonamencie:</span>
+                            </div>
+                            <div class="col-6 text-right">
+                              <span>{{ agreements.0.pakiet.included_hours }}h</span>
+                            </div>
+                          </div>
+                          <div class="row subsection_content">
+                            <div class="col-6">
+                              <span>Stawka poza abonamentem:</span>
+                            </div>
+                            <div class="col-6 text-right">
+                              <span>{% for rd in agreements.0.pakiet.ratestack.rate.all %}{% if rd.is_default == True %}{{ rd.price }}&nbsp;PLN{% endif %}{% endfor %}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-12 col-lg-4 bg-light border-top border-right">
+                          <div class="subsection_header text-center border-bottom p-2">
+                            <h5>Czas przepracowany</h5>
+                          </div>
+                          <div class="row subsection_content">
+                            <div class="col-6">
+                              <span>Wszystkie zlecenia/czas:</span>
+                            </div>
+                            <div class="col-6 text-right">
+                              <span>{{ orders_count }} / {{ suma_czas }}h</span>
+                            </div>
+                          </div>
+                          <div class="row subsection_content">
+                            <div class="col-6">
+                              <span>Zlecenia odpłatne</span>
+                            </div>
+                            <div class="col-6 text-right">
+                              <span>X</span>
+                            </div>
+                          </div>
+                          <div class="row subsection_content">
+                            <div class="col-6">
+                              <span>Godziny poza abonamentem</span>
+                            </div>
+                            <div class="col-6 text-right">
+                              <span>X</span>
+                            </div>
+                          </div>
+                          <div class="row subsection_content">
+                            <div class="col-6">
+                              <span>Godziny awaryjne 24/7</span>
+                            </div>
+                            <div class="col-6 text-right">
+                              <span>X</span>
+                            </div>
+                          </div>
+                          <div class="row subsection_content">
+                            <div class="col-6">
+                              <span>Dojazdy</span>
+                            </div>
+                            <div class="col-6 text-right">
+                              <span>{{ suma_km }} km</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-12 col-lg-4 bg-light border-top">
+                          <div class="subsection_header text-center border-bottom p-2">
+                            <h5>Podsumowanie</h5>
+                          </div>
+                          <div class="row subsection_content">
+                            <div class="col-6">
+                              <span>Abonament:</span>
+                            </div>
+                            <div class="col-6 text-right">
+                              <span>{{ agreements.0.pakiet.abonament }}&nbsp;PLN</span>
+                            </div>
+                          </div><div class="row subsection_content">
+                            <div class="col-6">
+                              <span>Kosz części:</span>
+                            </div>
+                            <div class="col-6 text-right">
+                              <span>X</span>
+                            </div>
+                          </div><div class="row subsection_content">
+                            <div class="col-6">
+                              <span>Zlecenia poza abonamentem:</span>
+                            </div>
+                            <div class="col-6 text-right">
+                              <span>X</span>
+                            </div>
+                          </div><div class="row subsection_content">
+                            <div class="col-6">
+                              <span>Dopłata zlec</span>
+                            </div>
+                            <div class="col-6 text-right">
+                              <span>X</span>
+                            </div>
+                          </div><div class="row subsection_content">
+                            <div class="col-6">
+                              <span>Łączny koszt dojazdów</span>
+                            </div>
+                            <div class="col-6 text-right">
+                              <span>{{ suma_km_costs }}&nbsp;PL</span>
+                            </div>
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+
+                         
+                  </div>
+          {% else %}
+            <span>Brak wpisanych zleceń</span>
+          {% endif %}
+          </div>
+          </div>
+  </section>
+<!-- JS-->
+  <!-- JQUERY -->
+    <script src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
+  <!-- URLs -->
+    <script>
+        // URLs
+          var $rozlicz_url = "{% url 'JSON_rozlicz_zlecenie' %}"
+          var $generate_url = "{% url 'Generate_raport' %}"
+    </script>
+  <!-- Span opis -->
+    <script>
+    $('span.opis-text').each(function () {
+        var $th = $(this)
+        var html = $th.html().split("\n");
+        $th.empty();
+        for (step = 0; step < html.length; step++) {
+          $th.append("<span>"+html[step]+"<span><br>")
+        }
+    });
+    </script>
+  <!-- Rozliczanie zleceń-->
+    <script>
+      // AJAX: Rozlicz zlecenie
+        function rozlicz_zlecenie(id,url){
+          console.log("Rozliczam zlecenie: "+id+" ...")
+          var $ids = parseInt(id);
+          $.ajax({
+            url: url,
+            dataType: 'json',
+            data: {
+              'order': $ids
+            },
+            success: function (data) {
+              console.log(data);
+              alert("Zlecenie o id: "+data.id+" uzyskało nowy status. Kliknij Ok aby przeładowac strone")
+              window.location.reload(true);
+            }
+
+        });
+        };
+      // CLICK: Rozlicz pojedyńcze zlecenie
+        $(".rozlicz").on("click", function(){
+          var $ids = $(this).attr("id");
+          console.log("Kliknięto zlecenie: "+$ids)
+          if (confirm('Czy napewno chcesz rozliczyć zlecenie ?')) {
+            rozlicz_zlecenie($ids,$rozlicz_url);
+          };
+        });
+    </script>
+
+    <script>
+      // Generuj raport
+        $("#btn-generate_raport").on("click", function(){
+          var values = $("form").serialize()     
+          window.location.href = $generate_url+values;
+        });
+    </script>
+
+    <script>
+      // Drukuj
+        $(".btn-print").on("click", function(){
+          var $th = $(this);
+          console.log($th)
+          var $target = $("."+$th.attr('target'))
+          print($target)
+        });
+    </script>
+
+    <script>
+    let params = (new URL(document.location)).searchParams;
+    let c = params.get('c');
+    let t = params.get('t');
+    let s = params.get('s');
+    let e = params.get('e');
+
+    //$("#c").text("Firma: "+c);
+    //$("#t").text("Typ: "+t);
+    $("#s").html("<b>Od: </b>"+s);
+    $("#e").html("<b>Do: </b>"+e);
+
+    </script>
+{% else %}
+<div class="container">
+  <div class="row p-1">
+    <div class="col-12">
+      <p>Nie jestes zalogowany!</p>
+      <img src="{% static 'img/gob_logo.png' %}" alt="logo"><br>
+      <span><a href="{% url 'login' %}">Zaloguj</a></span><br>
+      <span><a href="{% url 'register2' %}">Zarejestuj</a></span>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+
+
+</script>
+
+
+{% endblock %}

@@ -1,0 +1,68 @@
+<!-- templates/home.html-->
+{% extends 'HD_app/newbase.html' %}
+{% load static %}
+{% load rest_framework %}
+{% block title %}Edycja Firmy{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+<!-- FORMULARZ -->
+  <section class="sec">
+    <!-- TITLE -->
+      <div class="row section_title">
+        <div class="col">
+          <h2><i class="fas fa-building"></i> Edycja Firmy: {{ object }}</h2>
+          <hr class="hr_title">
+        </div>
+      </div>
+    <!-- FORM -->
+      <form method="post">
+        {% csrf_token %}
+        <div class="row">
+          <div class="col-12 col-sm-6">
+          {% for field in form %}
+            {% if forloop.counter < 5  %}
+              <label>{{ field.label }}</label> {{ field }}
+            {% endif %}
+          {% endfor %}
+          </div>
+          <div class="col-12 col-sm-6">
+            {% for field in form %}
+              {% if forloop.counter >= 5 %}
+                <label>{{ field.label }}</label> {{ field }}
+                {% if field.help_text %}<br>
+                  <span><i class="fas fa-info-circle"></i>&nbsp;{{ field.help_text }}  </span><hr>
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+        <hr>
+        <button type="submit" value="Nadpisz dane klienta" class="btn btn-danger mt-3 shadow"><i class="fas fa-save text-light"></i>&nbsp;Nadpisz dane</button>
+      </form>
+  </section>
+
+<!-- JS-->
+  <script src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
+
+
+{% else %}
+<div class="container">
+  <div class="row p-1">
+    <div class="col-12">
+      <p>Nie jestes zalogowany!</p>
+      <img src="{% static 'img/gob_logo.png' %}" alt="logo"><br>
+      <span><a href="{% url 'login' %}">Zaloguj</a></span><br>
+      <span><a href="{% url 'register2' %}">Zarejestuj</a></span>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+
+
+</script>
+
+
+{% endblock %}

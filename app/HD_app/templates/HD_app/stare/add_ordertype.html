@@ -1,0 +1,72 @@
+<!-- templates/home.html-->
+{% extends 'HD_app/base.html' %}
+{% load static %}
+
+{% block title %}Dodaj nowy typ zlecenia{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+    <div class="row p-3">
+    <div class="col-12 col-md-6 mb-5">
+        <h1><i class="fa fa-plus color1" aria-hidden="true"></i> Dodaj typ zlecenia</h1>
+        <hr>
+
+        <form id="add_ordertype" action="{% url 'add_ordertype' %}" method="post">
+            {% csrf_token %}
+            {{ form }}
+            <input type="submit" value="Zapisz" class="btn btn-danger mt-3 shadow">
+        </form>
+
+    </div>
+
+
+    
+    <div class="col-12 col-md-6">
+      <h1><i class="fa fa-list color1" aria-hidden="true"></i>
+        Lista typów zleceń</h1>
+      <hr>
+      <div class="fresh-div" id="ordertype_lst">
+
+      {% if ordertypes %}
+        {% for type in ordertypes %}
+        <div class="d-flex justify-content-center">
+          <div class="col">
+            
+            
+
+            <p id="{{ type.id }}"><i class="fa fa-handshake-o" aria-hidden="true"></i> {{ type.name }}</p>
+          </div>
+          <div class="col">
+
+          </div>
+        </div>
+        {% endfor %}
+      {% endif %}
+
+        <!-- {% if customers %}
+          {% for customer in customers %}
+            <p id="{{ customer.id }}">{{ customer }}</p>
+          {% endfor %}
+        {% endif %} -->
+      </div>
+  </div>
+
+
+</div>
+
+
+{% else %}
+
+<div class="container">
+  <div class="row p-1">
+    <div class="col-12">
+      <p>Nie jestes zalogowany!</p>
+      <img src="{% static 'img/gob_logo.png' %}" alt="logo"><br>
+      <span><a href="{% url 'login' %}">Zaloguj</a></span><br>
+      <span><a href="{% url 'register2' %}">Zarejestuj</a></span>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

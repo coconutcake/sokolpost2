@@ -1,0 +1,261 @@
+<!-- templates/home.html-->
+{% extends 'HD_app/newbase.html' %}
+{% load static %}
+{% load rest_framework %}
+{% block title %}Zlecenia niezrealizowane{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+{% if request.user.is_superuser %}
+  
+<!-- Header -->
+<div class="row p-2 mb-5">
+  <div class="col-12 header-div">
+    <div class="d-flex justify-content-between">
+      <div class="animated fadeInDown fast" id="">
+        <h2 class="mb-4">Zlecenia niezrealizowane</h2>
+      </div>
+      <div class="" id="">
+        <button class="animated bounceInDown fa btn btn-success shadow-sm open_modal_button" id="add_order_btn" type="button">
+          <i class="text-light rotate-center fa fa-plus" aria-hidden="true"></i> Dodaj</button>
+      </div>
+    </div>
+    <hr class="m-0">
+  </div>
+</div>
+
+
+<!-- Modal ADD order -->
+<div class="modal fade" id="add_order_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered " role="document">
+    <div class="modal-content bg-noisy p-1">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle"><i class="fa fa-plus color1" aria-hidden="true"></i> Dodawanie zlecenia</h5>
+        <button type="button" class="close close_modal_button" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="add_order" action="{% url 'orders1' %}" method="post">
+          {% csrf_token %}
+          {{ form.as_p }}
+            <!-- <input type="submit" value="Zapisz" class="btn btn-danger mt-3 shadow"> -->
+      </div>
+      <div class="modal-footer">
+        <input type="submit" value="Zapisz" class="btn btn-danger mt-3 shadow">
+        <button type="button" class="btn btn-secondary mt-3 shadow close_modal_button" data-dismiss="modal">Zamknij</button>
+      </form><!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal detail order -->
+<div class="modal fade" id="update_order_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered " role="document">
+    <div class="modal-content bg-noisy p-1">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle"><i class="fa fa-plus color1" aria-hidden="true"></i> Edycja zlecenia</h5>
+        <button type="button" class="close close_modal_button" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="update_order" action="{% url 'orders1' %}" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          {{ form.as_p }}
+            <!-- <input type="submit" value="Zapisz" class="btn btn-danger mt-3 shadow"> -->
+      </div>
+      <div class="modal-footer">
+        <input type="submit" value="Zapisz" class="btn btn-danger mt-3 shadow">
+        <button type="button" class="btn btn-secondary mt-3 shadow close_modal_button" data-dismiss="modal">Zamknij</button>
+      </form><!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal show order -->
+<div class="modal fade" id="order_detail" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered " role="document">
+    <div class="modal-content bg-noisy p-1">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle"> Zlecenie</h5>
+        <button type="button" class="close close_modal_button" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      </div>
+      <div class="modal-footer">
+        <a id="modyfikuj" href=""><button type="button" class="btn btn-warning mt-3 shadow"><i class="fa fa-pencil" aria-hidden="true"></i> Modifikuj</button></a>
+        <button type="button" class="btn btn-secondary mt-3 shadow close_modal_button" data-dismiss="modal">Zamknij</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Content -->
+
+
+<!-- Zawartość tabeli -->
+
+
+<!-- Pokaz w realizacji -->
+<div class="p-3">
+  <div id="" class="mt-5">
+  {% if myorders %}
+  {% for order in myorders|dictsort:"order_status.name" %}
+          <div style="display:none;" class="ih5 order row bg-warning mt-1 p-2 shadow">
+          <div class="col-6 col-sm-3">
+            <i class="fa fa-user align-middle" aria-hidden="true"></i> 
+            <span class="align-middle">{{ order.user }}</span>
+          </div>
+          <div class="col-6 col-sm-4 border-left d-none d-sm-block">
+            <span>{{ order.title }} </span>
+          </div>
+          <div class="col-6 col-sm-3 col-md-2 d-none d-md-block border-left">
+            <span>{{ order.start_datetime|date:'' }}</span>
+          </div>
+          <div class="col-6 col-sm-5 col-md-3 text-right">
+          {% if order.order_status.id == 3 %}
+          <i class='mr-1 fa fa-refresh fa-spin fa-1x fa-fw'></i>
+          {% endif %}
+          <a href="{{ order.attachment.url }}"><button class="btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-file" aria-hidden="true"></i>
+            Dokument</button></a>
+            <a href="{% url 'order_detail' order.id %}"><button class="btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-pencil" aria-hidden="true"></i>              Edytuj</button></a>
+            <a href="{% url 'order_delete' order.id %}"><button class="btn btn-danger shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_delete' order.id %}"><i class="fa fa-trash" aria-hidden="true"></i></button></a>
+          </div>
+        </div> 
+        {% endfor %}
+      {% endif %}
+  </div>
+  </div>
+
+
+
+
+
+
+
+
+
+<script src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
+<script>
+
+  $(".completed").click(function(){
+    var $target = $(this).attr('data-target')
+    $(".completed").removeClass('shadow border-dark border bg-dark');
+    $(this).addClass('shadow border-dark border bg-dark')
+    $(".collapse").collapse('hide');
+    $($target).collapse('toggle');
+  });
+
+  // Nofity ----------------------------------------------------------
+  function updateDiv(target) {
+    $(target).load(window.location.href + " " + target);
+  };
+  
+  function success_sound() {
+    var obj = document.createElement("audio");
+    obj.src = "{% static 'sounds/success.wav' %}";
+    obj.play();
+    console.log("success played!")
+  };
+  function get_value(link){
+    $.get(link, {},
+    function get_this(returnedHtml) {
+      console.log("To jest returned initial: "+returnedHtml)
+      $flag = returnedHtml
+    });
+  };
+ var $flag = 0
+  get_value("http://127.0.0.1:8000/orders_length/");
+  console.log("To jest flaga init: "+$flag)
+  function get_value_notify(link, target){
+    $.get(link, {},
+    function (returnedHtml) {
+      console.log(returnedHtml)
+      $flag2 = parseInt(returnedHtml)
+      if ($flag2 > $flag){
+        console.log("Flaga 1: "+$flag+" Flaga 2: "+$flag2)
+        $.notify({
+          title: '<b>Nowe zlecenie!</b>',
+          icon: 'fa fa-plus',
+          message: '<hr>Masz nowe zlecenie!' 
+        },{
+          type: 'warning',
+          offset: 30,
+          delay: 5000,
+          animate: {
+            enter: 'animated bounceInDown',
+            exit: 'animated bounceOutUp'
+          },
+          placement: {
+            from: "top",
+            align: "center"
+          },
+        });
+        $flag = $flag2
+
+        success_sound();
+        // $(target).html(returnedHtml);
+      }
+    });
+  }
+      
+
+  //$(document).on('click', 'button.completed', function (event) {
+   // event.preventDefault();
+    //console.log('clicked')
+    //$('html, body').animate({
+    //    scrollTop: $(window).scrollTop() + 500
+    //}, 300);
+//});
+  // Initial ---------------------------------------------------------
+
+
+//FullCalendar -------------------------------------------------------
+var calendar = ''
+document.addEventListener('DOMContentLoaded', function() {
+  var calendarEl = document.getElementById('calendar');
+
+  calendar = new FullCalendar.Calendar(calendarEl, {
+    
+    plugins: [ 'dayGrid' ],
+    defaultView: 'dayGridWeek',
+    events: [
+    {% if myorders %}
+      {% for order in myorders %}
+    {
+      title:"{{ order.title }}",
+      start: "{{ order.start_datetime|date:'Y-m-d H:m' }}",
+      end: "{{ order.end_datetime|date:'Y-m-d H:m' }}",
+    },
+    {% endfor %}
+    {% endif %}
+    ]
+  });
+  calendar.render();
+});
+</script>
+
+{% endif %}
+
+
+
+{% else %}
+
+<div class="container">
+  <div class="row p-1">
+    <div class="col-12">
+      <p>Nie jestes zalogowany!</p>
+      <img src="{% static 'img/gob_logo.png' %}" alt="logo"><br>
+      <span><a href="{% url 'login' %}">Zaloguj</a></span><br>
+      <span><a href="{% url 'register2' %}">Zarejestuj</a></span>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

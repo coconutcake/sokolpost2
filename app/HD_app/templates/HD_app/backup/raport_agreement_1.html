@@ -1,0 +1,614 @@
+<!-- templates/home.html-->
+{% extends 'HD_app/newbase.html' %}
+{% load static %}
+{% load rest_framework %}
+{% block title %}Zestawienie wg umów z klientami{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+<!-- RAPORTY -->
+  <section class="sec">
+    <!-- TITLE -->
+      <div class="row">
+        <div class="col col-12 col-sm-6 col-md-8 col-lg-9 mb-2">
+          <h2><i class="fa text-danger fa-square-root-alt" aria-hidden="true"></i>&nbsp;Zestawienie wg umów</h2>
+        </div>
+        <div class="col col-12 col-sm-6 col-md-4 col-lg-3 text-right p-0">
+          <div class="d-flex justify-content-end">
+            <input type="text" class="form-control input-sm" id="k_search" placeholder="Szybkie szukanie..."></input>
+          </div>
+        </div>
+        <div class="w-100"><hr class="hr_title"></div>
+      </div>
+
+
+        <!-- SEARCH-->
+          <div class="row bg-light border rounded mb-4 justify-content-end p-3">
+            <div class="col-12 col-sm-6 col-md-8 col-lg-9 mb-2">
+              <span><i class="fa text-danger fa-square-root-alt" aria-hidden="true"></i>&nbsp;Filtruj wg istniejących zleceń
+              </span>
+            </div>
+              <div class="col-12 col-sm-6 col-md-4 col-lg-3 p-0 text-right">
+              <form class="" action="{% url 'Raport_agree_1_filteredByTime' %}" method="get">
+                <input class="datepicker shadow-sm form-control mb-1" name="s" type="text" placeholder="Start...">
+                <input class="datepicker shadow-sm form-control mb-1" name="e" type="text" placeholder="Stop...">
+                <button type="submit" class="btn btn-sm btn-primary shadow-sm mb-1"><i class="fa fa-search" aria-hidden="true"></i>
+            Szukaj</button>
+                </div>
+              </form>
+            <div class="w-100"></div>
+          </div>
+
+
+    <!-- KOLUMNY -->
+      <div class="row">
+          <div class="col">
+            <span>Nazwa</span>
+          </div>
+          <div class="col">
+
+          </div>
+
+                    
+          <div class="col text-right">
+            <span>Opcje</span>
+          </div>
+          <div class="w-100"><br></div>
+      </div>
+
+
+    <!-- LISTA -->
+      <div class="ls">
+        {% if agreements %}
+          {% for a in agreements %}
+          
+            
+          <div class="row bg-color5 justify-content-start ls_elem ih agree mb-4" id="{{ a.id }}" style="display:none;">
+            <div class="col-12 col-sm-6 bg-bg-1 ">
+              <div class="d-inline-flex p-1 pl-2 bg-bg-1 text-light">
+                <span><i class="fas fa-building text-light"
+                        aria-hidden="true"></i>&nbsp;<b class="text-uppercase">{{ a.company.name }}</b></span><br>
+              </div>
+
+              <div class="d-inline-flex p-1 pl-2 bg-bg-1 text-light">
+              <span><i class="fas fa-scroll text-danger"></i>&nbsp;<b class="text-danger">{{ a.name }}</b></span><br>
+                
+              </div>
+            </div>
+
+            <div class="col-12 col-sm-6 bg-bg-1 text-right">
+              <span><a class="btn btn-sm shadow-sm mt-1 mb-1 rozlicz_all" id="{{ a.id }}"><i class="fas fa-coins text-danger"></i> Rozlicz w czasie</a></span>
+              <span><a class="btn btn-sm btn-primary shadow-sm mt-1 mb-1 text-light print-btn" agreement="{{ a.id }}">Drukuj</a></span>
+              <span><a class="btn btn-sm btn-warning shadow-sm mt-1 mb-1" href="{% url 'Agreement_detail' a.id %}">Edycja</a></span>
+              <span><a class="btn btn-sm btn-danger shadow-sm mt-1 mb-1" href="{% url 'Agreement_delete' a.id %}">Usuń</a></span>
+            
+            </div>
+          
+<div class="col-12"></div>
+
+        <!-- TITLE -->
+          <a class="" data-toggle="collapse" href="#agree_{{ a.id }}" role="button" aria-expanded="false" aria-controls="agree_{{ a.id }}">
+            <div class="col-12 border-b">
+            <div class="row bg-info d-flex justify-content-between">
+              <div class="col d-flex-inline text-light">
+                <span><i class="fas fa-home"></i><b> Ogólne</b></span>
+                </div>
+                <div class="col text-right">
+                <a class="btn btn-sm btn-dark mt-1 mb-1" data-toggle="collapse" href="#agree_{{ a.id }}" role="button" aria-expanded="false" aria-controls="orders_o_{{ a.id }}">
+                  Wiecej
+                </a>
+                </div>
+              </div>
+            </div>
+          </a>
+
+        <div class="col-12 collapse" id="agree_{{ a.id }}">
+          <div class="row p-2">
+            <!-- Queries -->
+              <div class="border-b col-6 {% now 'Y-m-d' as todays_date %}{% if a.status.name == 'Aktywna' and todays_date < a.end_date|date:'Y-m-d' %}bg-success-light{% else %}bg-danger-light{% endif %}">
+                <span><i class="fas fa-heartbeat text-danger"></i> Status</span>
+              </div>
+
+              <div class="border-b col-6 {% now 'Y-m-d' as todays_date %}{% if a.status.name == 'Aktywna' and todays_date < a.end_date|date:'Y-m-d' %}bg-success-light{% else %}bg-danger-light{% endif %} text-right">
+                <span>{% now "Y-m-d" as todays_date %}{% if a.status.name == "Aktywna" and todays_date < a.end_date|date:"Y-m-d" %}<i class="fas fa-check text-success"></i>&nbsp;<b class="text-success">{{ a.status.name }}</b>{% else %}<i class="fas fa-times text-danger"></i>&nbsp;<b class="text-danger">{{ a.status.name }} - Przedawniona </b>{% endif %}</span>
+              </div>
+
+              <div class="border-b col-6 bg-white">
+                <span><i class="fas fa-box-open text-danger"></i> Pakiet:</span>
+              </div>
+
+              <div class="border-b col-6 bg-color-white text-right">
+              <span>{{ a.pakiet.name }}</span>
+              </div>
+
+              <div class="border-b col-6 bg-white">
+                <span><i class="far fa-clock text-danger"></i> Zakres trwania umowy:</span>
+              </div>
+
+              <div class="border-b col-6 bg-color-white text-right">
+                <span>{{ a.end_date|timeuntil:a.start_date }}</span>
+              </div>
+
+              <div class="border-b col-6 bg-white">
+                <span><i class="fas fa-history text-danger"></i> Zakonczenie umowy:</span>
+              </div>
+
+              <div class="border-b col-6 bg-color-white text-right">
+                <span>{{ a.end_date }} | za {{ a.until_expire }} dni</span>
+              </div>
+          </div>
+        </div>
+
+
+            <div class="col-12"></div>
+
+
+            
+
+          <!-- TITLE -->
+            <a class="" data-toggle="collapse" href="#orders_o_{{ a.id }}" role="button" aria-expanded="false" aria-controls="orders_o_{{ a.id }}">
+              <div class="col-12 border-b">
+              <div class="row bg-info d-flex justify-content-between">
+                <div class="col d-flex-inline text-light">
+                  <span><i class="fas fa-user-alt"></i><b> Opiekunowie</b></span>
+                  </div>
+                  <div class="col text-right">
+                  <a class="btn btn-sm btn-dark mt-1 mb-1" data-toggle="collapse" href="#orders_o_{{ a.id }}" role="button" aria-expanded="false" aria-controls="orders_o_{{ a.id }}">
+                    Wiecej
+                  </a>
+                  </div>
+                </div>
+              </div>
+            </a>
+          <!-- LISTA -->
+            <div class="col-12">
+              <div class="ls collapse p-2" id="orders_o_{{ a.id }}">
+                {% for w in workers_with_orders %}
+                  {% if w.id in orders_u and a.id in orders_au %}
+                  <div class="row mb-1 border-b">
+                    <div class=" col-6">
+                      <span><i class="fas fa-user text-danger"></i> {{ w.first_name }}</span>
+                    </div>
+                    <div class="col">
+                      <div class="d-flex justify-content-end">
+                        <div class="text-right mr-1">
+                          <span class="sum_all">{% for io in orders_uo %}{% if io.care.id == w.id and io.agreement.id == a.id %}{{ io.calculate_order }} {% endif %}{% endfor %}</span>
+                        </div>
+                        <div class="text-right">
+                          <a href="" class="btn btn-sm btn-primary text-light mt-1 mb-1 raport-btn" worker="{{ w.id }}" agreement="{{ a.id }}">Raport</a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                {% endif %}
+              {% endfor %}
+
+            <!-- Chart -->
+              <!-- TITLE -->
+                <div class="row">
+                  <div class="col">
+                    <hr>
+                  </div>
+                </div>
+              <!-- Chart object -->
+                <div class="row">
+                  <div class="col">
+                    <canvas id="OrderCounterChart_a_{{ a.id }}" height="100"></canvas>
+                  </div>
+                </div>
+            </div>
+            </div>
+
+
+          <!-- TITLE -->
+            <a class="" data-toggle="collapse" href="#orders_a_{{ a.id }}" role="button" aria-expanded="false" aria-controls="orders_a_{{ a.id }}">
+              <div class="col-12">
+                <div class="row bg-info d-flex justify-content-between">
+                  <div class="col d-flex-inline text-light">
+                    <span><i class="fas fa-ticket-alt"></i><b> Lista Zleceń</b></span>
+                  </div>
+                  <div class="col text-right">
+                  <a class="btn btn-sm btn-dark mt-1 mb-1" data-toggle="collapse" href="#orders_a_{{ a.id }}" role="button" aria-expanded="false" aria-controls="orders_a_{{ a.id }}">
+                    Wiecej
+                  </a>
+                  </div>
+                </div>
+              </div>
+              </a>
+
+          <!-- LISTA -->
+            <div class="col-12">
+              <div class="ls collapse p-2" id="orders_a_{{ a.id }}">
+              {% if orders %}
+                {% for o in orders|dictsort:"care.first_name" %}
+                {% if o.agreement.id == a.id %}
+
+                  <div class="row bg-info-light border-top border-left border-right border-bottom border-info mb-3">
+              
+                    <div class="col-12 border-bs text-right bg-info-light">
+                    {% if o.order_status.name == "Zrealizowane - rozliczone" %}
+                    <span><button class="btn btn-sm btn-success shadow-sm mt-1 mb-1" disabled><i class="fas fa-check"></i> Rozliczone</button></a></span>
+                    {% else %}
+                    <span><a class="btn btn-sm btn-primary shadow-sm mt-1 mb-1 text-light rozlicz" id="{{ o.id }}"><i class="fas fa-coins text-light"></i> Rozlicz</a></span>
+                    {% endif %}
+                      <span><a class="btn btn-sm btn-warning shadow-sm mt-1 mb-1" href="{% url 'Order_detail' o.id %}">Edycja</a></span>
+                      <span><a class="btn btn-sm btn-danger shadow-sm mt-1 mb-1" href="{% url 'Order_delete' o.id %}">Usuń</a></span>
+                    </div>
+
+                    <div class="col-6 col-lg-3 border-b">
+                      <i class="fas fa-ticket-alt text-danger"></i> <span>Nazwa:</span>
+                    </div>
+                    <div class="col-6 col-lg-3 border-b text-right">
+                      <span>&nbsp;{{ o.name }}</span>
+                    </div>
+
+                    <div class="col-6 col-lg-3 border-b">
+                      <i class="fas fa-user text-danger"></i> <span>Opiekun:</span>
+                    </div>
+                    <div class="col-6 col-lg-3 border-b text-right">
+                        <span>{{ o.care.first_name }} {{ o.care.last_name }}</span>
+                    </div>
+
+
+                    <div class="col-6 col-lg-3 border-b">
+                      <i class="fas fa-hourglass-start text-danger"></i> <span>Czas:</span>
+                    </div>
+                    <div class="col-6 col-lg-3 border-b text-right">
+                      <span>{{ o.end_datetime|timeuntil:o.start_datetime }}</span>
+                    </div>
+
+                    <div class="col-6  border-b">
+                    </div>
+
+                    <div class="col-12  border-b">
+                      <i class="fas fa-user text-danger"></i> <span>Opis:</span>
+                    </div>
+
+                    <div class="col-12 border-b font-weight-bold">
+                        <span class="opis-text">{{ o.description }}</span>
+                    </div>
+
+                    <div class="col-6 col-lg-6 border-b">
+                      <i class="fas fa-coins text-danger"></i> <span>Koszt:</span>
+                    </div>
+                    <div class="col-6 col-lg-6 border-b text-right text-danger">
+                      <i class="fas fa-coins text-danger"></i> <span class="calculate_order" worker="{{ o.care.id }}" id="{{ a.id }}">{{ o.calculate_order }}</span><span> PLN</span>
+                    </div>
+
+
+                    <div class="w-100"></div>
+                  </div>
+                {% endif %}
+                {% endfor %}
+                <div class="row border-b">
+
+                    <div class="col-12 col-lg-12 text-right bg-light text-danger bg-color7 font-weight-bold">
+                      <i class="fas fa-coins text-danger"></i> <span class="calculated_orders" id="{{ a.id }}"></span><span>&nbsp;PLN</span>
+                    </div>
+                </div>
+                {% else %}
+                  <span>Brak wpisanych zleceń</span>
+                {% endif %}
+
+        
+
+                  <div class="col-12 col-sm-6">
+
+
+                  </div>
+                </div>
+              </div>  
+                <div class="col-12">
+                </div>
+                <div class="col-12">
+                </div>  
+                <div class="mb-2"></div>
+        </div>
+
+          {% endfor %}
+        {% else %}
+          <span>Brak wpisanych umów</span>
+        {% endif %}
+        <div class="col-12 col-sm-6">
+        </div>
+      </div>
+  </section>
+
+<!-- JS -->
+  <script src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
+  <script>
+
+    // URL
+    var $rozlicz_url = "{% url 'JSON_rozlicz_zlecenie' %}"
+
+    function timeToSeconds(time) {
+      time = time.split(/:/);
+      return time[0] * 3600 + time[1] * 60 + time[2];
+    }
+    function calculate_timedelta(x,y){
+        $list_target = x
+        $span_target = y
+        $lista = []
+        
+        $(x).each(function(){
+          $lista.push(this.id)
+        });
+
+        for(x=0;x<$lista.length;x++){
+          $wartosci = []
+          $("#"+$lista[x]+y).each(function(){
+            $wartosci.push(timeToSeconds($(this).text()))
+          });
+          var $sum = $wartosci.reduce((pv,cv)=>{
+            return pv + ((parseFloat(cv)/60)/60)/100;
+          },0);
+        }
+          for(x=0;x<$lista.length;x++){
+            $total=[]
+            $("#"+$lista[x]+" span"+y).each(function(){
+              $(this).remove()
+            });
+            $("#"+$lista[x]+$list_target).empty().append("<span>"+$sum+" h.</span>")
+          }
+        
+    }
+    function get_calculated_orders(){
+      // Zmienne
+        $divs = []
+        $calculated_per_user = []
+
+        $(".agree").each(function(){
+          $divs.push(this.id)
+        });
+
+        $("div.calculated_per_user").each(function(){
+          $calculated_per_user.push(this.id)
+        });
+
+
+      // Obliczanie sum wszystkich zleceń
+        for(x=0;x<$divs.length;x++){
+          $vlist = []
+          $("#"+$divs[x]+".calculate_order").each(function(){
+            $vlist.push(parseFloat($(this).text()))
+          });
+          var $sum = $vlist.reduce((pv,cv)=>{
+            return pv + (parseFloat(cv)||0);
+          },0);
+          $("#"+$divs[x]+".calculated_orders").text($sum);
+          }
+    };
+
+    function sum_all(span_class){
+      $(span_class).each(function( index ) {
+        var $th = $(this);
+        var $array = $th.text().split(" ");
+        var $arr = $array.filter(item => item);
+        console.log($arr);
+        var $sum = $array.reduce((pv,cv)=>{
+          return pv + (parseFloat(cv)||0);
+        },0);
+        $th.html("<span class='text-danger'><i class='fas fa-coins text-danger'></i> "+$sum+" PLN"+"</span>");
+          console.log($sum);
+      });
+
+
+    }
+    // Zbierz parametry uri
+      var getUrlParameter = function getUrlParameter(sParam) {
+        var sPageURL = window.location.search.substring(1),
+          sURLVariables = sPageURL.split('&'),
+          sParameterName,
+          i;
+        for (i = 0; i < sURLVariables.length; i++) {
+          sParameterName = sURLVariables[i].split('=');
+          if (sParameterName[0] === sParam) {
+              return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+          }
+        }
+      };
+
+    // FUNC: Rozlicz zlecenie (AJAX)
+      function rozlicz_zlecenie(id,url){
+        console.log("Rozliczam zlecenie: "+id+" ...")
+        var $ids = parseInt(id);
+        $.ajax({
+          url: url,
+          dataType: 'json',
+          data: {
+            'order': $ids
+          },
+          success: function (data) {
+            console.log(data);
+            alert("Zlecenie o id: "+data.id+" uzyskało nowy status. Kliknij Ok aby przeładowac strone")
+            window.location.reload(true);
+          }
+
+      });
+      };
+    // CLICK: Rozlicz wszystkie zlecenia umowy
+      $(".rozlicz_all").on("click", function(){
+        var $ids = $(this).attr("id");
+        console.log("Wybrano umowe id: "+$ids)
+        var $s = getUrlParameter('s');
+        var $e = getUrlParameter('e');
+        console.log("Rozliczam umowe: "+$ids+", od: "+$s+" do: "+$e+" ...")
+      });
+    // CLICK: Rozlicz pojedyńcze zlecenie
+      $(".rozlicz").on("click", function(){
+        var $ids = $(this).attr("id");
+        console.log("Kliknięto zlecenie: "+$ids)
+        if (confirm('Czy napewno chcesz rozliczyć zlecenie ?')) {
+          rozlicz_zlecenie($ids,$rozlicz_url);
+        };
+      });
+    // Zablokuj/Odblokuj button rozliczania umow gdy uri
+      var $s = getUrlParameter('s');
+      var $e = getUrlParameter('e');
+      if(typeof $s == 'undefined' || typeof $e == 'undefined' ){
+        console.log("Brak zdefiniowanych zakresów w uri. Blokuje rozliczanie umów...")
+        $(".rozlicz_all").prop("disabled", true);
+        $(".rozlicz_all").removeClass("btn-primary");
+        $(".rozlicz_all").removeClass("text-light");
+        $(".rozlicz_all").addClass("text-dark");
+        $(".rozlicz_all").addClass("btn-secondary");
+        $('.rozlicz_all').attr('disabled','disabled');
+      } else {
+        console.log("Wykryto zakres filtra w uri. Odblokowuje rozliczanie umów...")
+        $(".rozlicz_all").prop("disabled", false);
+        $(".rozlicz_all").addClass("btn-primary");
+        $(".rozlicz_all").addClass("text-light");
+        $(".rozlicz_all").removeClass("btn-secondary");
+        $(".rozlicz_all").removeClass("text-dark");
+      }
+
+    // calculate_timedelta(".calculate_timedelta",".calculate_timedelta_span")
+    get_calculated_orders();
+    sum_all(".sum_all");
+   
+  </script>
+
+<!-- JS Chart -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@0.7.0"></script>
+  <script>
+    
+    // Chart
+      var $agreements = [{% for a in agreements %}parseInt('{{ a.id|escapejs }}'),{% endfor %}]
+
+      {% for a in agreements %}
+        var ctx = document.getElementById('OrderCounterChart_a_{{ a.id }}').getContext('2d');
+        var workers = [{% for w in workers_with_orders %}{% if w.id in orders_u and a.id in orders_au %}'{{ w|escapejs }}',{% endif %}{% endfor %}]
+        console.log(workers)
+        //var order_count = [{% for w in workers_with_orders %}{% if w.id in orders_u and a.id in orders_au %}'{{ w.count_orders|escapejs }}',{% endif %}{% endfor %}]
+
+      // Order value per user
+        var $orders_values = []
+        {% for w in workers_with_orders %}
+          {% if w.id in orders_u and a.id in orders_au %}
+          var $wlist = []
+          {% for o in orders %}
+            {% if o.care.id == w.id and w.id in orders_u and a.id in orders_au and o.agreement.id == a.id %}
+              var $ord = {{ o.calculate_order|escapejs }}
+              $wlist.push($ord)
+            {% endif %}
+          {% endfor %}
+            var $sum = $wlist.reduce((pv,cv)=>{
+            return pv + cv;
+          },0);
+          $orders_values.push($sum)
+          {% endif %}
+        {% endfor %}
+        console.log($orders_values)
+
+
+      // Chart object
+        var myChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+              labels: workers,
+              datasets: [
+              {
+                  label: '# Wartość zleceń [PLN]',
+                  yAxisID: 'B',
+                  data: $orders_values,
+                  backgroundColor: 'rgba(255,0,0,0.5)',
+                  borderColor: 'rgba(255,0,0,0.5)',
+                  borderWidth: 2,
+                  type: 'bar',
+                  //barThickness: 16,
+                  //barPercentage: 0.5,
+              }]
+          },
+          options: {
+            legend: {
+            position: 'bottom',
+            display: true,
+            labels: {
+            },
+          },
+          layout: {
+            padding: {
+                left: 0,
+                right: 0,
+                top: 0,
+                bottom: 0
+                }
+              },
+              scales: {
+                  xAxes: [{
+                      stacked: true,
+                      //maxBarThickness: 100,
+                      //barPercentage: 0.2
+                      
+                  }],
+                  yAxes: [{
+                      id: 'B',
+                      type: 'linear',
+                      position: 'left',
+                      stacked: true,
+                      position: 'right',
+                      ticks: {
+                          padding: 18,
+                          fontColor: '#787878',
+                          beginAtZero: true
+                      }
+                  }]
+              }
+          }
+        });
+      {% endfor %}
+      
+              
+  </script>
+
+<!-- JS: Raportbtn -->
+  <script>
+    $("a.raport-btn").each(function(index) {
+      var $th = $(this);
+      var $s = getUrlParameter('s');
+      var $e = getUrlParameter('e');
+      var $urla = "{% url 'Raport_1_order_agreement_filteredByTime' %}"+"?"+"s="+$s+"&e="+$e+"&u="+$th.attr("worker")+"&a="+$th.attr("agreement")
+      $(this).attr("href", $urla)
+    });
+  </script>
+
+<script>
+  $("a.print-btn").click(function () {
+      print($(".agree[id='"+$(this).attr("agreement")+"']").html())
+  });
+</script>
+
+<!-- JS span opis-->
+  <script>
+  $('span.opis-text').each(function () {
+      var $th = $(this)
+      var html = $th.html().split("\n");
+      $th.empty();
+      for (step = 0; step < html.length; step++) {
+        $th.append("<span>"+html[step]+"<span><br>")
+      }
+  });
+  </script>
+
+{% else %}
+<div class="container">
+  <div class="row p-1">
+    <div class="col-12">
+      <p>Nie jestes zalogowany!</p>
+      <img src="{% static 'img/gob_logo.png' %}" alt="logo"><br>
+      <span><a href="{% url 'login' %}">Zaloguj</a></span><br>
+      <span><a href="{% url 'register2' %}">Zarejestuj</a></span>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+
+
+</script>
+
+
+{% endblock %}

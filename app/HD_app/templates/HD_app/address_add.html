@@ -1,0 +1,182 @@
+<!-- templates/home.html-->
+{% extends 'HD_app/newbase.html' %}
+{% load static %}
+{% load rest_framework %}
+{% block title %}Dodaj adres firmy{% endblock %}
+
+{% if user.is_authenticated %}
+{% block modals %}
+  <!-- MODAL WINDOW -->
+    <div class="modal fade" id="modal_window" tabindex="-1" role="dialog" aria-labelledby="modal_window_title" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content shadow">
+        <!-- MODAL BODY-->
+          <div class="modal-body">
+          </div>
+        </div>
+      </div>
+    </div>
+{% endblock %}
+{% endif %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+
+
+<!-- LISTA KLIENTÓW-->
+  <section class="sec">
+    <!-- TITLE -->
+      <div class="row section_title">
+        <div class="col col-12 col-sm-6 col-md-8 col-lg-9 section_header">
+          <h2><i class="fas fa-map-marker-alt"></i> Lista adresów</h2>
+        </div>
+        <div class="col col-12 col-sm-6 col-md-4 col-lg-3 section_quicksearch">
+          <div class="d-flex justify-content-end">
+           <input type="text" class="input-sm form-control" id="k_search" placeholder="Szybkie szukanie..."></input>
+          </div>
+        </div>
+        <div class="col"><hr class="hr_title"></div>
+      </div>
+
+    <!-- KOLUMNY -->
+      <div class="row ls_columns">
+          <div class="col-6 col-xl-2 d-none d-xl-block">
+            <span>Nazwa</span>
+          </div>
+          <div class="col-6 col-xl-2 d-none d-xl-block">
+            <span>Km</span>
+          </div>
+          <div class="col-6 col-xl-2 d-none d-xl-block">
+            <span>Adres</span>
+          </div>
+          <div class="col-6 col-xl-2 d-none d-xl-block">
+            <span>Firma</span>
+          </div>
+          <div class="col-6 col-xl-2 d-none d-xl-block">
+            <span>Domyślna</span>
+          </div>
+          <div class="col-6 col-xl-2 d-none d-xl-block text-right">
+            <span>Opcje</span>
+          </div>
+          <div class="w-100"></div>
+      </div>
+
+
+    <!-- LISTA -->
+      <div class="ls">
+        {% if addresses %}
+          {% for co in addresses %}
+          <div class="row ls_elem animated fadeInDown fast">
+
+            <div class="col-6 d-xl-none">
+              <span>Nazwa</span>
+            </div>
+            <div class="col-6 col-xl-2 first_elem">
+              <span><i class="fas fa-map-marker-alt"></i>&nbsp;<b>{{ co.name }}</b></span>
+            </div>
+
+            <div class="col-6 d-xl-none">
+              <span>Km</span>
+            </div>
+            <div class="col-6 col-xl-2 middle_elem">
+              <span>{{ co.distance }}</span>
+            </div>
+
+            <div class="col-6 d-xl-none">
+              <span>Adres</span>
+            </div>
+            <div class="col-6 col-xl-2 middle_elem">
+              <span>{{ co.address }}</span>
+            </div>
+
+            <div class="col-6 d-xl-none">
+              <span>Firma</span>
+            </div>
+            <div class="col-6 col-xl-2 middle_elem">
+              <span>{{ co.company }}</span>
+            </div>
+
+            <div class="col-6 d-xl-none">
+              <span>Domyślna</span>
+            </div>
+            <div class="col-6 col-xl-2 middle_elem">
+              <span>{% if co.is_default == True %}<i class="fas fa-check text-success"></i>{% endif %}</span>
+            </div>
+
+            
+            <div class="col text-right last_elem">
+              <span><a class="btn-dice btn btn-sm btn-warning shadow-sm" href="{% url 'Address_detail' co.id %}"><i class="fas fa-edit"></i></a></span>
+              <span><a class="btn-dice btn btn-sm btn-dark shadow-sm" href="{% url 'Address_delete' co.id %}"><i class="fas fa-trash"></i></a></span>
+            </div>
+            <div class="w-100"><hr class="m-0"></div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <span>Brak wpisanych adresów</span>
+        {% endif %}
+        <div class="col-12 col-sm-6">
+        </div>
+      </div>
+  </section>
+
+
+<!-- JS-->
+  <script src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
+
+<!-- MODAL -->
+  <script>
+
+    function dissmis_modal(modal){
+      $(modal).modal("hide");
+    }
+
+    function correct_checkboxes(){
+        $("input[type='checkbox']").each(function(){
+          $(this).removeClass("form-control");
+        });
+      }
+
+    function populate_modal_body(modal_body,content){
+      modal_body.html(content);
+    }
+
+    $(".modal_button").on('click',function(){
+      var $th = $(this);
+      var $url = $th.attr("url");
+      var $pk = $th.attr("pk");
+      var $data = {"pk":$pk}
+      var $type = $th.attr("type");
+      var $data_target = $th.attr("data-target");
+      var $modal_body = $($data_target+" div.modal-body");
+      $.ajax({
+        url:$url,
+        data:$data,
+        type:$type,
+        success: function(content){
+            populate_modal_body($modal_body,content);
+            correct_checkboxes();
+        }
+      });
+    });
+  </script>
+
+{% else %}
+<div class="container">
+  <div class="row p-1">
+    <div class="col-12">
+      <p>Nie jestes zalogowany!</p>
+      <img src="{% static 'img/gob_logo.png' %}" alt="logo"><br>
+      <span><a href="{% url 'login' %}">Zaloguj</a></span><br>
+      <span><a href="{% url 'register2' %}">Zarejestuj</a></span>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+
+
+</script>
+
+
+{% endblock %}

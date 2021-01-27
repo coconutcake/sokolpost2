@@ -1,0 +1,224 @@
+<section>
+<!-- Pokaz zakonczone 1 -->
+    <div class="collapse" id="collapseCompleted">
+    <div class="">
+    <div class="animated bounceInDown fast">
+      {% if my_completed_orders %}
+      {% for order in my_completed_orders|dictsort:"order_status.name" %}
+      {% if order.order_status.id == 5 or order.order_status.id == 6 or order.order_status.id == 7  %}
+      <div class="order order_completed row bg-success mt-1 p-2 shadow border border-secondary">
+        {% endif %}
+        <div class="col-6 col-sm-3">
+          <i class="fa fa-user align-middle" aria-hidden="true"></i> 
+          <b class="align-middle">{{ order.user }}</b>
+        </div>
+        <div class="col-6 col-sm-4 border-left d-none d-sm-block">
+          {{ order.title }} 
+        </div>
+        <div class="col-6 col-sm-3 col-md-2 d-none d-md-block border-left">
+          {{ order.start_datetime|date:'' }} 
+        </div>
+        <div class="col-6 col-sm-5 col-md-3 text-right">
+        {% if order.order_status.id == 3 %}
+        <i class='mr-1 fa fa-refresh fa-spin fa-1x fa-fw'></i>
+        {% endif %}
+        {% if order.order_status.id == 5 or order.order_status.id == 6 or order.order_status.id == 7 %}
+        <i class='mr-1 fa fa-check' aria-hidden='true'></i>
+        {% endif %}
+        <a href="{{ order.attachment.url }}"><button class="btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-file" aria-hidden="true"></i>
+          Dokument</button></a>
+          <a href="{% url 'order_detail' order.id %}"><button class="btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-pencil" aria-hidden="true"></i>              Edytuj</button></a>
+          <!-- <button class="show_order_btn btn shadow-sm btn-secondary btn-sm" apiurl="{% url 'order_api-list' %}" id="{{ order.id }}" url="{% url 'orders1' %}"><i class="fa fa-info" aria-hidden="true"></i> Szczegóły</button> -->
+          <a href="{% url 'order_delete' order.id %}"><button class="btn btn-danger shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_delete' order.id %}"><i class="fa fa-trash" aria-hidden="true"></i></button></a>
+        </div>
+      </div> 
+      
+      {% if order.order_status %}
+        <div class="order row mb-5 border bg-light shadow-sm p-3">
+        <div class="col-6 p-2">
+          <b><i class="statusy fa fa-rocket" aria-hidden="true"></i>
+            Status: </b>{{ order.order_status.name }}: <br><span class="text-dark">{{ order.order_status.description }}</span>
+        </div>
+        <div class="col-12 col-sm-6 p-2">
+          <b><i class="statusy fa fa-exclamation-triangle" aria-hidden="true"></i>
+            Mój komunikat: </b><br><span class="text-dark">{{ order.komunikat }}</span>
+        </div>
+        <div class="col-12 col-sm-6 p-2">
+          <b><i class="statusy fa fa-address-card" aria-hidden="true"></i>
+            Opis klienta: </b><br><span class="text-dark">{{ order.description }}</span>
+          </div>
+      </div>
+      {% endif %}
+      {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="mt-5 mb-5">&nbsp;</div>
+</div>
+
+
+<!-- Pokaz zakonczone 2 -->
+  <div class="collapse" id="collapseCompletednoinvoice">
+    <div class="">
+    <div class="animated bounceInDown fast">
+      {% if my_completed_orders_no_invoice %}
+      {% for order in my_completed_orders_no_invoice|dictsort:"order_status.name" %}
+       <div class="order order_completed row bg-danger mt-1 p-2 shadow border border-secondary">
+        <div class="col-6 col-sm-3">
+          <i class="fa fa-user align-middle" aria-hidden="true"></i> 
+          <b class="align-middle">{{ order.user }}</b>
+        </div>
+        <div class="col-6 col-sm-4 border-left d-none d-sm-block">
+          {{ order.title }} 
+        </div>
+        <div class="col-6 col-sm-3 col-md-2 d-none d-md-block border-left">
+          {{ order.start_datetime|date:'' }} 
+        </div>
+        <div class="col-6 col-sm-5 col-md-3 text-right">
+        {% if order.order_status.id == 3 %}
+        <i class='mr-1 fa fa-refresh fa-spin fa-1x fa-fw'></i>
+        {% endif %}
+        {% if order.order_status.id == 5 or order.order_status.id == 6 or order.order_status.id == 7 %}
+        <i class='mr-1 fa fa-check' aria-hidden='true'></i>
+        {% endif %}
+        <a href="{{ order.attachment.url }}"><button class="btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-file" aria-hidden="true"></i>
+          Dokument</button></a>
+          <a href="{% url 'order_detail' order.id %}"><button class="btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-pencil" aria-hidden="true"></i>              Edytuj</button></a>
+          <!-- <button class="show_order_btn btn shadow-sm btn-secondary btn-sm" apiurl="{% url 'order_api-list' %}" id="{{ order.id }}" url="{% url 'orders1' %}"><i class="fa fa-info" aria-hidden="true"></i> Szczegóły</button> -->
+          <a href="{% url 'order_delete' order.id %}"><button class="btn btn-danger shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_delete' order.id %}"><i class="fa fa-trash" aria-hidden="true"></i></button></a>
+        </div>
+      </div> 
+      
+      
+        
+      {% if order.order_status %}
+        <div class="order row mb-5 border bg-light shadow-sm p-3">
+        <div class="col-6 p-2">
+          <b><i class="statusy fa fa-rocket" aria-hidden="true"></i>
+            Status: </b>{{ order.order_status.name }}: <br><span class="text-dark">{{ order.order_status.description }}</span>
+        </div>
+        <div class="col-12 col-sm-6 p-2">
+          <b><i class="statusy fa fa-exclamation-triangle" aria-hidden="true"></i>
+            Mój komunikat: </b><br><span class="text-dark">{{ order.komunikat }}</span>
+        </div>
+        <div class="col-12 col-sm-6 p-2">
+          <b><i class="statusy fa fa-address-card" aria-hidden="true"></i>
+            Opis klienta: </b><br><span class="text-dark">{{ order.description }}</span>
+        </div>
+      </div>
+      {% endif %}
+      {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+  <div class="mt-5 mb-5">&nbsp;</div>
+  </div>
+
+  <!-- Pokaz zakonczone 3 -->
+  <div class="collapse" id="collapseCompletedinvoice">
+    <div class="">
+    <div class="animated bounceInDown fast ">
+      {% if my_completed_orders_invoice %}
+      {% for order in my_completed_orders_invoice|dictsort:"order_status.name" %}
+       <div class="order order_completed row bg-success mt-1 p-2 shadow border border-secondary">
+        <div class="col-6 col-sm-3">
+          <i class="fa fa-user align-middle" aria-hidden="true"></i> 
+          <b class="align-middle">{{ order.user }}</b>
+        </div>
+        <div class="col-6 col-sm-4 border-left d-none d-sm-block">
+          {{ order.title }} 
+        </div>
+        <div class="col-6 col-sm-3 col-md-2 d-none d-md-block border-left">
+          {{ order.start_datetime|date:'' }} 
+        </div>
+        <div class="col-6 col-sm-5 col-md-3 text-right">
+        {% if order.order_status.id == 3 %}
+        <i class='mr-1 fa fa-refresh fa-spin fa-1x fa-fw'></i>
+        {% endif %}
+        {% if order.order_status.id == 5 or order.order_status.id == 6 or order.order_status.id == 7 %}
+        <i class='mr-1 fa fa-check' aria-hidden='true'></i>
+        {% endif %}
+        <a href="{{ order.attachment.url }}"><button class="btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-file" aria-hidden="true"></i>
+          Dokument</button></a>
+          <a href="{% url 'order_detail' order.id %}"><button class="btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-pencil" aria-hidden="true"></i>              Edytuj</button></a>
+          <!-- <button class="show_order_btn btn shadow-sm btn-secondary btn-sm" apiurl="{% url 'order_api-list' %}" id="{{ order.id }}" url="{% url 'orders1' %}"><i class="fa fa-info" aria-hidden="true"></i> Szczegóły</button> -->
+          <a href="{% url 'order_delete' order.id %}"><button class="btn btn-danger shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_delete' order.id %}"><i class="fa fa-trash" aria-hidden="true"></i></button></a>
+        </div>
+      </div> 
+      
+      {% if order.order_status %}
+        <div class="order row mb-5 border bg-light shadow-sm p-3">
+        <div class="col-6 p-2">
+          <b><i class="statusy fa fa-rocket" aria-hidden="true"></i>
+            Status: </b>{{ order.order_status.name }}: <br><span class="text-dark">{{ order.order_status.description }}</span>
+        </div>
+        <div class="col-12 col-sm-6 p-2">
+          <b><i class="statusy fa fa-exclamation-triangle" aria-hidden="true"></i>
+            Mój komunikat: </b><br><span class="text-dark">{{ order.komunikat }}</span>
+        </div>
+        <div class="col-12 col-sm-6 p-2">
+          <b><i class="statusy fa fa-address-card" aria-hidden="true"></i>
+            Opis klienta: </b><br><span class="text-dark">{{ order.description }}</span>
+        </div>
+      </div>
+      {% endif %}
+      {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+  <div class="mt-5 mb-5">&nbsp;</div>
+  </div>
+
+<!-- Pokaz w realizacji -->
+<div class="animated bounceInUp p-3">
+  <div id="fresh-div" class="fresh-div mt-5">
+  {% if myorders %}
+  {% for order in myorders|dictsort:"order_status.name" %}
+          <div class="order row bg-warning mt-1 p-2 shadow">
+          <div class="col-6 col-sm-3">
+            <i class="fa fa-user align-middle" aria-hidden="true"></i> 
+            <span class="align-middle">{{ order.user }}</span>
+          </div>
+          <div class="col-6 col-sm-4 border-left d-none d-sm-block">
+            <span>{{ order.title }} </span>
+          </div>
+          <div class="col-6 col-sm-3 col-md-2 d-none d-md-block border-left">
+            <span>{{ order.start_datetime|date:'' }}</span>
+          </div>
+          <div class="col-6 col-sm-5 col-md-3 text-right">
+          {% if order.order_status.id == 3 %}
+          <i class='mr-1 fa fa-refresh fa-spin fa-1x fa-fw'></i>
+          {% endif %}
+          {% if order.order_status.id == 5 or order.order_status.id == 6 or order.order_status.id == 7 %}
+          <i class='mr-1 fa fa-check' aria-hidden='true'></i>
+          {% endif %}
+          <a href="{{ order.attachment.url }}"><button class="btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-file" aria-hidden="true"></i>
+            Dokument</button></a>
+            <a href="{% url 'order_detail' order.id %}"><button class="btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-pencil" aria-hidden="true"></i>              Edytuj</button></a>
+            <a href="{% url 'order_delete' order.id %}"><button class="btn btn-danger shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_delete' order.id %}"><i class="fa fa-trash" aria-hidden="true"></i></button></a>
+          </div>
+        </div> 
+
+        {% if order.order_status %}
+          <div class="order row mb-5 border bg-light rounded shadow-sm p-3">
+          <div class="col-6 p-2">
+            <span><i class="statusy fa fa-rocket" aria-hidden="true"></i>
+              Status: </span>{{ order.order_status.name }}: <br><span class="text-dark">{{ order.order_status.description }}</span>
+          </div>
+          <div class="col-12 col-sm-6 p-2">
+            <span><i class="statusy fa fa-exclamation-triangle" aria-hidden="true"></i>
+              Mój komunikat: </span><br><span class="text-dark">{{ order.komunikat }}</span>
+          </div>
+          <div class="col-12 col-sm-6 p-2">
+            <span><i class="statusy fa fa-address-card" aria-hidden="true"></i>
+              Opis klienta: </span><br><span class="text-dark">{{ order.description }}</span>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+      {% endif %}
+  </div>
+  </div>
+
+</section>

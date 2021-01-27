@@ -1,0 +1,71 @@
+<!-- templates/home.html-->
+{% extends 'HD_app/base.html' %}
+{% load static %}
+{% load rest_framework %}
+{% block title %}Dodaj nowy typ realizacji{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+    <div class="row p-3">
+    <div class="col-12 col-md-6 mb-5 p-3">
+        <h1><i class="fa fa-plus color1" aria-hidden="true"></i> Dodaj typ realizacji</h1>
+        <hr>
+
+        <form id="add_implementation" action="{% url 'implementations' %}" method="post">
+            {% csrf_token %}
+            {% render_form form %}
+            <input type="submit" value="Zapisz" class="btn btn-danger mt-3 shadow">
+        </form>
+
+    </div>
+
+
+    
+    <div class="col-12 col-md-6 p-3">
+      <h1><i class="fa fa-list color1" aria-hidden="true"></i>
+        Typy realizacji</h1>
+      <hr>
+      <div class="fresh-div" id="customer_lst">
+
+      {% if implementations %}
+        {% for i in implementations %}
+        <div class="d-flex justify-content-center">
+          <div class="col">
+            <p id="{{ i.id }}">{{ i }}</p>
+          </div>
+          <div class="col">
+
+          </div>
+          <div class="col text-right">
+            <button class="btn btn-danger cancel_order" id="{{ i.id }}" url="{% url 'implementations' %}"><i class="fa fa-trash" aria-hidden="true"></i> Usuń</button>
+          </div>
+        </div>
+        {% endfor %}
+      {% endif %}
+
+        <!-- {% if customers %}
+          {% for customer in customers %}
+            <p id="{{ customer.id }}">{{ customer }}</p>
+          {% endfor %}
+        {% endif %} -->
+      </div>
+  </div>
+</div>
+
+
+{% else %}
+
+<div class="container">
+  <div class="row p-1">
+    <div class="col-12">
+      <p>Nie jestes zalogowany!</p>
+      <img src="{% static 'img/gob_logo.png' %}" alt="logo"><br>
+      <span><a href="{% url 'login' %}">Zaloguj</a></span><br>
+      <span><a href="{% url 'register2' %}">Zarejestuj</a></span>
+    </div>
+  </div>
+</div>
+
+{% endif %}
+{% endblock %}

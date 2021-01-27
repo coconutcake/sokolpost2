@@ -1,0 +1,167 @@
+<!-- templates/home.html-->
+{% extends 'HD_app/newbase.html' %}
+{% load static %}
+{% load rest_framework %}
+{% block title %}Profil | SOKÓŁ{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+<!-- Header -->
+<page_header>
+<div class="row p-2">
+  <div class="col-12 header-div">
+    <div class="d-flex justify-content-between">
+      <div class="" id="">
+        <h2 class=""><i class="fa fa-user text-danger" aria-hidden="true"></i>
+          Profil użytkownika</h2>
+      </div>
+    </div>
+
+  </div>
+</div>
+<hr class="mb-3 mt-0">
+</page_header>
+<!-- Content -->
+
+<!-- Content -->
+<section style="display:none;">
+<div class="row p-2">
+
+<div class="col-12 col-sm-6 col-md-4 m-auto text-center animated zoomIn fast">
+
+<div class="thumb">
+  <img class="rounded-circle border border-secondary shadow-sm" src="{% if user.profile.thumb %}{{ user.profile.thumb.url }}{% else %}{% static 'img/logogb.jpg' %}{% endif %}"/>
+</div>
+
+
+<div class="mt-4 mb-4">
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{ form_thumb.thumb }}
+  <br>
+  
+  <input type="submit" value="Wyślij" name="form_thumb" class="btn btn-danger mt-3 shadow">
+</form>
+</div>
+
+</div>
+
+
+  <div class="p-2 animated fadeInDown col-12 col-sm-6 col-md-8 content-div">
+    <div class="section_header">
+      <h4 class=""><i class="fa fa-info" aria-hidden="true"></i>
+        Szczegóły:</h4><hr>
+    </div>
+
+      <p class=""><b>ID: </b>{{ user.id }}</p class="ih">
+      
+      <p class=""><b>Grupa: </b> 
+
+        {% if user.is_staff %}
+        <span class="text-dark border border-secondary p-1 shadow-sm rounded-sm bg-warning">
+          <i class="fa fa-users" aria-hidden="true"></i> W zespole
+        </span>
+        {% else %}
+        <span class="text-light border border-secondary p-1 shadow-sm rounded-sm bg-success">
+          <i class="fa fa-users" aria-hidden="true"></i> Użytkownik
+        </span>
+        {% endif %}
+        
+        {% if user.is_superuser %}
+        <span class="text-light border border-secondary p-1 shadow-sm rounded-sm bg-danger">
+          <i class="fa fa-users" aria-hidden="true"></i> Superuser
+        </span>
+        {% endif %}
+      </p>
+      
+      
+      <p class=""><b>Imię:</b> {{ user.first_name }}</p>
+      <p class=""><b>Nazwisko: </b>{{ user.last_name }}</p>
+      <p class=""><b>Mój opiekun:</b> {{ user.profile.care }}</p>
+      <p class=""><b>Email:</b> {{ user.email }}</p>
+      {% if token %}
+      <span class=""><b>Token API: </b></span>
+      <input class="mb-2 w-auto border rounded border-secondary" type="text" value="{{ token.key }}" id="copy_input" readonly>
+      <button class="btn btn-sm shadow-sm btn-danger" onclick="copy()"><i class="fa fa-clipboard" aria-hidden="true"></i> Skopiuj</button>
+      {% endif %}
+    </div>
+    
+    
+    
+    
+  </div>
+
+
+
+</section>
+
+
+<section style="display:none;">
+  <div class="col-12 p-0">
+    <div class="section_header">
+      <h4 class="">
+        <i class="fa fa-cog" aria-hidden="true"></i>
+        
+        Ustawienia:</h4><hr>
+    </div>
+    <form method="post">
+      {% csrf_token %}
+      {{ user_settings.as_p }}
+    <input type="submit" value="Zapisz" name="user_settings" class="btn btn-danger mt-3 shadow">
+  </form><!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+</div>
+</section>
+
+
+
+
+<!-- <div class="row">
+<div class="col">
+
+<div class="d-flex justify-content-center mt-5">
+  <div class="col-4 text-center border-bottom border-danger m-2 ih4">
+    <h2 class="ih p-2 text-danger">{% if umowy %}{{ umowy }}{% else %}Brak umów{% endif %}</h2><span>Umowy</span>
+    <hr>
+  </div>
+  <div class="col-4 text-center border-bottom border-warning m-2 ih4">
+    <h2 class="ih p-2 text-warning">{% if w_realizacji %}{{ w_realizacji }}{% else %}0{% endif %}</h2><span>Zlecenia w realizacji</span>
+    <hr>
+  </div>
+  <div class="col-4 text-center border-bottom border-success m-2 ih4">
+    <h2 class="ih p-2 text-success">{% if zrealizowane %}{{ zrealizowane }}{% else %}0{% endif %}</h2><span>Zlecenia zakończone</span>
+    <hr>
+  </div>
+
+</div>
+</div>
+</div> -->
+
+{% else %}
+
+<div class="container">
+  <div class="row p-1">
+    <div class="col-12">
+      <p>Nie jestes zalogowany!</p>
+      <img src="{% static 'img/gob_logo.png' %}" alt="logo"><br>
+      <span><a href="{% url 'login' %}">Zaloguj</a></span><br>
+      <span><a href="{% url 'register2' %}">Zarejestuj</a></span>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<script>
+//Kopiuj do schowka
+function copy() {
+  var copyText = document.getElementById("copy_input");
+  copyText.select();
+  copyText.setSelectionRange(0, 99999)
+  document.execCommand("copy");
+  console.log("Copied the text: " + copyText.value);
+}
+</script>
+
+{% endblock %}
+
+

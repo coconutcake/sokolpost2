@@ -1,0 +1,1 @@
+[{"model": "HD_app.documenttype", "pk": 1, "fields": {"name": "Umowa", "description": "Opis umowy"}}, {"model": "HD_app.documenttype", "pk": 2, "fields": {"name": "Projekt", "description": "Opis projektu"}}, {"model": "HD_app.documenttype", "pk": 3, "fields": {"name": "Inny", "description": ""}}]

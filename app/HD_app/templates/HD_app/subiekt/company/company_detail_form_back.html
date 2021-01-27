@@ -1,0 +1,237 @@
+<!-- FORMULARZ -->
+    <section class="modal_section">
+    <!-- TITLE -->
+        <div class="row section_title">
+        <div class="col m-0 p-0">
+            <h2><i class="fas fa-building"></i> Firma </h2>
+        </div>
+        </div>
+
+    <!-- FORM CONTAINER-->
+        <div class="row mt-3">
+        <div class="col m-0 p-0">
+
+            <form method="POST" action="{% url 'SubiektCompany_detail' %}" pk="{{ form.instance.id }}" id="company_detail_form">
+            {% csrf_token %}
+            <!-- TABS -->
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="primary-tab" data-toggle="tab" href="#primary" role="tab" aria-controls="primary" aria-selected="true">Podstawowe</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="additional-tab" data-toggle="tab" href="#additional" role="tab" aria-controls="additional" aria-selected="false">Adres w subiekcie</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" id="address-tab" data-toggle="tab" href="#address" role="tab" aria-controls="address" aria-selected="false">Adresy</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="agreement-tab" data-toggle="tab" href="#agreement" role="tab" aria-controls="agreement" aria-selected="false">Umowy</a>
+                </li>
+
+
+                </ul>
+            <!-- TABS: CONTENT-->
+                <div class="tab-content" id="myTabContent">
+                <!-- TABS: PODSTAWOWE-->
+                    <div class="tab-pane fade show active" id="primary" role="tabpanel" aria-labelledby="primary-tab">
+                        <div class="row">
+                        <div class="col-12">
+                        {% for field in form %}
+                            {% if forloop.counter < 5  %}
+                            <div class="field-group">
+                            <label>{{ field.label }}</label> {{ field }}
+                            {{ field.errors }}
+                            {% if field.help_text %}
+                                <span class="helptext">&nbsp;{{ field.help_text }}  </span>
+                            {% endif %}
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                        </div>
+                        </div>
+                    </div>
+                    
+                <!-- TABS: Adres w subiekcie -->
+                    <div class="tab-pane fade" id="additional" role="tabpanel" aria-labelledby="additional-tab">
+                        <div class="row">
+                        <div class="col-12">
+                            {% for field in form %}
+                            {% if forloop.counter >= 5 %}
+                            <div class="field-group">
+                                <label>{{ field.label }}</label> {{ field }}
+                                {{ field.errors }}
+                                {% if field.help_text %}<br>
+                                <span class="helptext">&nbsp;{{ field.help_text }}  </span>
+                                {% endif %}
+                                </div>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                        </div>
+                    </div>
+
+                <!-- TABS: Adresy django -->
+                    <div class="tab-pane fade" id="address" role="tabpanel" aria-labelledby="address-tab">
+                        {% if addresses %}
+                            <div class="row">
+                                <div class="col-12 pt-0 pl-4 pr-4">
+                                    <div class="row mb-1 pb-1 border-bottom">
+                                        <div class="col-9 font-weight-bold">
+                                            <span>adres</span>
+                                        </div>
+                                        <div class="col-3 font-weight-bold text-right">
+                                            <span>domyślny</span>
+                                        </div>
+                                    </div>
+                                    {% for address in addresses %}
+                                    <div class="row ls_elem_mini border-bottom pt-1 pb-1">
+                                        <div class="col-9">
+                                            <span>{{ address.name }}, {{ address.address }}, {{ address.city }}, {{ address.distance }}km</span>
+                                        </div>
+                                        <div class="col-3 text-right">
+                                            <span>{% if address.is_default == True %}<i class="fas text-success fa-check"></i>{% else %}<i class="fas text-danger fa-times"></i>{% endif %}</span>
+                                        </div>
+
+                                    </div>
+                                    {% endfor %}
+                                
+                                </div>
+                            </div>
+                        {% else %}
+                            <span>Brak przypisanych adresów</span>
+                        {% endif %}
+                    </div>
+                <!-- TABS: Umowy django -->
+                    <div class="tab-pane fade" id="agreement" role="tabpanel" aria-labelledby="agreement-tab">
+                        {% if agreements %}
+                            <div class="row">
+                                <div class="col-12 pt-0 pl-4 pr-4">
+                                    {% for agreement in agreements %}
+                                    <div class="row border-bottom ls ls_elem_mini pt-1 pb-1">
+                                        <div class="col-6 font-weight-bold">
+                                            <span>{{ agreement.name }}</span>
+                                        </div>
+                                        <div class="col-6 text-right ">
+                                            <span>{% if agreement.is_default == True %}<span class="text-success"><i class="fas text-success fa-check"></i>&nbsp;Aktywna</span>{% else %}<span class="text-danger"><i class="fas text-danger fa-times"></i>&nbsp;Nieaktywna</span>{% endif %}</span>
+                                        </div>
+                                        <div class="col-6">
+                                            <span>Start:</span>
+                                        </div>
+                                        <div class="col-6 text-right">
+                                            <span>{{ agreement.start_date }}</span>
+                                        </div>
+                                        <div class="col-6">
+                                            <span>Stop:</span>
+                                        </div>
+                                        <div class="col-6 text-right">
+                                            <span>{{ agreement.end_date }}</span>
+                                        </div>
+                                        <div class="col-6">
+                                            <span>Pakiet:</span>
+                                        </div>
+                                        <div class="col-6 text-right">
+                                            <span>{{ agreement.pakiet.name }}</span>
+                                        </div>
+
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% else %}
+                            <span>Brak przypisanych umów</span>
+                        {% endif %}
+                    </div>
+
+                
+                
+            </div>
+            <!-- SUBMITION -->
+                <div class="mt-4">
+                {% comment %} <a value="Zapisz" successurl="{% url 'SubiektCompany_detail' %}" modal="#modal_window" href="#" class="btn btn-sm btn-primary btn-block mt-3 shadow-sm ajax_post" form="#company_detail_form"><i class="fas fa-save text-light"></i>&nbsp;Zapisz</a> {% endcomment %}
+                
+                </div>
+
+            </form>
+        </div>
+        </div>
+    </section>
+
+<!-- JS-->
+  <script>
+    function correct_checkboxes(){
+        $("input[type='checkbox']").each(function(){
+          $(this).removeClass("form-control");
+        });
+      }
+    function populate_modal_body(modal_body,content){
+      modal_body.html(content);
+    }
+    function dissmis_modal(modal){
+      $(modal).modal("hide");
+    }
+    function redirect(url){
+        window.location.replace(url);
+    }  
+  </script>
+
+<!-- JS AJAX: POST -->
+  <script>
+    $("a.ajax_post").on('click',function(){
+      console.log("CLICK");
+      var $th = $(this);
+      var $target = $th.attr("form");
+      var $success_url = $th.attr("successurl");
+      var $form = $($target);
+      var $url = $form.attr("action");
+      var $method = $form.attr("method")
+      var $modal_window = $th.attr("modal");
+      var $data = $form.serialize();
+      var $modal_body = $("div.modal-body");
+      $.ajax({
+        url: $url,
+        data: $data,
+        type:$method,
+        success: function (data) {
+            console.log(data)
+            if(data.status=="OK"){
+                dissmis_modal($modal_window);
+                redirect($success_url);
+            } else {
+                populate_modal_body($modal_body,data);
+                correct_checkboxes();
+            }        
+        }
+      });
+    });
+
+    $("a.ajax_delete").on('click',function(){
+        console.log("CLICK");
+        if (confirm('Czy napewno chcesz usunąć?')) {
+        var $th = $(this);
+        var $success_url = $th.attr("successurl");
+        var $url = $th.attr("url");
+        var $method = "POST"
+        var $modal_window = $th.attr("modal");
+        var $pk = {"pk":$th.attr("pk")}
+        var $modal_body = $("div.modal-body");
+        $.ajax({
+            url: $url,
+            data: $pk,
+            type:$method,
+            success: function (data) {
+                console.log(data)
+                if(data.status=="OK"){
+                    dissmis_modal($modal_window);
+                    redirect($success_url);
+                } else {
+                    populate_modal_body($modal_body,data);
+                    correct_checkboxes();
+                }        
+            }
+        });
+        } else {
+            console.log('Canceled');
+        }    
+    });
+  </script>

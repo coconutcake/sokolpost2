@@ -1,0 +1,226 @@
+<!-- templates/home.html-->
+{% extends 'HD_app/base.html' %}
+{% load static %}
+{% load rest_framework %}
+{% block title %}Zlecenia | SOKÓŁ{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+
+<!-- Modal ADD order -->
+<div class="modal fade" id="add_order_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content bg-noisy p-1">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle"><i class="fa fa-plus color1" aria-hidden="true"></i> Dodawanie zlecenia</h5>
+        <button type="button" class="close close_modal_button" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        
+        <form id="add_order" action="{% url 'orders' %}" method="post">
+
+          {% csrf_token %}
+          {% render_form form %}
+            <!-- <input type="submit" value="Zapisz" class="btn btn-danger mt-3 shadow"> -->
+        
+
+
+      </div>
+      <div class="modal-footer">
+        <input type="submit" value="Zapisz" class="btn btn-danger mt-3 shadow">
+        <button type="button" class="btn btn-secondary mt-3 shadow close_modal_button" data-dismiss="modal">Zamknij</button>
+        
+      </form><!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal detail order -->
+<div class="modal fade" id="update_order_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered " role="document">
+    <div class="modal-content bg-noisy p-1">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle"><i class="fa fa-plus color1" aria-hidden="true"></i> Edycja zlecenia</h5>
+        <button type="button" class="close close_modal_button" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        
+        <form id="update_order" action="{% url 'orders' %}" method="post">
+
+          {% csrf_token %}
+          {% render_form form %}
+            <!-- <input type="submit" value="Zapisz" class="btn btn-danger mt-3 shadow"> -->
+        
+
+
+      </div>
+      <div class="modal-footer">
+        <input type="submit" value="Zapisz" class="btn btn-danger mt-3 shadow">
+        <button type="button" class="btn btn-secondary mt-3 shadow close_modal_button" data-dismiss="modal">Zamknij</button>
+        
+      </form><!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal show order -->
+<div class="modal fade" id="order_detail" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered " role="document">
+    <div class="modal-content bg-noisy p-1">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle"><i class="fa fa-plus color1" aria-hidden="true"></i> Zlecenie</h5>
+        <button type="button" class="close close_modal_button" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        
+
+        
+
+
+      </div>
+      <div class="modal-footer">
+       
+        <button type="button" class="btn btn-secondary mt-3 shadow close_modal_button" data-dismiss="modal">Zamknij</button>
+        
+     
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<div class="row p-3">
+    <div class="col-12 p-3">
+      <div class="d-flex justify-content-between">
+        <div class="" id="">
+          <h1><i class="fa fa-file-text-o bg-color4 rounded text-danger" aria-hidden="true"></i>
+            Moje zlecenia</h1> 
+
+        </div>
+        <button class="btn btn-success shadow-sm open_modal_button" id="add_order_btn" type="button">
+         Dodaj
+        </button>
+
+      </div>
+      <hr>
+        <div class="row mb-1">
+          <div class="col-4 col-sm-3">
+              <b><p>Klient:<p></b>
+          </div>
+          <div class="col-4 col-sm-3">
+            <b><p>Tytuł:</p></b> 
+          </div>
+          <div class="col col-sm-3 d-none d-sm-block">
+            <b><p>Data rozpoczęcia:</p></b> 
+          </div>
+          <div class="col-4 col-sm-3">
+            <b><p></p></b> 
+          </div>
+        </div>
+      
+<div class="fresh-div">
+        {% if orders %}
+
+        {% for order in orders %}
+
+        {% if order.order_status.name == 'Zrealizowane - nierozliczone' %}
+        <div class="row bg-success rounded mt-1 p-1 shadow-sm border border-secondary">
+
+          <div class="col-4 col-sm-3">
+            
+            <i class="fa fa-user align-middle" aria-hidden="true"></i> 
+            <b class="align-middle">{{ order.customer }}</b>
+          </div>
+          <div class="col-4 col-sm-3 border-left">
+            {{ order.title }} 
+          </div>
+          <div class="col col-sm-3 d-none d-sm-block border-left">
+            {{ order.start_datetime|date:'' }} 
+          </div>
+          <div class="col-4 col-sm-3 text-right">
+            <!-- <button class="success_order btn btn-success btn-sm p-1" id="{{ order.id }}" url="{% url 'orders' %}"><i class="fa fa-check" aria-hidden="true"></i></button> -->
+            <button class="update_order_btn btn btn-secondary btn-sm" id="{{ order.id }}" url="{% url 'orders' %}"><i class="fa fa-info" aria-hidden="true"></i></button>
+            <button class="cancel_order btn btn-danger btn-sm" id="{{ order.id }}" url="{% url 'orders' %}"><i class="fa fa-trash" aria-hidden="true"></i></button>
+          </div>
+        </div> 
+
+        {% else %}
+        <div class="row bg-light rounded mt-1 p-1 shadow-sm">
+          <div class="col-4 col-sm-3 bg-color5 ">
+            <i class="fa fa-user align-middle" aria-hidden="true"></i> 
+            <b class="align-middle">{{ order.customer }}</b>
+          </div>
+          <div class="col-4 col-sm-3 border-left">
+            {{ order.title }} 
+          </div>
+          <div class="col col-sm-3 d-none d-sm-block border-left">
+            {{ order.start_datetime|date:'' }} 
+          </div>
+          <div class="col-4 col-sm-3 text-right">
+            <!-- <button class="success_order btn btn-success btn-sm p-1" id="{{ order.id }}" url="{% url 'orders' %}"><i class="fa fa-check" aria-hidden="true"></i></button> -->
+            <button class="update_order_btn btn btn-secondary btn-sm" id="{{ order.id }}" url="{% url 'orders' %}"><i class="fa fa-info" aria-hidden="true"></i></button>
+            <button class="cancel_order btn btn-danger btn-sm" id="{{ order.id }}" url="{% url 'orders' %}"><i class="fa fa-trash" aria-hidden="true"></i></button>
+          </div>
+        </div> 
+
+        {% endif %}
+
+        {% endfor %}
+        {% endif %}
+</div>        
+        
+    </div>
+</div>
+
+<div id='calendar' class="bg-calendar p-3 rounded shadow-sm"></div>
+<script>
+//FullCalendar
+var calendar = ''
+document.addEventListener('DOMContentLoaded', function() {
+  var calendarEl = document.getElementById('calendar');
+
+  calendar = new FullCalendar.Calendar(calendarEl, {
+    
+    plugins: [ 'dayGrid' ],
+    defaultView: 'dayGridWeek',
+    events: [
+    {% if orders %}
+      {% for order in orders %}
+    {
+      title:"{{ order.title }}",
+      start: "{{ order.start_datetime|date:'Y-m-d H:m' }}",
+      end: "{{ order.end_datetime|date:'Y-m-d H:m' }}",
+    },
+    {% endfor %}
+    {% endif %}
+    ]
+  });
+  calendar.render();
+});
+</script>
+
+{% else %}
+
+<div class="container">
+  <div class="row p-1">
+    <div class="col-12">
+      <p>Nie jestes zalogowany!</p>
+      <img src="{% static 'img/gob_logo.png' %}" alt="logo"><br>
+      <span><a href="{% url 'login' %}">Zaloguj</a></span><br>
+      <span><a href="{% url 'register2' %}">Zarejestuj</a></span>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

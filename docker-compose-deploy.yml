@@ -1,0 +1,77 @@
+version: "3"
+
+services:
+    postgres:
+        image: postgres
+        container_name: postgresapp
+        restart: always
+        environment:
+            POSTGRES_DB: app         
+            POSTGRES_USER: django_app
+            POSTGRES_PASSWORD: asdasd123
+        ports:
+            - 5432:5432
+        
+    adminer:
+        image: adminer
+        container_name: adminer
+        restart: always
+        ports:
+            - 8080:8080
+        depends_on:
+            - postgres
+
+    # db:
+    #     image: mysql:5.7
+    #     container_name: db
+    #     ports:
+    #       - '3306:3306'
+    #     environment:
+    #        MYSQL_DATABASE: 'test'
+    #        MYSQL_ROOT_PASSWORD: 'asdasd123'
+    #     command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
+
+    app:
+        build:
+            context: .
+            dockerfile: ./dockerfiles/python/Dockerfile
+        container_name: app
+        volumes: 
+            - static:/app/static
+            - media:/app/media
+        environment:
+            - ADDRESS=0.0.0.0
+            - PORT=8877
+            - DB_ENGINE=django.db.backends.postgresql
+            - DB_NAME=app
+            - DB_USER=django_app
+            - DB_PASSWORD=asdasd123
+            - DB_ADDRESS=postgresapp
+            - DB_PORT=5432
+            - DB_TESTS=tests
+
+        expose:
+            - "8877"
+        command: >
+            ../wait-for-it.sh postgresapp:5432 --timeout=30 --strict -- /run.sh
+        depends_on:
+            - postgres
+
+    nginx:
+        container_name: nginx
+        restart: always
+        build:
+            context: .
+            dockerfile: ./dockerfiles/nginx/Dockerfile
+        volumes: 
+            - static:/static/
+            - media:/media/
+        ports: 
+            - "88:88"
+            - "4433:4433"
+        depends_on: 
+            - app
+        
+volumes: 
+    static:
+    media:

@@ -1,0 +1,878 @@
+<!-- templates/home.html-->
+{% extends 'HD_app/newbase.html' %}
+{% load static %}
+{% load rest_framework %}
+{% block title %}Zlecenia{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+{% if user.is_staff %}
+  
+<!-- Header -->
+<page_header>
+<div class="row p-2">
+  <div class="col-12 header-div">
+    <div class="d-flex justify-content-between">
+      <div class="" id="">
+        <h2 class=""><i class="fa fa-clipboard text-danger" aria-hidden="true"></i>
+Zlecenia</h2>
+        
+      </div>
+      <div class="" id="">
+      <a href="{% static 'files/Stool3.exe' %}"><button class="animated bounceInDown btn btn-danger shadow-sm" type="button">
+          <i class="text-light fas fa-download" aria-hidden="true"></i> Pobierz STool</button></a>
+        <button class="animated bounceInDown btn btn-success shadow-sm open_modal_button" id="add_order_btn" type="button">
+          <i class="text-light rotate-center fa fa-plus" aria-hidden="true"></i> Dodaj zlecenie</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+<hr class="mb-3 mt-0">
+</page_header>
+
+<div class="divitor">&nbsp;</div>
+
+
+
+
+<!-- Modale -->
+<modals id="sekcja_modale">
+<!-- Modal ADD order -->
+<div class="modal fade" id="add_order_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content bg-noisy p-1">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle"><i class="fa fa-plus color1" aria-hidden="true"></i> Dodawanie zlecenia</h5>
+        <button type="button" class="close close_modal_button" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="add_order" action="{% url 'orders1' %}" method="post">
+          {% csrf_token %}
+          {{ form.as_p }}
+            <!-- <input type="submit" value="Zapisz" class="btn btn-danger mt-3 shadow"> -->
+      </div>
+      <div class="modal-footer">
+        <input type="submit" value="Zapisz" class="btn btn-danger mt-3 shadow">
+        <button type="button" class="btn btn-secondary mt-3 shadow close_modal_button" data-dismiss="modal">Zamknij</button>
+      </form><!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal detail order -->
+<div class="modal fade" id="update_order_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered " role="document">
+    <div class="modal-content bg-noisy p-1">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle"><i class="fa fa-plus color1" aria-hidden="true"></i> Edycja zlecenia</h5>
+        <button type="button" class="close close_modal_button" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="update_order" action="{% url 'orders1' %}" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          {{ form.as_p }}
+            <!-- <input type="submit" value="Zapisz" class="btn btn-danger mt-3 shadow"> -->
+      </div>
+      <div class="modal-footer">
+        <input type="submit" value="Zapisz" class="btn btn-danger mt-3 shadow">
+        <button type="button" class="btn btn-secondary mt-3 shadow close_modal_button" data-dismiss="modal">Zamknij</button>
+      </form><!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal show order -->
+<div class="modal fade" id="order_detail" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered " role="document">
+    <div class="modal-content bg-noisy p-1">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle"> Zlecenie</h5>
+        <button type="button" class="close close_modal_button" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      </div>
+      <div class="modal-footer">
+        <a id="modyfikuj" href=""><button type="button" class="btn btn-warning mt-3 shadow"><i class="fa fa-pencil" aria-hidden="true"></i> Modifikuj</button></a>
+        <button type="button" class="btn btn-secondary mt-3 shadow close_modal_button" data-dismiss="modal">Zamknij</button>
+      </div>
+    </div>
+  </div>
+</div>
+</modals>
+
+
+<!-- Formularz search -->
+<!-- <section id="sekcja_search_q" style="display:none;">
+  <h4>Zaawansowane szukanie</h4>
+  <div class="row animated fadeInDown">
+    <div class="col-4 col-sm-3 d-none d-sm-block">
+        <b><p class="">Klient:<p></b>
+
+    </div>
+    <div class="col-4 col-sm-3 d-none d-sm-block">
+      <b><p class="">Tytuł:</p></b> 
+
+    </div>
+    <div class="col col-sm-3 d-none d-sm-block">
+      <b><p class="">Start:</p></b> 
+
+    </div>
+    <div class="col-4 col-sm-3 d-none d-sm-block">
+      <b><p class="">Koniec:</p></b> 
+
+    </div>
+  </div>
+<form class="mb-4 rounded" action="{% url 'search_orders' %}" method="get">
+  <div class="row mb-1 ">
+  <div class="col-12 col-sm-6">
+    <input class="form-control shadow-sm input-sm" name="q" type="text" placeholder="Szukaj...">
+  </div>
+  <div class="col-3 d-none d-sm-block">
+    <input class="datepicker form-control shadow-sm input-sm" name="s" type="text" placeholder="Szukaj...">
+  </div>
+  <div class="col-3 d-none d-sm-block">
+    <input class="datepicker form-control shadow-sm input-sm" name="e" type="text" placeholder="Szukaj...">
+  </div>
+  <div class="col-12 col-sm-6 mt-4">
+    <label><b>Status:</b></label>
+
+    <select class="form-control shadow-sm input-sm" name="t">
+      <option></option>
+      {% if orderstatus %}
+      {% for o in orderstatus %}
+      <option>{{ o }}</option>
+      {% endfor %}
+      {% endif %}
+    </select>
+  </div>
+  <div class="col-12 col-sm-3 mt-4">
+    <label><b>Typ:</b></label>
+
+    <select class="form-control shadow-sm input-sm" name="ty">
+      <option></option>
+      {% if ordertypes %}
+      {% for o in ordertypes %}
+      <option>{{ o }}</option>
+      {% endfor %}
+      {% endif %}
+    </select>
+  </div>
+    <div class="col-12 col-sm-3 d-flex align-items-end">
+      <button type="submit" class=" animated fadeInDown btn p-2 btn-block btn-primary shadow-sm"><i class="fa fa-search" aria-hidden="true"></i>
+        Szukaj</button>
+    </div>
+</div>
+</form>
+
+</section> -->
+
+<!-- <hr> -->
+
+<!-- Panel buttonów do filtrowania -->
+<!-- <div class="d-flex justify-content-center mb-2">
+  <button tip="tooltip" title="Pokaż wszystkie zakończone" id="btn-completed" class="ih7 m-1 completed text-center btn btn-success shadow-sm " type="button" data-toggle="collapse" data-target="#collapseCompleted" aria-expanded="false" aria-controls="collapseExample">
+    <i class="ih5 fa fa-arrow-down" aria-hidden="true"></i>
+  </button>
+  <button tip="tooltip" title="Pokaż zakończone - niezrealizowane" id="btn-completed" class="ih7 m-1 completed text-center btn btn-danger shadow-sm " type="button" data-toggle="collapse" data-target="#collapseCompletednoinvoice" aria-expanded="false" aria-controls="collapseExample">
+    <i class="ih5 fa fa-arrow-down" aria-hidden="true"></i>
+  </button>
+  <button tip="tooltip" title="Pokaż wyfakturowane" id="btn-completed" class="ih7 m-1 completed text-center btn btn-success shadow-sm " type="button" data-toggle="collapse" data-target="#collapseCompletedinvoice" aria-expanded="false" aria-controls="collapseExample">
+    <i class="ih5 fa fa-gavel" aria-hidden="true"></i>
+  </button>
+</div> -->
+
+
+
+<!-- Ordery -->
+{% if user.is_staff %}
+{% else %}
+<!-- Pokaz zlecenia -->
+<section id="sekcja_zlecenia" style="display:none;">
+  <div class="row">
+      <div id="" class="col-xs-12 col-sm-12 col-md-6 col-lg-6 mt-3">
+          <h4 class="mb-4">W realizacji</h4>
+          <div class="form-group">
+              <label for="r_search">Szukaj:</label>
+              <input type="text" class="form-control input-sm" id="r_search"></input>
+            </div>
+          <hr>
+  
+          <div id="live_wrealizacji">
+          {% if user.is_staff %}
+          {% if myorders %}
+          {% for order in myorders|dictsort:"order_status.name" %}
+                  <div id="wrealizacjidiv">
+                    
+                  <div style="display:none;" id="{{ order.id }}{{ order.title }}" class="ih5 rounded border border-secondary order wrealizacji row bg-warning m-1 mb-2 p-2 shadow">
+                  <div class="col-8">
+                    <i class="fa fa-user align-middle" aria-hidden="true"></i> 
+                    <span class="align-middle"><b>{{ order.user.first_name }} {{ order.user.last_name }}</b></span><br>
+                    <span>Firma: 
+                      {% if order.user.profile.thumb %}
+                      <img class="rounded-circle border border-secondary shadow-sm thumb_min" src="{{ order.user.profile.thumb.url }}"/>
+                      {% else %}
+                      <!-- <img class="rounded-circle border border-secondary shadow-sm thumb_min" src="{% static 'img/logogb.jpg' %}"/> -->
+                      {% endif %}
+                      {{ order.user.profile.company_name }} </span><br>
+                    <span>Opis: {{ order.title }} </span>
+                  </div>
+                  <div class="col text-right">
+                    <span>{{ order.start_datetime|date:'' }}</span>
+                  <a href="{% if order.attachment %}{{ order.attachment.url }}{% endif %}"><button class="mb-1 btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-file" aria-hidden="true"></i>
+                    </button></a>
+                    <a href="{% url 'order_detail' order.id %}"><button class="mb-1 btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-pencil" aria-hidden="true"></i></button></a>
+                    <a href="{% url 'order_delete' order.id %}"><button class="mb-1 btn btn-danger shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_delete' order.id %}"><i class="fa fa-trash" aria-hidden="true"></i></button></a>
+                  </div>
+                </div> 
+
+              </div>
+              {% endfor %}
+          {% endif %}
+  
+          {% else %}
+  
+          {% if myorders2 %}
+          {% for order in myorders2|dictsort:"order_status.name" %}
+                  <div id="wrealizacjidiv">
+  
+                  <div style="display:none;" id="{{ order.id }}{{ order.title }}" class="ih5 rounded border border-secondary order wrealizacji row bg-warning m-1 mb-2 p-2 shadow">
+                  <div class="col-8">
+                    <i class="fa fa-user align-middle" aria-hidden="true"></i> 
+                    <span class="align-middle"><b>{{ order.user }}</b></span><br>
+                    <span class="align-middle">Opiekun: <b>{{ order.care }}</b></span><br>
+                    <span>Firma: 
+                      {% if order.user.profile.thumb %}
+                      <img class="rounded-circle border border-secondary shadow-sm thumb_min" src="{{ order.user.profile.thumb.url }}"/>
+                      {% else %}
+                      <!-- <img class="rounded-circle border border-secondary shadow-sm thumb_min" src="{% static 'img/logogb.jpg' %}"/> -->
+                      {% endif %}
+                      {{ order.user.profile.company_name }} </span><br>
+                    <span>Opis: {{ order.title }} </span>
+                  </div>
+  
+                  <div class="col text-right">
+                    <span>{{ order.start_datetime|date:'' }}</span>
+                  <a href="{% if order.attachment %}{{ order.attachment.url }}{% endif %}"><button class="mb-1 btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-file" aria-hidden="true"></i>
+                    </button></a>
+                    <a href="{% url 'order_detail' order.id %}"><button class="mb-1 btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-pencil" aria-hidden="true"></i></button></a>
+                    <a href="{% url 'order_delete' order.id %}"><button class="mb-1 btn btn-danger shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_delete' order.id %}"><i class="fa fa-trash" aria-hidden="true"></i></button></a>
+                  </div>
+                </div> 
+              </div>
+          {% endfor %}
+          {% endif %}
+          
+          {% endif %}
+  </div>
+          </div>
+      <div id="" class="col-xs-12 col-sm-12 col-md-6 col-lg-6 mt-3">
+          <h4 class="mb-4">Zrealizowane</h4>
+          <div class="form-group">
+              <label for="z_search">Szukaj:</label>
+              <input type="text" class="form-control input-sm" id="z_search"></input>
+            </div>
+          <hr>
+  
+      <div id="live_zrealizowane">
+          {% if user.is_staff %}
+          {% if my_completed_orders %}
+          {% for order in my_completed_orders|dictsort:"order_status.name" %}
+              <div id="zrealizowanediv">
+                  <div style="display:none;" id="{{ order.id }}{{ order.title }}" class="ih5 order rounded border border-secondary zrealizowane row bg-success m-1 mb-2 p-2 shadow">
+                  <div class="col-8">
+                    <i class="fa fa-user align-middle" aria-hidden="true"></i> 
+                    <span class="align-middle"><b>{{ order.user }}</b></span><br>
+                    <span>Firma: 
+                      {% if order.user.profile.thumb %}
+                      <img class="rounded-circle border border-secondary shadow-sm thumb_min" src="{{ order.user.profile.thumb.url }}"/>
+                      {% else %}
+                      <!-- <img class="rounded-circle border border-secondary shadow-sm thumb_min" src="{% static 'img/logogb.jpg' %}"/> -->
+                      {% endif %}
+                      {{ order.user.profile.company_name }} </span><br>
+                    <span>Opis: {{ order.title }} </span>
+                  </div>
+  
+                  <div class="col text-right">
+                    <span>{{ order.start_datetime|date:'' }}</span>
+                  <a href="{% if order.attachment %}{{ order.attachment.url }}{% endif %}"><button class="mb-1 btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-file" aria-hidden="true"></i>
+                    </button></a>
+                    <a href="{% url 'order_detail' order.id %}"><button class="mb-1 btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-pencil" aria-hidden="true"></i></button></a>
+                    <a href="{% url 'order_delete' order.id %}"><button class="mb-1 btn btn-danger shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_delete' order.id %}"><i class="fa fa-trash" aria-hidden="true"></i></button></a>
+                  </div>
+                </div> 
+              </div>
+                {% endfor %}
+              {% endif %}
+  
+          {% else %}
+  
+          {% if my_completed_orders2 %}
+          {% for order in my_completed_orders2|dictsort:"order_status.name" %}
+              <div id="zrealizowanediv">
+                  <div style="display:none;" id="{{ order.id }}{{ order.title }}" class="ih5 order rounded border border-secondary zrealizowane row bg-success m-1 mb-2 p-2 shadow">
+                  <div class="col-8">
+                    <i class="fa fa-user align-middle" aria-hidden="true"></i> 
+                    <span class="align-middle"><b>{{ order.user }}</b></span><br>
+                    <span>Firma: 
+                      {% if order.user.profile.thumb %}
+                      <img class="rounded-circle border border-secondary shadow-sm thumb_min" src="{{ order.user.profile.thumb.url }}"/>
+                      {% else %}
+                      <!-- <img class="rounded-circle border border-secondary shadow-sm thumb_min" src="{% static 'img/logogb.jpg' %}"/> -->
+                      {% endif %}
+                      {{ order.user.profile.company_name }} </span><br>
+                    <span>Opis: {{ order.title }} </span>
+                  </div>
+  
+                  <div class="col text-right">
+                    <span>{{ order.start_datetime|date:'' }}</span>
+                  <a href="{% if order.attachment %}{{ order.attachment.url }}{% endif %}"><button class="mb-1 btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-file" aria-hidden="true"></i>
+                    </button></a>
+                    <a href="{% url 'order_detail' order.id %}"><button class="mb-1 btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-pencil" aria-hidden="true"></i></button></a>
+                    <a href="{% url 'order_delete' order.id %}"><button class="mb-1 btn btn-danger shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_delete' order.id %}"><i class="fa fa-trash" aria-hidden="true"></i></button></a>
+                  </div>
+                </div> 
+              </div>
+                {% endfor %}
+              {% endif %}
+          {% endif %}
+          </div>
+      </div>
+      </div>
+  </section>
+{% endif %}
+
+
+{% if user.is_staff %}
+<!-- Nowe zlecenia -->
+<section id="sekcja_zlecenia" style="display:none;">
+  <!-- <div class="section_header">zlecenie
+    <h4 class="" ><i class="fa fa-bar-chart" aria-hidden="true"></i>
+        Lista zleceń</h4><hr>
+</div> -->
+
+<div class="row">
+<div class="col-12 col-md-12">
+  <div class="section_header">
+    <h4 class=""><i class="fa fa-hourglass-start text-danger" aria-hidden="true"></i> W realizacji</h4><hr>
+  </div>
+<!-- 1 search -->
+  <div class="form-group">
+    <label for="r_search">Szukaj:</label>
+    <input type="text" class="form-control input-sm" id="r2_search">
+  </div>
+
+<!-- 1 -->
+  <div class="lista_zlecen lista_w_realizacji">
+    <div id="live_wrealizacji">
+        {% if user.is_staff %}
+        {% if myorders %}
+        {% for order in myorders|dictsort:"order_status.name" %}
+        <div class="zoom1">
+        <div class="row zlecenie shadow-sm rounded zlecenie_w_realizacji animated fadeInDown fast">
+          
+          
+
+          <div class="col-7 col-sm-9 col-md-10">
+            <span class="font-weight-bold" 
+            data-toggle="tooltip2" 
+            data-html="true" 
+            title=
+            "<div class='x'>
+              <div class='mt-2'>
+                  {% if order.agreement.company.thumb %}
+                  <img class='thumb_min_c shadow-sm' src='{{ order.agreement.company.thumb.url }}'>
+                  {% endif %}
+              </div>
+              <div class='mt-2'>
+                <b><span class='bg-danger rounded p-1 shadow-sm'>{{ order.agreement.company.name }}</span></b><br>
+              </div>
+              <div class='mt-2'>
+                <span>NIP: {{ order.agreement.company.nip }}</span><br>
+                <span>{{ order.agreement.company.adres }}</span><br>
+                <span>Opiekun: {{ order.agreement.company.care }}</span>
+              </div>">
+              {% if order.agreement.company %}
+                {% if order.agreement.company.thumb %}
+                <img class="rounded-circle border border-secondary shadow-sm thumb_min_a" src="{{ order.agreement.company.thumb.url }}"/>
+                {% endif %}
+              
+                <span class="company_span">{{ order.agreement.company }} -  <input style="display:inline;" readonly type="text" value="{{ order.no }}" class="text-center shadow-sm allowCopy noselect border border-secondary rounded"></span></span><hr>
+               
+
+
+          </div>
+
+          <div class="col-5 col-sm-3 col-md-2 text-right">
+            {% if order.attachment %}
+          <a href="{{ order.attachment.url }}"><button data-toggle="tooltip" data-html="true" data-placement="top" title="Pobierz dokument" class="mb-1 btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-file" aria-hidden="true"></i>
+            </button></a>
+            {% endif %}
+            <a href="{% url 'order_detail' order.id %}"><button data-toggle="tooltip" data-html="true" data-placement="top" title="Edytuj" class="mb-1 btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-pencil" aria-hidden="true"></i></button></a>
+            <a href="{% url 'order_delete' order.id %}"><button data-toggle="tooltip" data-html="true" data-placement="top" title="Usuń" class="mb-1 btn btn-danger shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_delete' order.id %}"><i class="fa fa-trash" aria-hidden="true"></i></button></a>
+          </div>
+
+
+
+          <div class="col">
+            <span><i class="fa fa-handshake-o" aria-hidden="true"></i>
+              {{ order.agreement.name }} - {{ order.agreement.status }}</span><br>
+           <span>
+              NIP: {{ order.agreement.company.nip }}</span>
+           {% endif %}    
+          </div>
+
+
+          <div class="col-4 zlecenie_status text-right">
+            <span>
+              <i class="fa fa-refresh fa-spin fa-1x fa-fw"></i></span>
+            </div>
+
+          <div class="col-12 zlecenie_info">
+            
+            <span class="font-weight-bold">{{ order.title }}</span> - <span>{{ order.created_date|date:'' }}</span>
+            <hr>
+
+
+            <div class="zlecenie_info_1 rounded">
+
+              <div class="row p-2">
+
+
+
+            <div class='col-12  mb-4'>
+              <span class="font-weight-bold" 
+              data-toggle="tooltip2" 
+              data-html="true" 
+              title=
+              "<div class='x'>
+                <div class='mt-2'>
+                {% if order.care.profile.thumb %}
+                    <img class='thumb_min_c shadow-sm' src='{{ order.care.profile.thumb.url }}'>
+                {% endif %}
+                </div>
+                <div class='mt-2'>
+                  <b><span class='bg-danger rounded p-1 shadow-sm'>{{ order.care.first_name }} {{ order.care.last_name }}</span></b><br>
+                  <b><span class=''>{{ order.care.email }}</span></b><br>
+                </div>
+                "><i class="far fa-life-ring"></i> Opiekun IT: {% if order.agreement.company.care.profile.thumb %}<img class="rounded-circle border border-secondary shadow-sm thumb_min" src="{{ order.agreement.company.care.profile.thumb.url }}"/>{% endif %}{{ order.agreement.company.care.first_name }}</span><hr class="mt-1">
+            
+            
+            
+            <span><i class="fa fa-arrow-up" aria-hidden="true"></i> Start: {{ order.start_datetime|date:'d-M h:m' }}</span>
+            <span><i class="fa fa-arrow-down" aria-hidden="true"></i>
+              Koniec: {{ order.end_datetime|date:'d-M h:m' }}</span><br>
+              <span><i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                Komunikat: {% if order.komunikat %}<span class="zlecenie_komunikat">{{ order.komunikat }}</span>{% endif %}</span><br>
+               </div> 
+
+
+                {% if hardwares %}
+                {% for h in hardwares %}
+                {% if h.order.id == order.id %}
+              <div class="col-12 col-md-6 mb-4">
+              <span><i class="fas fa-desktop"></i> {{ h.platform_hostname }}</span><hr class="mt-1">
+                <span><i class="fas fa-microchip"></i> <b>Seria:</b> {{ h.cpu }} </span> / <span> <b>Platforma:</b> {{ h.platform }} </span> / <span> <b>Rdzenie:</b> {{ h.cpu_physical_cores }} / {{ h.cpu_total_cores }}</span><br>
+                <span><i class="fab fa-windows"></i> <b>System:</b> {{ h.platform_system }} {{ h.platform_version }} / </span><br>
+                
+
+                {% if net %}
+                {% for n in net %}
+                  {% if n.hardware.id == h.id %}
+                  <span><i class="fas fa-network-wired"></i> <b>{{ n.name }}</b> / IP: {{ n.ip }} / MAC: {{ n.mac }}</span><br>
+                  
+                  {% endif %}
+                {% endfor %}
+                {% endif %}
+
+
+</div>
+<div class="col-12 col-md-6">
+                {% if partitions %}
+
+                <span><i class="fas fa-hdd"></i> Partycje</span>
+                <hr class="mt-1">
+                {% for p in partitions %}
+                  {% if p.hardware.id == h.id %}
+
+                  <span><i class="fas fa-hdd"></i> {{ p.device }}</span>
+                  
+                  <div class="progress shadow-sm border border-secondary">
+                    <div class="progress-bar progress-bar-striped bg-success text-right" role="progressbar" style="width: {{ p.used_percentage }}%" aria-valuenow="{{ p.used_percentage }}" aria-valuemin="0" aria-valuemax="100">{{ p.used_size }}/{{ p.total_size }}GB - Free:({{ p.free_size }}GB) - {{ p.used_percentage }}%&nbsp;</div>
+                </div>
+
+
+                  {% endif %}
+                {% endfor %}
+                {% endif %}
+                
+            </div>
+              {% endif %}
+            {% endfor %}
+            {% endif %}
+
+</div>
+
+
+              </div>
+              <hr>
+              <div class="row">
+            </div>
+        </div>
+
+        </div>
+      </div>
+        {% endfor %}
+        {% endif %}
+        {% endif %}
+      </div>
+  </div>
+</div>
+
+<!-- 2 search -->
+<div class="col-12 col-md-12">
+  <div class="section_header">
+    <h4 class=""><i class="fa fa-check text-success" aria-hidden="true"></i> Zrealizowane</h4><hr>
+  </div>
+  <div class="form-group">
+      <label for="z_search">Szukaj:</label>
+      <input type="text" class="form-control input-sm" id="z2_search">
+  </div>
+      
+<!-- 2 -->
+  <div class="lista_zlecen lista_zrealizowane">
+    <div id="live_zrealizowane">
+        {% if user.is_staff %}
+        {% if my_completed_orders %}
+        {% for order in my_completed_orders|dictsort:"order_status.name" %}
+        <div class="zoom1">
+        <div class="row zlecenie shadow-sm rounded zlecenie_zrealizowane animated fadeInDown fast">
+          <div class="col-7 col-sm-9 col-md-10">
+            <span class="font-weight-bold" 
+            data-toggle="tooltip2" 
+            data-html="true" 
+            title=
+            "<div class='x'>
+              <div class='mt-2'>
+              {% if order.agreement.company.thumb %}
+                  <img class='thumb_min_c shadow-sm' src='{{ order.agreement.company.thumb.url }}'>
+                  {% endif %}
+              </div>
+              <div class='mt-2'>
+                <b><span class='bg-danger rounded p-1 shadow-sm'>{{ order.agreement.company.name }}</span></b><br>
+              </div>
+              <div class='mt-2'>
+                <span>NIP: {{ order.agreement.company.nip }}</span><br>
+                <span>{{ order.agreement.company.adres }}</span><br>
+                <span>Opiekun: {{ order.agreement.company.care }}</span>
+              </div>">
+              {% if order.agreement.company %}
+              {% if order.agreement.company.thumb %}
+                <img class="rounded-circle border border-secondary shadow-sm thumb_min_a" src="{{ order.agreement.company.thumb.url }}"/>
+                {% endif %}
+              
+ <span class="company_span">{{ order.agreement.company }} -  <input style="display:inline;" readonly type="text" value="{{ order.no }}" class="text-center shadow-sm allowCopy noselect border border-secondary rounded"></span></span></span><hr>
+          </div>
+
+          <div class="col-5 col-sm-3 col-md-2 text-right">
+            {% if order.attachment %}
+          <a href="{{ order.attachment.url }}"><button data-toggle="tooltip" data-html="true" data-placement="top" title="Pobierz dokument" class="mb-1 btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-file" aria-hidden="true"></i>
+            </button></a>
+            {% endif %}
+            <a href="{% url 'order_detail' order.id %}"><button data-toggle="tooltip" data-html="true" data-placement="top" title="Edytuj" class="mb-1 btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-pencil" aria-hidden="true"></i></button></a>
+            <a href="{% url 'order_delete' order.id %}"><button data-toggle="tooltip" data-html="true" data-placement="top" title="Usuń" class="mb-1 btn btn-danger shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_delete' order.id %}"><i class="fa fa-trash" aria-hidden="true"></i></button></a>
+          </div>
+
+          <div class="col">
+            <span><i class="fa fa-handshake-o" aria-hidden="true"></i>
+              {{ order.agreement.name }} - {{ order.agreement.status }}</span><br>
+           <span>
+              NIP: {{ order.agreement.company.nip }}</span>
+           {% endif %}    
+          </div>
+
+
+          <div class="col-4 zlecenie_status text-right">
+            <span>
+              <i class="fa fa-check text-success" aria-hidden="true"></i></span>
+            </div>
+
+          <div class="col-12 zlecenie_info">
+            <span>{{ order.title }}</span> - <span>{{ order.created_date|date:'' }}</span>
+            <hr>
+            <div class="zlecenie_info_1 rounded">
+
+            <div class="row">
+              <div class='col-12  mb-4'>
+
+              <span class="font-weight-bold" 
+              data-toggle="tooltip2" 
+              data-html="true" 
+              title=
+              "<div class='x'>
+                <div class='mt-2'>
+                {% if order.care.profile.thumb %}
+                    <img class='thumb_min_c shadow-sm' src='{{ order.care.profile.thumb.url }}'>
+                    {% endif %}
+                </div>
+                <div class='mt-2'>
+                  <b><span class='bg-danger rounded p-1 shadow-sm'>{{ order.care.first_name }} {{ order.care.last_name }}</span></b><br>
+                  <b><span class=''>{{ order.care.email }}</span></b><br>
+                </div>
+                ">Opiekun IT: {% if order.agreement.company.care.profile.thumb %}<img class="rounded-circle border border-secondary shadow-sm thumb_min" src="{{ order.agreement.company.care.profile.thumb.url }}"/>{% endif %}{{ order.agreement.company.care.first_name }}</span><br>
+            <span><i class="fa fa-arrow-up" aria-hidden="true"></i> Start: {{ order.start_datetime|date:'d-M h:m' }}</span>
+            <span><i class="fa fa-arrow-down" aria-hidden="true"></i>
+              Koniec: {{ order.end_datetime|date:'d-M h:m' }}</span><br>
+              <span><i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                Komunikat: {% if order.komunikat %}<span class="zlecenie_komunikat">{{ order.komunikat }}</span>{% endif %}</span><br>
+              </div>
+
+{% if hardwares %}
+
+                {% for h in hardwares %}
+              <div class="col-12 col-md-6 mb-4">
+                {% if h.order.id == order.id %}
+              <span><i class="fas fa-desktop"></i> {{ h.platform_hostname }}</span><hr class="mt-1">
+                <span><i class="fas fa-microchip"></i> <b>Seria:</b> {{ h.cpu }} </span> / <span> <b>Platforma:</b> {{ h.platform }} </span> / <span> <b>Rdzenie:</b> {{ h.cpu_physical_cores }} / {{ h.cpu_total_cores }}</span><br>
+                <span><i class="fab fa-windows"></i> <b>System:</b> {{ h.platform_system }} {{ h.platform_version }} / </span><br>
+                
+
+                {% if net %}
+                {% for n in net %}
+                  {% if n.hardware.id == h.id %}
+                  <span><i class="fas fa-network-wired"></i> <b>{{ n.name }}</b> / IP: {{ n.ip }} / MAC: {{ n.mac }}</span><br>
+                  {% endif %}
+                {% endfor %}
+                {% endif %}
+</div>
+<div class="col-12 col-md-6 mb-4">
+
+
+                {% if partitions %}
+                
+                <span><i class="fas fa-hdd"></i> Partycje</span>
+                <hr class="mt-1">
+                {% for p in partitions %}
+                  {% if p.hardware.id == h.id %}
+
+                  <span><i class="fas fa-hdd"></i> {{ p.device }}</span>
+                  
+                  <div class="progress shadow-sm border border-secondary">
+                    <div class="progress-bar progress-bar-striped bg-success text-right" role="progressbar" style="width: {{ p.used_percentage }}%" aria-valuenow="{{ p.used_percentage }}" aria-valuemin="0" aria-valuemax="100">{{ p.used_size }}/{{ p.total_size }}GB - Free:({{ p.free_size }}GB) - {{ p.used_percentage }}%&nbsp;</div>
+                </div>
+
+
+                  {% endif %}
+                {% endfor %}
+                {% endif %}
+                
+              {% endif %}
+            </div>
+            {% endfor %}
+            {% endif %}
+
+</div>
+              </div>
+              <hr>
+              <div class="row">
+            </div>
+        </div>
+        </div>
+      </div>
+        {% endfor %}
+        {% endif %}
+        {% endif %}
+      </div>
+  </div>
+</div>
+
+
+
+</div>
+</section>
+{% endif %}
+  
+
+
+
+
+<script src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
+<script>
+
+  $(".completed").click(function(){
+    var $target = $(this).attr('data-target')
+    $(".completed").removeClass('shadow border-dark border bg-dark');
+    $(this).addClass('shadow border-dark border bg-dark')
+    $(".collapse").collapse('hide');
+    $($target).collapse('toggle');
+  });
+
+  // Nofity ----------------------------------------------------------
+  function updateDiv(target) {
+    $(target).load(window.location.href + " " + target);
+  };
+  
+  function success_sound() {
+    var obj = document.createElement("audio");
+    obj.src = "{% static 'sounds/success.wav' %}";
+    obj.play();
+    console.log("success played!")
+  };
+  function get_value(link){
+    $.get(link, {},
+    function get_this(returnedHtml) {
+      console.log("To jest returned initial: "+returnedHtml)
+      $flag = returnedHtml
+    });
+  };
+ var $flag = 0
+  get_value("http://127.0.0.1:8000/orders_length/");
+  console.log("To jest flaga init: "+$flag)
+  function get_value_notify(link, target){
+    $.get(link, {},
+    function (returnedHtml) {
+      console.log(returnedHtml)
+      $flag2 = parseInt(returnedHtml)
+      if ($flag2 > $flag){
+        console.log("Flaga 1: "+$flag+" Flaga 2: "+$flag2)
+        $.notify({
+          title: '<b>Nowe zlecenie!</b>',
+          icon: 'fa fa-plus',
+          message: '<hr>Masz nowe zlecenie!' 
+        },{
+          type: 'warning',
+          offset: 30,
+          delay: 5000,
+          animate: {
+            enter: 'animated bounceInDown',
+            exit: 'animated bounceOutUp'
+          },
+          placement: {
+            from: "top",
+            align: "center"
+          },
+        });
+        $flag = $flag2
+
+        success_sound();
+        // $(target).html(returnedHtml);
+      }
+    });
+  }
+      
+
+  //$(document).on('click', 'button.completed', function (event) {
+   // event.preventDefault();
+    //console.log('clicked')
+    //$('html, body').animate({
+    //    scrollTop: $(window).scrollTop() + 500
+    //}, 300);
+//});
+
+
+          //W realizacji search
+    $("#r_search").on("keyup", function() {
+      var value = $(this).val().toLowerCase();
+      console.log(value)
+      $("#wrealizacjidiv .order").filter(function() {
+          $(this).toggle($(this).find('span').text().toLowerCase().indexOf(value) > -1)
+      });
+      });
+      $("#r2_search").on("keyup", function() {
+        var value = $(this).val().toLowerCase();
+        console.log(value)
+        $(".lista_zlecen .zlecenie_w_realizacji").filter(function() {
+            $(this).toggle($(this).find('span').text().toLowerCase().indexOf(value) > -1)
+        });
+        });
+      //Zrealizowane search
+      $("#z_search").on("keyup", function() {
+      var value = $(this).val().toLowerCase();
+      console.log(value)
+      $("#zrealizowanediv .order").filter(function() {
+          $(this).toggle($(this).find('span').text().toLowerCase().indexOf(value) > -1)
+      });
+      });
+      $("#z2_search").on("keyup", function() {
+        var value = $(this).val().toLowerCase();
+        console.log(value)
+        $(".lista_zlecen .zlecenie_zrealizowane").filter(function() {
+            $(this).toggle($(this).find('span').text().toLowerCase().indexOf(value) > -1)
+        });
+        });
+  // Initial ---------------------------------------------------------
+  setInterval(function(){
+    
+    get_value_notify("http://127.0.0.1:8000/orders_length/", "div.here")
+  }, 3000);
+
+
+
+
+
+$(function() {
+   $(document).on('click','.allowCopy', function() {
+     $(this).focus();
+     $(this).select();
+     document.execCommand('copy');
+      copy_alert();
+     new_message_sound_3();
+   });
+});
+
+function new_message_sound_3() {
+            var obj = document.createElement("audio");
+            obj.src = "{% static 'sounds/tick0.wav' %}";
+            obj.play();
+          };
+
+function copy_alert() {
+            $('#modal_loading').modal('hide');
+
+              $.notify({
+                  title: '<span class="align-middle message_box_title"> Skopiowano!</span><br>',
+                  icon: 'fa fa-1x fa-commenting-o',
+                  message: 'Teraz możesz wkleić nr do <b>STool</b>' 
+                },{
+                  type: 'light',
+                  offset: 30,
+                  delay: 2500,
+                  animate: {
+                    enter: 'animated bounceIn fast',
+                    exit: 'animated fadeOutDown fast'
+                  },
+                  placement: {
+                    from: "bottom",
+                    align: "center"
+                  },
+                });
+          }
+</script>
+
+{% endif %}
+
+
+
+{% else %}
+
+<div class="container">
+  <div class="row p-1">
+    <div class="col-12">
+      <p>Nie jestes zalogowany!</p>
+      <img src="{% static 'img/gob_logo.png' %}" alt="logo"><br>
+      <span><a href="{% url 'login' %}">Zaloguj</a></span><br>
+      <span><a href="{% url 'register2' %}">Zarejestuj</a></span>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

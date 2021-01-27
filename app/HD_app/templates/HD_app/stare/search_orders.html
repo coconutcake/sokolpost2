@@ -1,0 +1,103 @@
+{% extends 'HD_app/newbase.html' %}
+{% load static %}
+{% load rest_framework %}
+{% block title %}Wyszukane{% endblock %}
+
+
+{% if user.is_authenticated %}
+{% block content %}
+
+
+<!-- Header -->
+<page_header>
+  <div class="row p-2">
+    <div class="col-12 header-div">
+      <div class="d-flex justify-content-between">
+        <div class="" id="">
+          
+            <h2 class="mb-4"><i class="fa fa-search" aria-hidden="true"></i>
+              Zlecenia wyszukane</h2>
+          
+          
+        </div>
+
+      </div>
+      <hr class="m-0">
+    </div>
+  </div>
+</page_header>
+
+
+
+  <div class="row pl-3 pr-3">
+
+
+  <div class="col-12">
+
+
+
+
+      {% if object_list %}
+      {% for order in object_list|dictsort:"order_status.name" %}
+      {% if order.object_list.id == 5 or order.object_list.id == 6 or order.object_list.id == 7  %}
+       <div class="text-dark animated fadeInDown faster order row bg-success rounded mt-1 p-2 shadow border border-secondary">
+        {% else %}
+          <div class="text-dark animated fadeInDown faster order row bg-warning rounded mt-1 p-2 shadow border border-secondary">
+        {% endif %}
+        <div class="col-4 col-sm-3">
+          <i class="fa fa-user align-middle" aria-hidden="true"></i> 
+          <b class="align-middle">{{ order.user }}</b>
+        </div>
+        <div class="col-4 col-sm-3 border-left">
+          {{ order.title }} 
+        </div>
+        <div class="col col-sm-3 d-none d-sm-block border-left">
+          {{ order.start_datetime|date:'' }} 
+        </div>
+        
+        <div class="col-4 col-sm-3 text-right">
+          
+        {% if order.id == 3 %}
+        <i class='mr-1 fa fa-refresh fa-spin fa-1x fa-fw'></i>
+        {% endif %}
+        
+        {% if order.id == 5 or order.id == 6 or order.id == 7 %}
+        <i class='mr-1 fa fa-check' aria-hidden='true'></i>
+        {% endif %}
+
+          <a href="{% url 'order_detail' order.id %}"><button class="btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-pencil" aria-hidden="true"></i>              Edytuj</button></a>
+          <!-- <button class="show_order_btn btn shadow-sm btn-secondary btn-sm" apiurl="{% url 'order_api-list' %}" id="{{ order.id }}" url="{% url 'orders1' %}"><i class="fa fa-info" aria-hidden="true"></i> Szczegóły</button> -->
+          <a href="{% url 'order_delete' order.id %}"><button class="btn btn-danger shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_delete' order.id %}"><i class="fa fa-trash" aria-hidden="true"></i></button></a>
+        </div>
+      </div> 
+      
+      
+      {% if object_list %}
+        <div class="row mb-5 border bg-light rounded shadow-sm p-3 animated fadeInDown faster">
+        <div class="col-6 p-2">
+          <b><i class="statusy fa fa-rocket" aria-hidden="true"></i> Status: </b>{{ order.order_status.name }}: <br><span class="text-secondary">{{ order.order_status.description }}</span>
+        </div>
+        <div class="col-6 p-2">
+          <b><i class="statusy fa fa-exclamation-triangle" aria-hidden="true"></i> Mój komunikat: </b><br><span class="text-secondary">{{ order.komunikat }}</span>
+        </div>
+        <div class="col-12 p-2">
+          <b><i class="statusy fa fa-address-card" aria-hidden="true"></i> Opis klienta: </b><br><span class="text-secondary">{{ order.description }}</span>
+        </div>
+      </div>
+      {% endif %}
+      {% endfor %}
+      {% endif %}
+      
+      </div>             
+   </div>
+   </div> 
+
+
+
+
+
+
+{% endblock content %}
+{% else %}
+<h2>Brak dostepu</h2>
+{% endif %}

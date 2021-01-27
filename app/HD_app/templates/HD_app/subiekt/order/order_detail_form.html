@@ -1,0 +1,269 @@
+<!-- FORMULARZ -->
+    <section class="modal_section">
+    <!-- TITLE -->
+        <div class="row section_title">
+        <div class="col m-0 p-0">
+            {% for header in modal_sections.headers %}
+            {% if header.name == "detail" %}
+                <h2>{% autoescape off %}{{ header.icon }} {{ header.text }}{% endautoescape %}</h2>
+            {% endif %}
+            {% endfor %}
+        </div>
+        </div>
+
+    <!-- FORM CONTAINER-->
+        <div class="row mt-3">
+        <div class="col m-0 p-0">
+
+            <form method="POST" action="{% url 'Order_detail' pk=form.instance.id %}" pk="{{ form.instance.id }}" id="Order_detail_form">
+            {% csrf_token %}
+            <!-- TABS -->
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                
+                {% for i,v in modal_sections.items %}
+                    {% if i == "tabs" %}
+                        {% for tab in v %}
+                            <li class="nav-item">
+                                <a class="nav-link {% if tab.active == True %}active{% endif %}" id="{{ tab.tab_id }}-tab" data-toggle="tab" href="#{{ tab.tab_id }}" role="tab" aria-controls="{{ tab.tab_id }}" aria-selected="true">{% if tab.icon %}{% autoescape off %}{{ tab.icon }}{% endautoescape %}{% endif %} {{ tab.tab_name }}</a>
+                            </li> 
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+                                
+                </ul>
+                <!-- TABS: CONTENT-->
+                <div class="tab-content" id="myTabContent">
+                    {% for i,v in modal_sections.items %}
+                        {% if i == "tabs" %}
+                            {% for tab in v %}
+                            <div class="tab-pane fade show {% if tab.active == True %}active{% endif %}" id="{{ tab.tab_id }}" role="tabpanel" aria-labelledby="{{ tab.tab_id }}-tab">
+                                <div class="row">
+                                    <div class="col-12">
+
+                                        {% if tab.tab_id == "koszta" %}
+                                            <div class="row mb-4">
+                                                <!-- #1 -->
+                                                <div class="col-6">
+                                                    <span class="font-weight-bold"><i class="fas fa-dollar-sign text-secondary"></i> Koszt klienta:</span>
+                                                </div>
+                                                <div class="col-6 text-right">
+                                                    <span>{{ form.instance.calculate_order }} PLN</span>
+                                                </div>
+                                                <div class="col-12">
+                                                    <hr class="m-0">
+                                                </div>
+
+                                                <!-- #2 -->
+                                                <div class="col-6">
+                                                    <span class="font-weight-bold"><i class="fas fa-dollar-sign text-danger"></i> Koszt klienta z dojazdem:</span>
+                                                </div>
+                                                <div class="col-6 text-right">
+                                                    <span class="text-danger font-weight-bold">{{ form.instance.calculate_order_with_distance }} PLN</span>
+                                                </div>
+                                                <div class="col-12">
+                                                    <hr class="border-bottom border-danger m-0">
+                                                </div>
+
+
+
+
+                                                <!-- #4 -->
+                                                <div class="col-6">
+                                                    <span class="font-weight-bold"><i class="fas fa-map-signs text-secondary"></i> Dystans w dwie strony {% if form.instance.is_distance %}(baza){% else %}(google){% endif %}:</span>
+                                                </div>
+                                                <div class="col-6 text-right">
+                                                    <span>{{ form.instance.get_two_way_distance }} km</span>
+                                                </div>
+                                                <div class="col-12">
+                                                    <hr class="m-0">
+                                                </div>
+
+                                                <!-- #4 -->
+                                                <div class="col-6">
+                                                    <span class="font-weight-bold"><i class="fas fa-gas-pump text-secondary"></i> Koszty paliwa (w dwie strony):</span>
+                                                </div>
+                                                <div class="col-6 text-right">
+                                                    <span>{{ form.instance.get_fuel_costs }} PLN</span>
+                                                </div>
+                                                <div class="col-12">
+                                                    <hr class="m-0">
+                                                </div>
+                                                                                                <!-- #4 -->
+                                                <div class="col-6">
+                                                    <span class="font-weight-bold"><i class="fas fa-percentage text-secondary"></i> Stawka paliwowa:</span>
+                                                </div>
+                                                <div class="col-6 text-right">
+                                                    <span>{{ form.instance.getDistanceCalcProfileCosts }} PLN</span>
+                                                </div>
+                                                <div class="col-12">
+                                                    <hr class="m-0">
+                                                </div>
+
+                                                <!-- #3 -->
+                                                <div class="col-6">
+                                                    <span class="font-weight-bold"><i class="fas fa-percentage text-secondary"></i> Grupa stawek:</span>
+                                                </div>
+                                                <div class="col-6 text-right">
+                                                    <span>{{ form.instance.get_ratestack.name }}</span>
+                                                </div>
+                                                <div class="col-12">
+                                                    <hr class="m-0">
+                                                </div>
+
+                                                <!-- #4 -->
+                                                <div class="col-6">
+                                                    <span class="font-weight-bold"><i class="fas fa-percentage text-secondary"></i> Ceny w grupie stawek:</span>
+                                                </div>
+                                                <div class="col-6 text-right">
+                                                    <span>{% for rate in form.instance.get_rates.all %}{{ rate.name }} - {{ rate.price }} PLN/h<br>{% endfor %}</span>
+                                                </div>
+                                                <div class="col-12">
+                                                    <hr class="m-0">
+                                                </div>
+
+                                                
+
+                                                <!-- #5 -->
+                                                <div class="col-12 animated fadeIn faster">
+                                                <iframe
+                                                    width="100%"
+                                                    height="500"
+                                                    frameborder="0" style="border:1px solid grey;"
+                                                    src="https://www.google.com/maps/embed/v1/directions?key=AIzaSyB7W8VWn3SxVUoDFbtyLoDAk7hpLP2LivA&origin=Gorzow+Poland+Gobit&destination={{ form.instance.address.city }}+{{ form.instance.address.street }}+{{ form.instance.address.nr_dom }}&avoid=tolls|highways" allowfullscreen>
+                                                    </iframe>
+                                                </div>
+
+                                            </div>
+                                        {% endif %}
+
+                                        {% for field in form %}
+                                            {% if tab.fields %}
+                                                {% if field.name in tab.fields %}
+                                                    <div class="field-group">
+                                                    <label>{{ field.label }}</label> {{ field }}
+                                                    {{ field.errors }}
+                                                    {% if field.help_text %}
+                                                        <span class="helptext">&nbsp;{{ field.help_text }}  </span>
+                                                    {% endif %}
+                                                    </div>
+                                                {% endif %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            <!-- SUBMITION -->
+                <div class="mt-4">
+                <a value="Zapisz" successurl="{% url 'Order_add' %}" modal="#modal_window" href="#" class="btn btn-sm btn-primary btn-block mt-3 shadow-sm ajax_post" form="#Order_detail_form"><i class="fas fa-save text-light"></i>&nbsp;Zapisz</a>
+                </div>
+
+            </form>
+        </div>
+        </div>
+    </section>
+
+<!-- JS-->
+  <script>
+    function correct_checkboxes(){
+        $("input[type='checkbox']").each(function(){
+          $(this).removeClass("form-control");
+        });
+      }
+    function populate_modal_body(modal_body,content){
+      modal_body.html(content);
+    }
+    function dissmis_modal(modal){
+      $(modal).modal("hide");
+    }
+    function redirect(url){
+        window.location.replace(url);
+    }  
+  </script>
+
+<!-- JS AJAX: POST -->
+  <script>
+    $("a.ajax_post").on('click',function(){
+      console.log("CLICK");
+      var $th = $(this);
+      var $target = $th.attr("form");
+      var $success_url = $th.attr("successurl");
+      var $form = $($target);
+      var $url = $form.attr("action");
+      var $method = $form.attr("method")
+      var $modal_window = $th.attr("modal");
+      var $data = $form.serialize();
+      var $modal_body = $("div.modal-body");
+      $.ajax({
+        url: $url,
+        data: $data,
+        type:$method,
+        success: function (data) {
+            console.log(data)
+            if(data.status=="OK"){
+                dissmis_modal($modal_window);
+                redirect($success_url);
+            } else {
+                populate_modal_body($modal_body,data);
+                correct_checkboxes();
+            }        
+        }
+      });
+    });
+
+    $("a.ajax_delete").on('click',function(){
+        console.log("CLICK");
+        if (confirm('Czy napewno chcesz usunąć?')) {
+        var $th = $(this);
+        var $success_url = $th.attr("successurl");
+        var $url = $th.attr("url");
+        var $method = "POST"
+        var $modal_window = $th.attr("modal");
+        var $pk = {"pk":$th.attr("pk")}
+        var $modal_body = $("div.modal-body");
+        $.ajax({
+            url: $url,
+            data: $pk,
+            type:$method,
+            success: function (data) {
+                console.log(data)
+                if(data.status=="OK"){
+                    dissmis_modal($modal_window);
+                    redirect($success_url);
+                } else {
+                    populate_modal_body($modal_body,data);
+                    correct_checkboxes();
+                }        
+            }
+        });
+        } else {
+            console.log('Canceled');
+        }    
+    });
+  </script>
+
+  <script>
+      // Dodawanie klas css datepicker ---------------
+      function set_datetime_fields(){
+        $('textarea, input[type="text"], select').addClass('shadow-sm');
+        $("textarea").addClass('bg-textarea')
+        jQuery('input[name="start_datetime"], input[name="end_datetime"]').datetimepicker({
+          format: 'Y-m-d H:i',
+          step: 15,
+        });
+        jQuery('input[name="start_date"], input[name="end_date"], .dates').datetimepicker({
+          format: 'Y-m-d',
+        });
+
+        $(function () {
+          $(".datepicker").datepicker({
+            dateFormat: 'yy-mm-dd',
+          });
+        });
+      }
+      set_datetime_fields()
+</script>

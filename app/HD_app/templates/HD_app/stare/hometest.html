@@ -1,0 +1,12 @@
+{% extends 'HD_app/newbase.html' %}
+{% load static %}
+{% block title %}Home{% endblock %}
+
+
+{% if user.is_authenticated %}
+Jesteś zalogowany
+{% else %}
+
+Nie jestes zalogowany
+{% endif %}
+    

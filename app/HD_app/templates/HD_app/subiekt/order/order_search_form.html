@@ -1,0 +1,14 @@
+
+<form id="company-search-form" type="POST" url="{% url 'SubiektCompany_add' %}">
+    {% csrf_token %}
+        {% for field in form.visible_fields %}
+        <div class="field-group">
+        <label>{{ field.label }}</label> {{ field }}
+        {{ field.errors }}
+        {% if field.help_text %}
+            <span class="helptext">&nbsp;{{ field.help_text }}  </span>
+        {% endif %}
+        </div>             
+    {% endfor %}
+</form>
+<a value="Zapisz" url="{% url 'SubiektCompany_add' %}" href="#" class="btn btn-sm btn-primary mt-3 shadow-sm subiekt-get-list-from-form" div="#company-search-div" forms="#company-search-form" import-to="#subiekt_company_list"><i class="fas fa-search text-light"></i>&nbsp;Szukaj</a>

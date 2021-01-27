@@ -1,0 +1,122 @@
+<!-- FORMULARZ -->
+              <section class="modal_section">
+                <!-- TITLE -->
+                  <div class="row section_title">
+                    <div class="col m-0 p-0">
+                      <h2><i class="fas fa-user-alt"></i> Nowy użytkownik</h2>
+                    </div>
+                  </div>
+
+                <!-- FORM CONTAINER-->
+                  <div class="row mt-3">
+                    <div class="col m-0 p-0">
+  
+                      <form action="{% url 'User_add' %}" method="post" id="user_add_form">
+                        {% csrf_token %}
+                        <!-- TABS -->
+                          <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            <li class="nav-item">
+                              <a class="nav-link active" id="primary-tab" data-toggle="tab" href="#primary" role="tab" aria-controls="primary" aria-selected="true">Podstawowe</a>
+                            </li>
+                            <li class="nav-item">
+                              <a class="nav-link" id="additional-tab" data-toggle="tab" href="#additional" role="tab" aria-controls="additional" aria-selected="false">Dodatkowe</a>
+                            </li>
+                          </ul>
+                        <!-- TABS: CONTENT-->
+                          <div class="tab-content" id="myTabContent">
+                          <!-- TABS: PODSTAWOWE-->
+                            <div class="tab-pane fade show active" id="primary" role="tabpanel" aria-labelledby="primary-tab">
+                              <div class="row">
+                                <div class="col-12">
+                                {% for field in form %}
+                                  {% if forloop.counter < 5  %}
+                                  <div class="field-group">
+                                    <label>{{ field.label }}</label> {{ field }}
+                                    {{ field.errors }}
+                                    {% if field.help_text %}
+                                        <span class="helptext">&nbsp;{{ field.help_text }}  </span>
+                                    {% endif %}
+                                    </div>
+                                  {% endif %}
+                                {% endfor %}
+                                </div>
+                              </div>
+                            </div>
+                            
+                          <!-- TABS: OPCJONALNE -->
+                            <div class="tab-pane fade" id="additional" role="tabpanel" aria-labelledby="additional-tab">
+                              <div class="row">
+                                <div class="col-12">
+                                  {% for field in form %}
+                                    {% if forloop.counter >= 5 %}
+                                    <div class="field-group">
+                                      <label>{{ field.label }}</label> {{ field }}
+                                      {{ field.errors }}
+                                      {% if field.help_text %}<br>
+                                        <span class="helptext">&nbsp;{{ field.help_text }}  </span>
+                                      {% endif %}
+                                      </div>
+                                    {% endif %}
+                                  {% endfor %}
+                                </div>
+                              </div>
+                            </div>
+                            
+                          </div>
+                        <!-- SUBMITION -->
+                          <div class="mt-4">
+                            <a value="Zapisz" successurl="{% url 'User_add' %}" modal="#modal_window" href="#" class="btn btn-sm btn-primary btn-block mt-3 shadow-sm ajax_post" form="#user_add_form"><i class="fas fa-save text-light"></i>&nbsp;Zapisz</a>
+                          </div>
+
+                      </form>
+                    </div>
+                  </div>
+              </section>
+
+<!-- JS-->
+  <script>
+    function correct_checkboxes(){
+        $("input[type='checkbox']").each(function(){
+          $(this).removeClass("form-control");
+        });
+      }
+    function populate_modal_body(modal_body,content){
+      modal_body.html(content);
+    }
+    function dissmis_modal(modal){
+      $(modal).modal("hide");
+    }
+    function redirect(url){
+        window.location.replace(url);
+    }  
+  </script>
+
+<!-- JS AJAX: POST -->
+  <script>
+    $("a.ajax_post").on('click',function(){
+      console.log("CLICK")
+      var $th = $(this);
+      var $target = $th.attr("form");
+      var $success_url = $th.attr("successurl");
+      var $form = $($target);
+      var $url = $form.attr("action")
+      var $method = $form.attr("method")
+      var $modal_window = $th.attr("modal")
+      var $data = $form.serialize()
+      var $modal_body = $("div.modal-body");
+      $.ajax({
+        url: $url,
+        data: $data,
+        type:$method,
+        success: function (data) {
+            if(data.status=="OK"){
+                dissmis_modal($modal_window);
+                redirect($success_url)
+            } else {
+                populate_modal_body($modal_body,data);
+                correct_checkboxes();
+            }        
+        }
+      });
+    });
+  </script>

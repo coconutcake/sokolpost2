@@ -1,0 +1,106 @@
+<!-- FORMULARZ -->
+              <section class="modal_section">
+                <!-- TITLE -->
+                  <div class="row section_title">
+                    <div class="col m-0 p-0">
+                      <h2><i class="fas fa-building"></i> Nowa firma</h2>
+                    </div>
+                  </div>
+
+                <!-- FORM CONTAINER-->
+                  <div class="row mt-3">
+                    <div class="col m-0 p-0">
+                        <!-- TABS -->
+                          <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            <li class="nav-item">
+                              <a class="nav-link active" id="primary-tab" data-toggle="tab" href="#primary" role="tab" aria-controls="primary" aria-selected="true">Podstawowe</a>
+                            </li>
+                          </ul>
+                        <!-- TABS: CONTENT-->
+                          <div class="tab-content" id="myTabContent">
+                          <!-- TABS: PODSTAWOWE-->
+                            <div class="tab-pane fade show active" id="primary" role="tabpanel" aria-labelledby="primary-tab">
+                              <div class="row">
+                                <div class="col-12">
+                                <form action="{% url 'SubiektAPICompanyCreateView' %}" method="post" id="company_add_form">
+                                  {% csrf_token %}
+                                  {% for field in form.visible_fields %}
+                                  <div class="field-group">
+                                    <label>{{ field.label }}</label> {{ field }}
+                                    {{ field.errors }}
+                                    {% if field.help_text %}
+                                        <span class="helptext">&nbsp;{{ field.help_text }}  </span>
+                                    {% endif %}
+                                    </div>             
+                                {% endfor %}
+                                </form>
+                                </div>
+                              </div>
+                            </div>
+                                                                                  
+                          </div>
+                        <!-- SUBMITION -->
+                          <div class="mt-4">
+                            <a value="Zapisz" url="{% url 'SubiektAPICompanyCreateView' %}" successurl="{% url 'SubiektAPICompanyCreateView' %}" modal="#modal_window" href="#" class="btn btn-sm btn-primary btn-block mt-3 shadow-sm ajax_post" forms="#company_add_form"><i class="fas fa-save text-light"></i>&nbsp;Zapisz</a>
+                          </div>
+                      </form>
+                    </div>
+                  </div>
+              </section>
+
+<!-- JS-->
+  <script>
+    function correct_checkboxes(){
+        $("input[type='checkbox']").each(function(){
+          $(this).removeClass("form-control");
+        });
+      }
+    function populate_modal_body(modal_body,content){
+      modal_body.html(content);
+    }
+    function dissmis_modal(modal){
+      $(modal).modal("hide");
+    }
+    function redirect(url){
+        window.location.replace(url);
+    }  
+  </script>
+
+<!-- JS AJAX: POST -->
+  <script>
+    $("a.ajax_post").on('click',function(){
+      console.log("CLICK")
+      var $th = $(this);
+      var $target = $th.attr("forms");
+      var $url = $th.attr("url");
+      var $success_url = $th.attr("successurl");
+      var $forms = $($target);
+      var $modal_window = $th.attr("modal")
+      var $modal_body = $("div.modal-body");
+      var $data = [];
+
+      $($forms).each(function( index ) {
+        var $id = $(this).attr("id")
+        var $content = $(this).serialize()
+        var $obj = {}
+        $obj[$id] = $content
+        $data.push($obj)
+      });
+
+      $.ajax({
+        url: $url,
+        data: {"data": JSON.stringify($data)},
+        type:"POST",
+        success: function (data) {
+            console.log(data)
+            if(data.status=="OK"){
+                dissmis_modal($modal_window);
+                redirect($success_url)
+            } else {
+                populate_modal_body($modal_body,data);
+                correct_checkboxes();
+            }        
+        }
+      });
+    });
+  </script>

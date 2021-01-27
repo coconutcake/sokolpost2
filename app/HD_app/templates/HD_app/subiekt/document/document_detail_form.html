@@ -1,0 +1,356 @@
+<!-- FORMULARZ -->
+    <section class="modal_section">
+    <!-- TITLE -->
+        <div class="row section_title">
+        <div class="col m-0 p-0">
+            {% for header in modal_sections.headers %}
+            {% if header.name == "detail" %}
+                <h2>{% autoescape off %}{{ header.icon }} {{ header.text }}{% endautoescape %}</h2>
+            {% endif %}
+            {% endfor %}
+        </div>
+        </div>
+
+    <!-- FORM CONTAINER-->
+        <div class="row mt-3">
+        <div class="col m-0 p-0">
+
+            
+            <!-- TABS -->
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                
+                {% for i,v in modal_sections.items %}
+                    {% if i == "tabs" %}
+                        {% for tab in v %}
+                            <li class="nav-item">
+                                <a class="nav-link {% if tab.active == True %}active{% endif %}" id="{{ tab.tab_id }}-tab" data-toggle="tab" href="#{{ tab.tab_id }}" role="tab" aria-controls="{{ tab.tab_id }}" aria-selected="true">{% if tab.icon %}{% autoescape off %}{{ tab.icon }}{% endautoescape %}{% endif %} {{ tab.tab_name }}</a>
+                            </li> 
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+                                
+                </ul>
+                <!-- TABS: CONTENT-->
+                <div class="tab-content" id="myTabContent">
+
+                    {% for i,v in modal_sections.items %}
+                        {% if i == "tabs" %}
+                            {% for tab in v %}
+                            <div class="tab-pane fade show {% if tab.active == True %}active{% endif %}" id="{{ tab.tab_id }}" role="tabpanel" aria-labelledby="{{ tab.tab_id }}-tab">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <!-- ! -->
+                                            {% if tab.tab_id == "podstawowe" %}
+                                                <div class="row mb-4">
+                                                    <!-- #wg-formularza -->
+                                                    <div class="col-12" id="">
+                                                        {% if form %}
+                                                        <form method="POST" action="{% url 'Document_detail' pk=form.instance.id %}" pk="{{ form.instance.id }}" id="Document_detail_form">
+                                                            {% csrf_token %}
+                                                            {% for field in form %}
+                                                                {% if tab.fields %}
+                                                                    {% if field.name in tab.fields %}
+                                                                        <div class="field-group">
+                                                                        <label>{{ field.label }}</label> {{ field }}
+                                                                        {{ field.errors }}
+                                                                        {% if field.help_text %}
+                                                                            <span class="helptext">&nbsp;{{ field.help_text }}  </span>
+                                                                        {% endif %}
+                                                                        </div>
+                                                                    {% endif %}
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        </form>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+
+
+                                        <!-- ! -->
+                                            {% if tab.tab_id == "raport" %}
+                                                <div class="row mb-4">
+                                                    <!-- #wg-formularza -->
+                                                    <div class="col-12" id="raport-search-form">
+                                                        {% if search_form %}
+                                                            {{ search_form }}
+                                                            <a value="Generuj" url="{% url 'Raport_search_ajax' %}" div-to-map="#raport-search-form" href="#" class="btn btn-sm btn-primary btn-block mt-3 shadow-sm subiekt-get-list-from-div-redirect"><i class="fas fa-save text-light"></i>&nbsp;Generuj</a>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+
+
+                                        <!-- ! -->
+                                            {% if tab.tab_id == "pending" %}
+                                                <div class="row mb-4">
+                                                    <!-- #wg querysetu -->
+                                                    <div class="col-12" id="pending-orders-delete-form">
+                                                        {% if pending_orders %}
+                                                            {% for a in pending_orders %}
+                                                                <div class="row">
+                                                                    <div class="col-10">
+                                                                        <input type="checkbox" id="pending_order_{{ a.id }}" name="pending_order" value="{{ a.id }}">
+                                                                        <label for="pending_order_{{ a.id }}">&nbsp;<i class="fas fa-clipboard-list"></i> {{ a.document.get_subiekt_company_name }} - {{ a.name }}</label>
+                                                                    </div>
+                                                                    <div class="col-2 text-right">
+                                                                        <a class="btn btn-sm btn-primary text-light" data-toggle="collapse" href="#pending_order__{{ a.id }}" role="button" aria-expanded="false" aria-controls="collapseExample"><i class="fas fa-arrow-down"></i></a>
+                                                                    </div>
+                                                                    <div class="col-12">
+                                                                        <hr class="m-0">
+                                                                    </div>
+                                                                    <div class="col-12">
+                                                                        <div class="collapse" id="pending_order__{{ a.id }}">
+                                                                            <div class="card card-body rounded-0">
+                                                                                {% for field,value in a.get_view_fields %}
+                                                                                    <div class="row">
+                                                                                        <!-- #1 -->
+                                                                                        <div class="col-6">
+                                                                                            <span class="font-weight-bold">{{ field }}</span>
+                                                                                        </div>
+                                                                                        <div class="col-6 text-right">
+                                                                                            <span>{{ value }}</span>
+                                                                                        </div>
+                                                                                        <div class="col-12">
+                                                                                            <hr class="m-0">
+                                                                                        </div>
+                                                                                    </div>
+                                                                                {% endfor %}
+
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            {% endfor %}
+                                                            <a modal="#modal_window" url="{% url 'Order_delete_ajax2' %}" div-to-map="#pending-orders-delete-form" href="#" class="btn btn-sm btn-danger btn-block mt-3 shadow-sm subiekt-get-list-from-div"><i class="fas fa-save text-light"></i>&nbsp;Usuń wybrane</a>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                        <!-- ! -->
+                                            {% if tab.tab_id == "closed" %}
+                                                <div class="row mb-4">
+                                                    <!-- #wg querysetu -->
+                                                    <div class="col-12" id="pending-orders-delete-form">
+                                                        {% if completed_orders %}
+                                                            {% for a in completed_orders %}
+                                                                <div class="row">
+                                                                    <div class="col-10">
+                                                                        <input type="checkbox" id="completed_order_{{ a.id }}" name="completed_order" value="{{ a.id }}">
+                                                                        <label for="completed_order_{{ a.id }}">&nbsp;<i class="fas fa-clipboard-list"></i> {{ a.agreement.get_subiekt_company_name }} - {{ a.name }}</label>
+                                                                    </div>
+                                                                    <div class="col-2 text-right">
+                                                                        <a class="btn btn-sm btn-primary text-light" data-toggle="collapse" href="#completed_order__{{ a.id }}" role="button" aria-expanded="false" aria-controls="collapseExample"><i class="fas fa-arrow-down"></i></a>
+                                                                    </div>
+                                                                    <div class="col-12">
+                                                                        <hr class="m-0">
+                                                                    </div>
+                                                                    <div class="col-12">
+                                                                        <div class="collapse" id="completed_order__{{ a.id }}">
+                                                                            <div class="card card-body rounded-0">
+                                                                                {% for field,value in a.get_view_fields %}
+                                                                                    <div class="row">
+                                                                                        <!-- #1 -->
+                                                                                        <div class="col-6">
+                                                                                            <span class="font-weight-bold">{{ field }}</span>
+                                                                                        </div>
+                                                                                        <div class="col-6 text-right">
+                                                                                            <span>{{ value }}</span>
+                                                                                        </div>
+                                                                                        <div class="col-12">
+                                                                                            <hr class="m-0">
+                                                                                        </div>
+                                                                                    </div>
+                                                                                {% endfor %}
+
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            {% endfor %}
+                                                            <a modal="#modal_window" url="{% url 'Order_delete_ajax2' %}" div-to-map="#pending-orders-delete-form" href="#" class="btn btn-sm btn-danger btn-block mt-3 shadow-sm subiekt-get-list-from-div"><i class="fas fa-save text-light"></i>&nbsp;Usuń wybrane</a>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                        
+
+
+                                        
+                                    </div>
+                                </div>
+                            </div>
+
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+
+
+                </div>
+            <!-- SUBMITION -->
+
+
+        </div>
+        </div>
+    </section>
+
+<!-- JS-->
+  <script>
+    function correct_checkboxes(){
+        $("input[type='checkbox']").each(function(){
+          $(this).removeClass("form-control");
+        });
+      }
+    function populate_modal_body(modal_body,content){
+      modal_body.html(content);
+    }
+    function dissmis_modal(modal){
+      $(modal).modal("hide");
+    }
+    function redirect(url){
+        window.location.replace(url);
+    }  
+  </script>
+
+<!-- JS AJAX: POST -->
+  <script>
+    $("a.ajax_post").on('click',function(){
+      console.log("CLICK");
+      var $th = $(this);
+      var $target = $th.attr("form");
+      var $success_url = $th.attr("successurl");
+      var $form = $($target);
+      var $url = $form.attr("action");
+      var $method = $form.attr("method")
+      var $modal_window = $th.attr("modal");
+      var $data = $form.serialize();
+      var $modal_body = $("div.modal-body");
+      $.ajax({
+        url: $url,
+        data: $data,
+        type:$method,
+        success: function (data) {
+            console.log(data)
+            if(data.status=="OK"){
+                dissmis_modal($modal_window);
+                redirect($success_url);
+            } else {
+                populate_modal_body($modal_body,data);
+                correct_checkboxes();
+            }        
+        }
+      });
+    });
+
+
+    $(".subiekt-get-list-from-div").on('click',function(){
+    var $th = $(this);
+    var $target = $th.attr("div-to-map");
+    var $url = $th.attr("url");
+    var $divs = $($target);
+    var $data = [];
+    var $modal_window = $th.attr("modal")
+
+    $($divs).each(function( index ) {
+    var $id = $(this).attr("id")
+    var $content = $(this).find("input,select,textarea").serialize()
+    var $obj = {}
+    $obj[$id] = $content
+    $data.push($obj)
+    });
+    var $serialized_data = {"data": JSON.stringify($data)};
+    console.log("Dane zostały serializowane:")
+    console.log($serialized_data)
+    $.ajax({
+            url: $url,
+            data: $serialized_data,
+            type:"POST",
+            success: function (data) {
+                console.log(data)
+                if(data.status=="OK"){
+                    dissmis_modal($modal_window);
+                    //redirect($success_url);
+                } else {
+                    populate_modal_body($modal_body,data);
+                    correct_checkboxes();
+                }        
+            }
+        });
+    });
+
+    $(".subiekt-get-list-from-div-redirect").on('click',function(){
+    var $th = $(this);
+    var $target = $th.attr("div-to-map");
+    var $url = $th.attr("url");
+    var $divs = $($target);
+    var $data = [];
+
+    $($divs).each(function( index ) {
+    var $id = $(this).attr("id")
+    var $content = $(this).find("input,select,textarea").serialize()
+    var $obj = {}
+    $obj[$id] = $content
+    $data.push($obj)
+    });
+    var $serialized_data = {"data": JSON.stringify($data)};
+    var $uri = $url+"?"+$data[0]['raport-search-form']
+    console.log("Dane zostały serializowane:")
+    console.log($uri)
+
+    redirect($uri)
+    
+
+});
+
+    $("a.ajax_delete").on('click',function(){
+        console.log("CLICK");
+        if (confirm('Czy napewno chcesz usunąć?')) {
+        var $th = $(this);
+        var $success_url = $th.attr("successurl");
+        var $url = $th.attr("url");
+        var $method = "POST"
+        var $modal_window = $th.attr("modal");
+        var $pk = {"pk":$th.attr("pk")}
+        var $modal_body = $("div.modal-body");
+        $.ajax({
+            url: $url,
+            data: $pk,
+            type:$method,
+            success: function (data) {
+                console.log(data)
+                if(data.status=="OK"){
+                    dissmis_modal($modal_window);
+                    redirect($success_url);
+                } else {
+                    populate_modal_body($modal_body,data);
+                    correct_checkboxes();
+                }        
+            }
+        });
+        } else {
+            console.log('Canceled');
+        }    
+    });
+  </script>
+
+  <script>
+      // Dodawanie klas css datepicker ---------------
+      function set_datetime_fields(){
+        $('textarea, input[type="text"], select').addClass('shadow-sm');
+        $("textarea").addClass('bg-textarea')
+        jQuery('input[name="start_datetime"], input[name="end_datetime"]').datetimepicker({
+          format: 'Y-m-d H:i',
+          step: 15,
+        });
+        jQuery('input[name="start_date"], input[name="end_date"], .dates').datetimepicker({
+          format: 'Y-m-d',
+        });
+
+        $(function () {
+          $(".datepicker").datepicker({
+            dateFormat: 'yy-mm-dd',
+          });
+        });
+      }
+      set_datetime_fields()
+</script>

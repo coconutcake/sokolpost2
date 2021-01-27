@@ -1,0 +1,695 @@
+<!-- templates/home.html-->
+{% extends 'HD_app/newbase.html' %}
+{% load static %}
+{% load rest_framework %}
+{% block title %}Raport{% endblock %}
+
+{% if user.is_authenticated %}
+{% block modals %}
+  <!-- MODAL WINDOW -->
+    <div class="modal fade" id="modal_window" tabindex="-1" role="dialog" aria-labelledby="modal_window_title" aria-hidden="true">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content shadow">
+        <!-- MODAL BODY-->
+          <div class="modal-body">
+            <div id="spinner-loading" class="mt-5 mb-5 pt-5 pb-5"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  <!-- MODAL WINDOW 2 -->
+    <div class="modal fade" id="modal_window_2" tabindex="-1" role="dialog" aria-labelledby="modal_window_2_title" aria-hidden="true">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content shadow">
+        <!-- MODAL BODY-->
+          <div class="modal-body">
+          <div id="spinner-loading"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+{% endblock %}
+{% endif %}
+
+
+{% block content %}
+{% if user.is_authenticated %}
+
+<!-- LISTA KLIENTÓW -->
+  <section class="sec">
+    <!-- ACTION BAR-->
+      <nav class="action-bar">
+       <!-- HEADER -->
+       <div class="row upper-bar">
+        <div class="col-12 col-sm-3 action-bar-header">
+        <h2 class=""><i class="fas fa-clipboard-list"></i> Raport  <span class="mark_counter align-middle"></span></h2>
+        </div>
+
+        <!-- Links -->
+          <div class="col-12 col-sm-9 action-bar-items text-right">
+            <div class="d-flex justify-content-end">
+            <div>
+            <ul class="action-bar-list">
+              <li class="action-bar-item">
+                <a href="#" class="btn btn-sm btn-primary action-bar-item-link"> Pobierz PDF</a>
+              </li>
+              <li class="action-bar-item">
+                <a href="#" class="btn btn-sm btn-primary action-bar-item-link"> Drukuj</a>
+              </li>
+
+
+              <li class="action-bar-item">
+                <button class="btn btn-primary btn-sm dropdown-toggle" id="dropdown-options" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-sliders-h"></i> Opcje</button>
+                <div class="dropdown-menu p-0 m-0" aria-labelledby="dropdown-options">
+                   <a href="#" class="btn-block btn-sm btn-primary action-bar-item-link dark-mode m-0"><i class="fas fa-moon"></i> Tryb ciemny</a>
+                  <a href="#" class="btn-block btn-sm btn-primary action-bar-item-link full-screen m-0"><i class="fas fa-expand"></i> Pełny ekran</a>
+                </div>
+              </li>
+
+            </ul>
+            </div>
+            </div>
+          </div>
+        </div>
+
+
+      </nav>
+
+
+  <!-- LISTA -->
+    
+    <div id="subiekt_raport_list">
+    
+      {% for a in documents %}
+        <!-- Raport -->
+
+        <!-- Nagłowek -->
+          <div class="row raport-order pt-4 ">
+            <div class="col-12 ">
+              <div class="section-container header-row">
+                  <div class="section-header">
+                <h2><i class="fas fa-chart-line"></i> RAPORT dla firmy {{ a.get_subiekt_company_name }}</h2>
+                <hr>
+              </div>
+
+            <div class="col-12 pt-2 pb-2 ">
+            
+              <div class="row">
+              <!-- header -->
+                <div class="col-12">
+
+                  <div class="row mb-3">
+                    <div class="col-12">
+                        <span class="font-weight-bold order-heading-row"><i class="fas fa-clipboard-list "></i> <span class="">Informacje o raporcie</span></span>
+                    </div>
+                    <div class="col-12">
+                        <hr class="m-0">
+                    </div>
+                  </div>
+                  </div>
+                <div class="col-12 col-md-6 pt-2 pl-4 pr-4 pb-2">
+              <!-- info list -->
+                  <div class="row">
+                  <!-- list item -->
+                    <div class="col-6">
+                      <span class="font-weight-bold order-heading-row"><i class="fas fa-clipboard-list "></i> <span class="">Zakres umowy</span></span>
+                    </div>
+                    <div class="col-6 text-right">
+                      <span class="font-weight-bold order-heading-row"><span class="">od {{ a.start_date|date:"Y-m-d" }} do {{ a.end_date|date:"Y-m-d" }}</span></span>
+                    </div>
+                    <div class="col-12">
+                      <hr class="m-0">
+                    </div>
+                  <!-- list item -->
+                    <div class="col-6">
+                      <span class="font-weight-bold order-heading-row"><i class="fas fa-clipboard-list "></i> <span class="">Zakres raportu</span></span>
+                    </div>
+                    <div class="col-6 text-right">
+                      <span class="font-weight-bold order-heading-row"><span class="">od {{ date_range.start_date }} do {{ date_range.end_date }}</span></span>
+                    </div>
+                    <div class="col-12">
+                      <hr class="m-0">
+                    </div>
+                  <!-- list item -->
+                    <div class="col-6">
+                      <span class="font-weight-bold order-heading-row"><i class="fas fa-clipboard-list "></i> <span class="">Zakres raportu w dniach</span></span>
+                    </div>
+                    <div class="col-6 text-right">
+                      <span class="font-weight-bold order-heading-row"><span class="">{{ date_range.get_range_in_days }} dni</span></span>
+                    </div>
+                    <div class="col-12">
+                      <hr class="m-0">
+                    </div>
+                    
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-6 pt-2 pl-4 pr-4 pb-2">
+                  <div class="row">
+                    <!-- list item -->
+                    <div class="col-6">
+                      <span class="font-weight-bold order-heading-row"><i class="fas fa-clipboard-list "></i> <span class="">Data wygenerowania dokumentu</span></span>
+                    </div>
+                    <div class="col-6 text-right">
+                      <span class="font-weight-bold order-heading-row"><span class="">{{ datetime_now|date:"Y-m-d H:i:s" }}</span></span>
+                    </div>
+                    <div class="col-12">
+                      <hr class="m-0">
+                    </div>
+                    <!-- list item -->
+                    <div class="col-6">
+                      <span class="font-weight-bold order-heading-row"><i class="fas fa-clipboard-list "></i> <span class="">Podmiot wydający</span></span>
+                    </div>
+                    <div class="col-6 text-right">
+                      <span class="font-weight-bold order-heading-row"><span class="">Gobit</span></span>
+                    </div>
+                    <div class="col-12">
+                      <hr class="m-0">
+                    </div>
+                    <!-- list item -->
+                    <div class="col-6">
+                      <span class="font-weight-bold order-heading-row align-middle"><i class="fas fa-clipboard-list "></i> <span class="">Podmiot adresowany</span></span>
+                    </div>
+                    <div class="col-6 text-right">
+                      <span class="font-weight-bold order-heading-row"><span class="">{{ a.get_subiekt_company_name }}</span></span>
+                    </div>
+                    <div class="col-12">
+                      <hr class="m-0">
+                    </div>
+                  </div>
+                </div>
+                </div>
+              </div>
+            </div>
+            </div>
+            </div>
+            </div>
+
+          <!-- Treść -->
+
+          <div class="row raport-order">
+        
+            <div class="col-12 ">
+              <div class="section-container">
+                  <div class="section-header">
+                  <h5 class="text-secondary"><i class="fas fa-chart-line"></i> Lista zleceń</h5>
+                  <hr>
+                </div>
+              
+              <!-- header -->
+              <!--
+                <div class="col-12">
+                  <div class="row  mb-3">
+                    <div class="col-12">
+                        <span class="font-weight-bold order-heading-row"><i class="fas fa-clipboard-list "></i> <span class="order-heading-row">Informacje o zleceniach</span></span>
+                    </div>
+                    <div class="col-12">
+                        <hr class="m-0">
+                    </div>
+                  </div>
+-->
+            <div class="col-12">
+            
+
+
+
+            <!-- Lista zleceń -->
+              {% for o in orders %}
+              <!-- Element -->
+                <div class="row mb-3 pt-2 shadow-sm order-row ">
+
+                  <div class="col-12 ">
+
+                      <div class="row mb-2">
+                        <!-- header -->
+                        <div class="col-12">
+                          <div class="row  mb-3">
+                            <div class="col-12">
+                                <span class="font-weight-bold order-heading-row"><i class="fas fa-clipboard-list "></i> <span class="order-heading-row">Zlecenie {{ forloop.counter }} </span></span>
+                            </div>
+                            <div class="col-12">
+                                <hr class="m-0">
+                            </div>
+                            <div class="col-12">
+                              <div class="row">
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        
+                        <div class="col-12 col-md-6 pt-2 pl-4 pr-4 pb-4">
+                          <div class="row">
+                          <!-- Wiersz -->
+                            <div class="col-6">
+                              <span class="font-weight-bold order-name"><i class="fas fa-clipboard-list "></i> <span class="order-name">{{ o.name }}</span></span>
+                            </div>
+                            <div class="col-6 text-right">
+                              <span>{{ o.created_date|date:"Y-m-d" }}</span>
+                            </div>
+                            <div class="col-12">
+                              <hr class="m-0">
+                            </div>
+                          <!-- Wiersz -->
+                            <div class="col-6">
+                              <span class="font-weight-bold"><i class="fas fa-clipboard-list text-secondary"></i> Typ realizacji:</span>
+                            </div>
+                            <div class="col-6 text-right">
+                              <span>{{ o.implementation_type.name }}</span>
+                            </div>
+                            <div class="col-12">
+                              <hr class="m-0">
+                            </div>
+                          <!-- Wiersz -->
+                            <div class="col-6">
+                              <span class="font-weight-bold"><i class="fas fa-clipboard-list text-secondary"></i> Typ zlecenia:</span>
+                            </div>
+                            <div class="col-6 text-right">
+                              <span>{{ o.order_type.name }}</span>
+                            </div>
+                            <div class="col-12">
+                              <hr class="m-0">
+                            </div>
+                          <!-- Wiersz -->
+                            <div class="col-6">
+                              <span class="font-weight-bold"><i class="fas fa-clipboard-list text-secondary"></i> Status:</span>
+                            </div>
+                            <div class="col-6 text-right">
+                              <span>{{ o.order_status.name }}</span>
+                            </div>
+                            <div class="col-12">
+                              <hr class="m-0">
+                            </div>
+                          <!-- Wiersz -->
+                            <div class="col-6">
+                              <span class="font-weight-bold"><i class="fas fa-user text-secondary"></i> Opiekun IT:</span>
+                            </div>
+                            <div class="col-6 text-right">
+                              <span>{{ o.care.first_name }} {{ o.care.last_name }}</span>
+                            </div>
+                            <div class="col-12">
+                              <hr class="m-0">
+                            </div>
+                          <!-- Wiersz -->
+                            <div class="col-6">
+                              <span class="font-weight-bold"><i class="fas fa-hourglass-half text-secondary"></i> Czas realizacji:</span>
+                            </div>
+                            <div class="col-6 text-right">
+                              <span>{{ o.end_datetime|timeuntil:o.start_datetime }}</span>
+                            </div>
+                            <div class="col-12">
+                              <hr class="m-0">
+                            </div>
+                          <!-- Wiersz -->
+                            <div class="col-6">
+                              <span class="font-weight-bold"><i class="fas fa-gas-pump text-secondary"></i> Stawka paliwowa:</span>
+                            </div>
+                            <div class="col-6 text-right">
+                              <span>{{ o.getDistanceCalcProfileCosts }} PLN/km</span>
+                            </div>
+                            <div class="col-12">
+                              <hr class="m-0">
+                            </div>
+                          <!-- Wiersz -->
+                            <div class="col-6">
+                              <span class="font-weight-bold"><i class="fas fa-dollar-sign text-secondary"></i> Koszt:</span>
+                            </div>
+                            <div class="col-6 text-right">
+                              <span>{{ o.calculate_order }} PLN</span>
+                            </div>
+                            <div class="col-12">
+                              <hr class="m-0">
+                            </div>
+                          <!-- Wiersz -->
+                            <div class="col-6">
+                              <span class="font-weight-bold"><i class="fas fa-dollar-sign text-secondary"></i> Koszt dojazdu:</span>
+                            </div>
+                            <div class="col-6 text-right">
+                              <span>{{ o.get_fuel_costs }} PLN</span>
+                            </div>
+                            <div class="col-12">
+                              <hr class="m-0">
+                            </div>
+                          <!-- Wiersz -->
+                            <div class="col-6">
+                              <span class="font-weight-bold"><i class="fas fa-dollar-sign text-secondary"></i> Koszt z dojazdem:</span>
+                            </div>
+                            <div class="col-6 text-right">
+                              <span>{{ o.calculate_order_with_distance }} PLN</span>
+                            </div>
+                            <div class="col-12">
+                              <hr class="m-0">
+                            </div>
+
+                          </div>
+                        </div>
+                        <!-- Opis -->
+                          <div class="col-12 col-md-6 pt-2 pl-4 pr-4 pb-4">
+                            <div class="row">
+                              <div class="col-12">
+                                <span class="font-weight-bold"><i class="fas fa-clipboard-list text-secondary"></i> Opis</span>
+                              </div>
+                              <div class="col-12">
+                                <hr class="m-0">
+                              </div>
+                              <div class="col-12">
+                                <span class="opis-text">{{ o.description }}</span>
+                              </div>
+                            </div>
+                          </div>
+                      </div>
+
+                  </div>
+                </div>
+              {% endfor %}
+              </div>
+              </div>
+
+
+        <!-- Podsumowanie nowe -->
+          <div class="row raport-order">
+                    <div class="col-12 ">
+              <div class="section-container">
+                  <div class="section-header ">
+                  <h5 class="text-danger"><i class="fas fa-chart-line"></i> Podsumowanie</h5>
+                  <hr class="">
+                </div>
+            <div class="col-12">
+               <!-- Element -->
+                <div class="row mb-3 pt-2 ">
+
+                  <div class="col-12 ">
+
+                      <div class="row mb-5">
+                        <!-- header -->
+                        <div class="col-12">
+                          <div class="row  mb-3">
+                            <div class="col-12">
+                                <span class="font-weight-bold order-heading-row"><i class="fas fa-clipboard-list "></i> <span class="order-heading-row">Dane matematyczne </span></span>
+                            </div>
+                            <div class="col-12">
+                                <hr class="m-0">
+                            </div>
+                            <div class="col-12">
+                              <div class="row">
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        
+                        <div class="col-12 col-md-6 pt-2 pl-4 pr-4 pb-4">
+                          <div class="row">
+                          <!-- Wiersz -->
+                             <!-- Wiersz -->
+                                <div class="col-6">
+                                  <span class="font-weight-bold"><i class="fas fa-sort-numeric-up-alt text-secondary"></i> Ilość zleceń</span>
+                                </div>
+                                <div class="col-6 text-right">
+                                  <span>{{ get_orders_counter }}</span>
+                                </div>
+                                <div class="col-12">
+                                  <hr class="m-0">
+                                </div>
+
+                            <!-- Wiersz -->
+                                <div class="col-6">
+                                  <span class="font-weight-bold"><i class="fas fa-sort-numeric-up-alt text-secondary"></i> Ilość przebytych kolometrów</span>
+                                </div>
+                                <div class="col-6 text-right">
+                                  <span>{{ get_orders_two_way_distance }} km</span>
+                                </div>
+                                <div class="col-12">
+                                  <hr class="m-0">
+                                </div>
+                            <!-- Wiersz -->
+                                <div class="col-6">
+                                  <span class="font-weight-bold"><i class="fas fa-sort-numeric-up-alt text-secondary"></i> Stawki kilometrowe</span>
+                                </div>
+                                <div class="col-6 text-right">
+                                  <span>{% for stack in get_orders_fuel_stacks %}{{ stack }},{% endfor %} PLN/km</span>
+                                </div>
+                                <div class="col-12">
+                                  <hr class="m-0">
+                                </div>
+
+                            <!-- Wiersz -->
+                                <div class="col-6">
+                                  <span class="font-weight-bold"><i class="fas fa-sort-numeric-up-alt text-secondary"></i> Suma kosztów kilometrowych</span>
+                                </div>
+                                <div class="col-6 text-right">
+                                  <span>{{ get_orders_sum_travel_costs }} PLN</span>
+                                </div>
+                                <div class="col-12">
+                                  <hr class="m-0">
+                                </div>
+
+                            <!-- Wiersz -->
+                                <div class="col-6">
+                                  <span class="font-weight-bold"><i class="fas fa-sort-numeric-up-alt text-secondary"></i> Suma przepracowanych godzin</span>
+                                </div>
+                                <div class="col-6 text-right">
+                                  <span>{{ get_orders_sum_time }} h</span>
+                                </div>
+                                <div class="col-12">
+                                  <hr class="m-0">
+                                </div>
+
+                              <!-- Wiersz -->
+                                <div class="col-6">
+                                  <span class="font-weight-bold"><i class="fas fa-dollar-sign text-secondary"></i> Koszta całkowite</span>
+                                </div>
+                                <div class="col-6 text-right">
+                                  <span>{{ get_orders_sum_costs }} PLN</span>
+                                </div>
+                                <div class="col-12">
+                                  <hr class="m-0">
+                                </div>
+
+                              <!-- Wiersz -->
+                                <div class="col-6">
+                                  <span class="font-weight-bold"><i class="fas fa-dollar-sign text-secondary"></i> Koszta całkowite z dojazdami</span>
+                                </div>
+                                <div class="col-6 text-right">
+                                  <span>{{ get_orders_sum_costs_with_travel }} PLN</span>
+                                </div>
+                                <div class="col-12">
+                                  <hr class="m-0">
+                                </div>
+
+                          </div>
+                        </div>
+                        </div>
+                    </div>
+                  </div>
+                  </div>
+              </div>
+              </div>
+              </div>
+              </div>
+
+
+
+
+
+
+      {% endfor %}
+  
+    </div>
+
+
+  </section>
+<!-- JS -->
+  <script src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mojs/core"></script>
+<!-- MODAL -->
+  <script>
+
+    function dissmis_modal(modal){
+      $(modal).modal("hide");
+    }
+
+    function correct_checkboxes(){
+        $("input[type='checkbox']").each(function(){
+          $(this).removeClass("form-control");
+        });
+      }
+
+    function populate_modal_body(modal_body,content){
+      modal_body.html(content);
+    }
+
+    function is_only_one_allowed(val){
+      if(val == "true"){
+        return true
+      } else {
+        return false
+      }
+    }
+
+    function marked_counter(marker){
+      var $name = marker
+      var $list = [];
+      var $checked = $(document).find(".mark[name='"+$name+"']:checked")
+      console.log($checked.length)
+      return $checked.length;
+    }
+    function get_pk(marker){
+      var $name = marker
+      var $checked = $(document).find(".mark[name='"+$name+"']:checked")
+      console.log($checked.attr("pk"))
+      return $checked.attr("pk");
+    }
+
+    function is_only_1_marked(marker){
+      var $counter = marked_counter(marker);
+      if($counter == 1){
+        return true
+      } else {
+        return false
+      }
+      }
+
+      function send_ajax(url,data,type,modal_body){
+        var $url = url;
+        var $data = data;
+        var $type = type;
+        var $modal_body = modal_body;
+        console.log($data)
+
+          $.ajax({
+            url:$url,
+            data:{"data":JSON.stringify($data)},
+            type:$type,        
+            success: function(content) {
+              populate_modal_body($modal_body,content);
+              correct_checkboxes();
+            }
+          });
+      }
+
+    $(".subiekt-modal-form-create").on('click',function(){
+      console.log("subiekt-modal-form-create clicked");
+      var $th = $(this);
+      var $onlyone = $th.attr("only-one");
+      var $url = $th.attr("url");
+      var $keyid = $th.attr("keyid");
+      var $marker = $th.attr("marker");
+      console.log($marker)
+      var $pk = $th.attr("pk");
+      var $data = {} 
+      $data[$keyid] = $pk
+      var $type = $th.attr("type");
+      var $data_target = $th.attr("data-target");
+      var $modal_body = $($data_target+" div.modal-body");
+
+      if(is_only_one_allowed($onlyone)){
+        if(is_only_1_marked($marker)){
+          $pk = get_pk($marker)
+          $data[$keyid] = $pk
+          send_ajax($url,$data,$type,$modal_body)
+        } else {
+          var $counter = marked_counter($marker)
+          populate_modal_body($modal_body,"Zaznaczyłeś: "+$counter+" elementów. Dozwolona ilość wynosi zaznaczeń to: 1");
+        }
+      } else {
+        send_ajax($url,$data,$type,$modal_body)
+      }
+
+    });
+
+
+    $('#company-search-form input').keypress(function (e) {
+      if (e.which == 13) {
+          $('a[forms="#company-search-form"]').click();
+          
+          return false;
+      }
+    });
+
+        const rect = new mojs.Shape({
+          shape:        'rect',
+          left:         '50%',
+          top:          '50%',
+          parent:       '#spinner-loading',
+          scale: {3:1},
+          fill:         {'none':'none'},
+          radius:       30,
+          stroke:       { 'white' : 'black' },
+          strokeWidth:  { 20: 40 },
+          angle:        { 0: 40 },
+          duration:     500,
+          delay: 200,
+          easing:        'cubic.inout',
+        
+        }).then({
+          fill:         'none',
+          strokeWidth:  { 40: 20 },
+          stroke:       { 'black' : 'black' },
+          radius:       30,
+          angle:        { 40: 130 },
+          duration:     1000,
+          easing:        'ease.inout',
+          repeat:999
+          })
+      
+
+
+document.addEventListener( 'click', function (e) {
+  rect.replay();
+});
+
+
+
+    $(".modal_button").on('click',function(){
+
+      var $th = $(this);
+      var $url = $th.attr("url");
+      var $pk = $th.attr("pk");
+      var $data = {"pk":$pk}
+      var $type = $th.attr("type");
+      var $data_target = $th.attr("data-target");
+      var $modal_body = $($data_target+" div.modal-body");
+
+      console.log($modal_body)
+      $.ajax({
+        url:$url,
+        data:$data,
+        type:$type,
+        success: function(content){
+          console.log(content)
+            populate_modal_body($modal_body,content);
+            correct_checkboxes();
+        }
+      });
+    });
+  </script>
+<script>
+
+
+</script>
+<!-- JS span opis-->
+  <script>
+  $('span.opis-text').each(function () {
+      var $th = $(this)
+      var html = $th.html().split("\n");
+      $th.empty();
+      for (step = 0; step < html.length; step++) {
+        $th.append("<span>"+html[step]+"<span><br>")
+      }
+  });
+  </script>
+{% else %}
+<div class="container">
+  <div class="row p-1">
+    <div class="col-12">
+      <p>Nie jestes zalogowany!</p>
+      <img src="{% static 'img/gob_logo.png' %}" alt="logo"><br>
+      <span><a href="{% url 'login' %}">Zaloguj</a></span><br>
+      <span><a href="{% url 'register2' %}">Zarejestuj</a></span>
+    </div>
+  </div>
+</div>
+{% endif %}
+</script>
+{% endblock %}

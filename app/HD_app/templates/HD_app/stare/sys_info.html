@@ -1,0 +1,37 @@
+{% extends 'HD_app/base.html' %}
+{% load static %}
+
+
+    <div class="row">
+        {% block content %}
+            <h1><i class="fa fa-cogs" aria-hidden="true"></i><b> System</b></h1>
+            <span>Informacje systemowe</span><br>
+            <span>Plik zbierający te dane: </span><span class="text-secondary"><i>{{ appconfig_cwd }}</i></span><br>
+            <span>Plik konfiguracyjny Django: </span><span class="text-secondary"><i>{{ settings_cwd }}</i></span><br>
+            <hr>
+            <div class="col-12">
+                <h3><i class="fa fa-database" aria-hidden="true"></i> Baza danych Gobit.    HelpDesk</h3>
+                {% if db_status == "ONLINE" %}
+                    <span>Status: </span><span class="text-success font-weight-bold"><i class="fa fa-check" aria-hidden="true"></i> {{ db_status }}</span><br>
+                    {% for v in version %}
+                        <span>Wersja sys: </span><span class="font-weight-bold">{{ v.0 }}</span><br>
+                        <span>Wersja mysql: </span><span class="font-weight-bold">{{ v.1 }}</span><br>
+                    {% endfor %}
+                    
+                {% else %}
+                    <span>Status: </span><span class="text-danger font-weight-bold"><i class="fa fa-times" aria-hidden="true"></i> {{ db_status }}</span><br>
+                {% endif %}
+                
+                <span>Plik konfiguracyjny bazy: </span><span class="text-secondary"><i>{{ database_cwd }}</i></span><br>
+                <hr>
+                {% if db %}
+                {% for key, value in db.items %}
+                <p class="m-1"><b>{{ key }}</b> : {{ value }}</p>
+                {% endfor %}
+                {% else %}
+                <p>Nie udalo sie połączyć z bazą</p>
+                {% endif %}
+            </div>
+        {% endblock content %}
+    </div>
+

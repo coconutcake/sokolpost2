@@ -1,0 +1,144 @@
+<!-- FORMULARZ -->
+              <section class="modal_section">
+                <!-- TITLE -->
+                  <div class="row section_title">
+                    <div class="col m-0 p-0">
+                      <h2><i class="fas fa-user-alt"></i> Nowy użytkownik</h2>
+                    </div>
+                  </div>
+
+                <!-- FORM CONTAINER-->
+                  <div class="row mt-3">
+                    <div class="col m-0 p-0">
+  
+
+                        <!-- TABS -->
+                          <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            <li class="nav-item">
+                              <a class="nav-link active" id="user-tab" data-toggle="tab" href="#user" role="tab" aria-controls="user" aria-selected="true">Podstawowe</a>
+                            </li>
+                          </ul>
+                        <!-- TABS: CONTENT-->
+                          <div class="tab-content" id="myTabContent">
+                          <!-- TABS: Adres -->
+                            <div class="tab-pane fade show active" id="user" role="tabpanel" aria-labelledby="user-tab">
+                              <div class="row">
+                                <div class="col-12">
+                                
+                                  <form action="{% url 'User_add' %}" method="post" id="user_add_form">
+                                    {% csrf_token %}
+                                    {% for field in user_form.visible_fields %}
+                                    <div class="field-group">
+                                      <label>{{ field.label }}</label> {{ field }}
+                                      {{ field.errors }}
+                                      {% if field.help_text %}
+                                          <span class="helptext">&nbsp;{{ field.help_text }}  </span>
+                                      {% endif %}
+                                      </div>
+                                  {% endfor %}
+                                </form>
+
+
+                                </div>
+                              </div>
+                            </div>
+                            
+
+                            
+                          </div>
+                        <!-- SUBMITION -->
+                          <div class="mt-4">
+                            <a value="Zapisz" successurl="{% url 'User_add' %}" url="{% url 'User_add' %}" href="#" modal="#modal_window" class="btn btn-sm btn-block btn-primary mt-3 shadow-sm ajax-post-form" forms="#user_add_form"><i class="fas fa-save text-light"></i>&nbsp;Zapisz</a>
+                            <!--
+                            <a value="Zapisz" successurl="{% url 'User_add' %}" modal="#modal_window" href="#" class="btn btn-sm btn-primary btn-block mt-3 shadow-sm ajax_post" form="#user_add_form"><i class="fas fa-save text-light"></i>&nbsp;Zapisz</a>
+                            -->
+                          </div>
+
+
+                    </div>
+                  </div>
+              </section>
+
+<!-- JS-->
+  <script>
+    function correct_checkboxes(){
+        $("input[type='checkbox']").each(function(){
+          $(this).removeClass("form-control");
+        });
+      }
+    function populate_modal_body(modal_body,content){
+      modal_body.html(content);
+    }
+    function dissmis_modal(modal){
+      $(modal).modal("hide");
+    }
+    function redirect(url){
+        window.location.replace(url);
+    }  
+  </script>
+
+<!-- JS AJAX: POST -->
+  <script>
+    $("a.ajax_post").on('click',function(){
+      console.log("CLICK")
+      var $th = $(this);
+      var $target = $th.attr("form");
+      var $success_url = $th.attr("successurl");
+      var $form = $($target);
+      var $url = $form.attr("action")
+      var $method = $form.attr("method")
+      var $modal_window = $th.attr("modal")
+      var $data = $form.serialize()
+      var $modal_body = $("div.modal-body");
+      $.ajax({
+        url: $url,
+        data: $data,
+        type:$method,
+        success: function (data) {
+            if(data.status=="OK"){
+                dissmis_modal($modal_window);
+                redirect($success_url)
+            } else {
+                populate_modal_body($modal_body,data);
+                correct_checkboxes();
+            }        
+        }
+      });
+    });
+
+// --- AJAX POST FORM
+    $("a.ajax-post-form").on('click',function(){
+      var $th = $(this);
+      var $target = $th.attr("forms");
+      var $url = $th.attr("url");
+      var $success_url = $th.attr("successurl");
+      var $forms = $($target);
+      var $modal_window = $th.attr("modal")
+      var $modal_body = $("div.modal-body");
+      var $data = [];
+      
+      $($forms).each(function( index ) {
+        var $id = $(this).attr("id")
+        var $content = $(this).serialize()
+        var $obj = {}
+        $obj[$id] = $content
+        $data.push($obj)
+      });
+
+      $.ajax({
+        url: $url,
+        data: {"data":JSON.stringify($data)},
+        type:"POST",
+        success: function (data) {
+            console.log(data)
+            if(data.status == 200){
+                dissmis_modal($modal_window)
+                redirect($success_url)
+            } else {
+                populate_modal_body($modal_body,data);
+                correct_checkboxes();
+            }        
+        }
+      });
+    });
+  </script>

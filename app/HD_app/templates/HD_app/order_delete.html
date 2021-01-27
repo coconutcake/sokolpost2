@@ -1,0 +1,57 @@
+<!-- templates/home.html-->
+{% extends 'HD_app/newbase.html' %}
+{% load static %}
+{% load rest_framework %}
+{% block title %}Zlecenie{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+
+
+
+<!-- FORMULARZ -->
+  <section class="sec">
+    <!-- TITLE -->
+      <div class="row section_title">
+        <div class="col">
+          <h2><i class="fas fa-building"></i> Usuwanie zlecenia {{ object }}</h2>
+          <hr class="hr_title">
+        </div>
+      </div>
+    <!-- FORM -->
+      <form method="post">
+        {% csrf_token %}
+        <div class="row">
+          <div class="col-12 col-sm-6">
+            <p><b>Czy napewno chcesz usunąć "{{ object }}"?</b></p>
+          </div>
+        </div>
+        <hr>
+        <input type="submit" value="Usuń" class="btn btn-danger mt-3 shadow">
+      </form>
+  </section>
+
+
+
+
+<!-- JS-->
+  <script src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
+
+{% else %}
+
+<div class="container">
+  <div class="row p-1">
+    <div class="col-12">
+      <p>Nie jestes zalogowany!</p>
+      <img src="{% static 'img/gob_logo.png' %}" alt="logo"><br>
+      <span><a href="{% url 'login' %}">Zaloguj</a></span><br>
+      <span><a href="{% url 'register2' %}">Zarejestuj</a></span>
+    </div>
+  </div>
+</div>
+
+{% endif %}
+
+
+{% endblock %}

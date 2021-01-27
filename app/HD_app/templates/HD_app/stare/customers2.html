@@ -1,0 +1,104 @@
+<!-- templates/home.html-->
+{% extends 'HD_app/base.html' %}
+{% load static %}
+{% load rest_framework %}
+{% block title %}Dodaj nowego klienta{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+
+<!-- Modal ADD order -->
+<div class="modal fade" id="add_customer_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered " role="document">
+    <div class="modal-content bg-noisy p-1">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle"><i class="fa fa-plus color1" aria-hidden="true"></i> Dodawanie klienta</h5>
+        <button type="button" class="close close_modal_button" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        
+        <form id="add_customer" action="{% url 'customers' %}" method="post">
+          {% csrf_token %}
+          {% render_form form %}
+      
+
+      </div>
+      <div class="modal-footer">
+        <input type="submit" value="Zapisz" class="btn btn-danger mt-3 shadow">
+        <button type="button" class="btn btn-secondary mt-3 shadow close_modal_button" data-dismiss="modal">Zamknij</button>
+        
+      </form><!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+    <div class="row p-3">
+      <div class="col-12 p-3">
+        <div class="d-flex justify-content-between">
+          <div class="" id="">
+            <h1><i class="fa fa-list color1" aria-hidden="true"></i>
+              Klienci</h1> 
+  
+          </div>
+          <button class="btn btn-success shadow-sm open_modal_button" id="add_customer_btn" type="button">
+           Dodaj
+          </button>
+        </div>
+        <hr>
+      </div>
+    </div>
+
+    <div class="row mb-1">
+      <div class="col">
+      <div class="fresh-div" id="customer_lst">
+
+        
+      {% if customers %}
+        {% for c in customers.all %}
+        <div class="d-flex justify-content-center">
+          <div class="col">
+            <span id="{{ c.id }}">ID: {{ c.id }}</span> /
+            <h2 id="{{ c.id }}"><b>{{ c.name|upper }}</b></h2>
+            <p id="{{ c.id }}">Adres: {{ c.address }}</p>
+            <p id="{{ c.id }}">Nip: {{ c.nip }}</p>
+            <p id="{{ c.id }}">Komórka: {{ c.cellphone }}</p>
+          
+            
+          </div>
+
+          <div class="col text-right">
+            <a href="{% url 'customers' c.id %}">
+            <button class="show_btn btn shadow-sm btn-sm btn-secondary" id="{{ c.id }}" url="{% url 'customers' c.id %}"><i class="fa fa-trash" aria-hidden="true"></i> Zmień</button></a>
+            <button class="cancel_order btn shadow-sm btn-sm btn-danger" id="{{ c.id }}" url="{% url 'customers' %}"><i class="fa fa-trash" aria-hidden="true"></i> Usuń</button>
+          </div>
+        </div>
+        <!-- <hr> -->
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+
+
+{% else %}
+
+<div class="container">
+  <div class="row p-1">
+    <div class="col-12">
+      <p>Nie jestes zalogowany!</p>
+      <img src="{% static 'img/gob_logo.png' %}" alt="logo"><br>
+      <span><a href="{% url 'login' %}">Zaloguj</a></span><br>
+      <span><a href="{% url 'register2' %}">Zarejestuj</a></span>
+    </div>
+  </div>
+</div>
+
+{% endif %}
+{% endblock %}

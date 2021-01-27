@@ -1,0 +1,199 @@
+<!-- templates/home.html-->
+{% extends 'HD_app/newbase.html' %}
+{% load static %}
+{% load rest_framework %}
+{% block title %}Dashboard - Sokół{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+<!-- STAFF ONLY USERS-->
+  {% if user.is_staff %}
+  <!-- Dashboard -->
+    <section class="sec">
+      <!-- TITLE -->
+        <div class="row section_title">
+          <div class="col">
+            <h2><i class="fas fa-chart-pie"></i> Dashboard {{ object.name }}</h2>
+            <hr class="hr_title">
+          </div>
+          <div class="col section-content">
+            <canvas id="myChart" width="400" height="400"></canvas>
+          </div>
+        </div>
+      <!-- Chart -->
+        <!-- TITLE -->
+          <div class="row mt-3">
+            <div class="col">
+              <h5><i class="far fa-chart-bar"></i> Zlecenia per user {{ object.name }}</h5>
+              <hr>
+            </div>
+          </div>
+        <!-- Chart object -->
+          <div class="row">
+            <div class="col">
+              <canvas id="OrderCounterChart" height="100"></canvas>
+            </div>
+          </div>
+    </section>
+
+
+
+  {% else %}
+<!-- NORMAL USER -->
+  <!-- Dashboard -->
+      <section class="sec">
+        <!-- TITLE -->
+          <div class="row">
+            <div class="col">
+              <h2><i class="fas fa-chart-pie text-danger"></i> Dashboard {{ object.name }}</h2>
+              <hr class="hr_title">
+            </div>
+          </div>
+        <!-- Zlecenia -->
+          <!-- TITLE -->
+            <div class="row mt-3">
+              <div class="col">
+                <h5><i class="far fa-chart-bar"></i> Moje zlecenia</h5>
+                <hr>
+              </div>
+            </div>
+          <!-- Lista -->
+            <div class="row">
+              <div class="col">
+               
+              </div>
+            </div>
+      </section>
+
+
+
+
+
+  {% endif %}
+
+
+<!-- JS-->
+  <script src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
+  <!-- Charts modules -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@0.7.0"></script>
+  <!-- STAFF ONLY USERS -->  
+    {% if user.is_staff %}  
+      <script>
+        var ctx = document.getElementById('OrderCounterChart').getContext('2d');
+        var workers = [{% for x in workers %}'{{ x|escapejs }}',{% endfor %}]
+        var order_count = [{% for x in workers %}'{{ x.count_orders|escapejs }}',{% endfor %}]
+        
+        // Order value per user
+          var $orders_values = []
+          {% for w in workers %}
+            var $wlist = []
+            {% for o in orders %}
+              {% if o.care.id == w.id %}
+                var $ord = {{ o.calculate_order|escapejs }}
+                $wlist.push($ord)
+              {% endif %}
+            {% endfor %}
+              var $sum = $wlist.reduce((pv,cv)=>{
+              return pv + cv;
+            },0);
+            $orders_values.push($sum)
+          {% endfor %}
+          console.log($orders_values)
+        
+        // Chart object
+          var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: workers,
+                datasets: [{
+                    label: '# Ilość zleceń',
+                    yAxisID: 'A',
+                    data: order_count,
+                    backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: '# Wartość zleceń [PLN]',
+                    yAxisID: 'B',
+                    data: $orders_values,
+                    backgroundColor: 'rgba(255,0,0,0.5)',
+                    borderColor: 'rgba(255,0,0,0.5)',
+                    borderWidth: 2,
+                    type: 'bar',
+                    //barThickness: 16,
+                    //barPercentage: 0.5,
+                }]
+            },
+            options: {
+              legend: {
+              position: 'bottom',
+              display: true,
+              labels: {
+              },
+            },
+            layout: {
+              padding: {
+                  left: 0,
+                  right: 0,
+                  top: 0,
+                  bottom: 0
+                  }
+                },
+                scales: {
+                    xAxes: [{
+                        stacked: true,
+                        //maxBarThickness: 100,
+                        //barPercentage: 0.2
+                        
+                    }],
+                    yAxes: [{
+                        id: 'A',
+                        type: 'linear',
+                        position: 'left',
+                        display: true,
+                        labelString: 'ilość',
+                        stacked: true,
+                        ticks: {
+                            stepSize: 1,
+                            beginAtZero: true
+                        }
+                    },{
+                        id: 'B',
+                        type: 'linear',
+                        position: 'left',
+                        stacked: true,
+                        position: 'right',
+                        ticks: {
+                            padding: 18,
+                            fontColor: '#787878',
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+          });
+      </script>
+    {% endif %}
+
+{% else %}
+<div class="container">
+  <div class="row p-1">
+    <div class="col-12">
+      <p>Nie jestes zalogowany!</p>
+      <img src="{% static 'img/gob_logo.png' %}" alt="logo"><br>
+      <span><a href="{% url 'login' %}">Zaloguj</a></span><br>
+      <span><a href="{% url 'register2' %}">Zarejestuj</a></span>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+
+
+</script>
+
+
+{% endblock %}

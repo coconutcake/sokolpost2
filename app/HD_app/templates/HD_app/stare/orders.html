@@ -1,0 +1,85 @@
+<!-- templates/home.html-->
+{% extends 'HD_app/base.html' %}
+{% load static %}
+{% load rest_framework %}
+{% block title %}Dodaj nowe zlecenie{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+<div class="row p-3">
+  <div class="col-12 col-md-12 mb-5 p-3">
+      <h1><i class="fa fa-plus color1" aria-hidden="true"></i> Dodaj zlecenie</h1>
+      <hr>
+
+      <form id="add_order" action="{% url 'orders' %}" method="post">
+
+        {% csrf_token %}
+        {% render_form form %}
+          {% comment %} {% render_form form %} {% endcomment %}
+      
+          {% comment %} {% render_field form.customer style=style %}      {% endcomment %}
+
+
+        {% comment %} <div class="row">
+          <div class="col-12 col-md-4">
+              {% render_field form.customer style=style %}  
+          </div>
+          <div class="col-12 col-md-4">
+            {% render_field form.title style=style %}
+          </div>
+          <div class="col-12 col-md-4">
+            {% render_field form.order_type style=style %}
+          </div>
+          </div>
+          <div class="row">
+            <div class="col-12">
+          {% render_field form.description style=style %}
+            </div>
+          </div> {% endcomment %}
+
+
+          <!-- {{ form }} -->
+          <input type="submit" value="Zapisz" class="btn btn-danger mt-3 shadow">
+      </form>
+
+  </div>
+
+
+  <!-- <div class="col-12 col-md-6">
+    <h1><i class="fa fa-list color1" aria-hidden="true"></i>
+      Lista moich zleceń</h1>
+    <hr>
+    <div class="fresh-div" id="order_lst">
+      {% if orders %}
+        {% for order in orders %}
+          <p>{{ order }} </p>
+        {% endfor %}
+      {% endif %}
+    </div>
+</div> -->
+
+
+</div>
+
+
+{% else %}
+
+<div class="container">
+  <div class="row p-1">
+    <div class="col-12">
+      <p>Nie jestes zalogowany!</p>
+      <img src="{% static 'img/gob_logo.png' %}" alt="logo"><br>
+      <span><a href="{% url 'login' %}">Zaloguj</a></span><br>
+      <span><a href="{% url 'register2' %}">Zarejestuj</a></span>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+
+<script>
+
+
+
+</script>

@@ -1,0 +1,93 @@
+<!-- templates/home.html-->
+{% extends 'HD_app/base.html' %}
+{% load static %}
+{% load rest_framework %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+<div class="row p-3">
+  <div class="col-12 p-3 ih ">
+    <div class="d-flex justify-content-between ">
+      <div class="" id="">
+        <h1><i class="fa fa-file-text-o bg-color4 text-danger rounded" aria-hidden="true"></i>
+          Profil</h1> 
+
+      </div>
+      <!-- <button class="btn btn-success shadow-sm open_modal_button" id="add_order_btn" type="button">
+        <i class="fa fa-plus" aria-hidden="true"></i> Dodaj</button> -->
+
+    </div>
+
+
+
+    <div class="here"></div>
+
+
+    <hr>
+
+
+
+
+
+
+    <div class="row mt-4 mb-4 rounded mt-5 border border-secondary shadow-sm">
+    <div class="col-md-4 bg-service-customer-3 p-4">
+        <h3><i class="fa fa-user" aria-hidden="true"></i>
+            {{ user.username }}</h3>
+
+        <div class="row">
+            <div class="col-3">
+
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8  p-4">
+        <div class="row">
+            <div class="col-3">
+                <p class="ih"><b>ID: </b>{{ user.id }}</p class="ih"><hr>
+                <p class="ih"><b>Imię:</b> {{ user.first_name }}</p><hr>
+                <p class="ih"><b>Nazwisko: </b>{{ user.last_name }}</p><hr>
+                <p class="ih"><b>Mój opiekun:</b> {{ user.profile.care }}</p><hr>
+            </div>
+          </div>
+        </div>
+        
+        
+      </div>
+      <div class="row">
+<div class="col">
+
+<div class="d-flex justify-content-center mt-5">
+  <div class="col-4 text-center border-bottom border-danger m-2 ih4">
+    <h2 class="ih p-2 text-danger">{% if umowy %}{{ umowy }}{% else %}Brak umów{% endif %}</h2><span>Umowy</span>
+    <hr>
+  </div>
+  <div class="col-4 text-center border-bottom border-warning m-2 ih4">
+    <h2 class="ih p-2 text-warning">{% if w_realizacji %}{{ w_realizacji }}{% else %}0{% endif %}</h2><span>Zlecenia w realizacji</span>
+    <hr>
+  </div>
+  <div class="col-4 text-center border-bottom border-success m-2 ih4">
+    <h2 class="ih p-2 text-success">{% if zrealizowane %}{{ zrealizowane }}{% else %}0{% endif %}</h2><span>Zlecenia zakończone</span>
+    <hr>
+  </div>
+
+</div>
+</div>
+</div>
+
+{% else %}
+
+<div class="container">
+  <div class="row p-1">
+    <div class="col-12">
+      <p>Nie jestes zalogowany!</p>
+      <img src="{% static 'img/gob_logo.png' %}" alt="logo"><br>
+      <span><a href="{% url 'login' %}">Zaloguj</a></span><br>
+      <span><a href="{% url 'register2' %}">Zarejestuj</a></span>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

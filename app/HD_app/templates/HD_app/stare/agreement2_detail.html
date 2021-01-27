@@ -1,0 +1,114 @@
+<!-- templates/home.html-->
+{% extends 'HD_app/base.html' %}
+{% load static %}
+{% load rest_framework %}
+{% block title %}Umowy{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+{% if user.is_superuser %}
+
+
+    <div class="row p-3 animated fadeIn">
+      <div class="col-12 col-md-4">
+      <div class="p-3" id="customer_lst">
+      {% if object %}
+
+      <div class="text-center animated zoomIn">
+      <i class="fa fa-5x fa-file-text-o" aria-hidden="true"></i>
+      <h1 class="mt-4 data" name="name" id="{{ object.id }}"><b>Umowa</b></h1>
+      <h3 class="text-secondary mt-2 data" name="name" id="{{ object.id }}"><b>{{ object.name }}</b></h3><hr>
+      <span><b>ID: </b></span><span class="data" name="id" id="{{ object.id }}">{{ object.id }}</p>
+      {% comment %} <span><b>Klient: </b></span><span class="data" name="id" id="{{ object.id }}">{{ object.user.username }}</p> {% endcomment %}
+
+      
+      
+      <div class="stan_umowy">
+
+      <hr>
+      <div class="bg-1 pb-3 pt-3 rounded shadow-sm mb-2 border border-secondary">
+      {% if object.status.id == 1 %}
+      <p class="text-success"><b>{{ object.status.name|upper }}</b></p>
+      <i class="text-success fa fa-check fa-3x fa-fw"></i>
+      {% endif %}
+      {% if object.status.id == 2 %}
+      <p class="text-danger"><b>{{ object.status.name|upper }}</b></p>
+      <i class="text-danger fa fa-times fa-3x fa-fw"></i>
+      {% endif %}
+      {% if object.status.id == 3 %}
+      <p class="text-secondary"><b>{{ object.status.name|upper }}</b></p>
+      <i class="text-secondary fa fa-pause-circle-o fa-3x fa-fw"></i>
+      {% endif %}
+      </div>
+
+      <a href="{% url 'agreement_delete' object.id %}">
+      <button class=" btn shadow btn btn-danger mt-2" id="{{ object.id }}" ><i class="fa fa-trash" aria-hidden="true"></i> Usuń</button>
+      </a>
+      </div>
+        </div>
+      {% endif %}
+
+      </div>
+    </div>
+      <div class="col-12 col-md-8">
+
+<form  class="animated fadeInLeft faster" method="post">
+{% csrf_token %}
+    {{ form.as_p }}
+    <!-- <input type="submit" value="Zapisz" class="btn btn-primary mt-3 shadow"> -->
+    <button type="submit" class=" btn shadow btn btn-primary mt-2"><i class="fa fa-floppy-o" aria-hidden="true"></i> Zapisz</button>
+  </form>
+
+
+        
+    </div>
+  </div>
+
+
+{% else %}
+<h1>Brak uprawnień</h1>
+{% endif %}
+
+{% else %}
+
+<div class="container">
+  <div class="row p-1">
+    <div class="col-12">
+      <p>Nie jestes zalogowany!</p>
+      <img src="{% static 'img/gob_logo.png' %}" alt="logo"><br>
+      <span><a href="{% url 'login' %}">Zaloguj</a></span><br>
+      <span><a href="{% url 'register2' %}">Zarejestuj</a></span>
+    </div>
+  </div>
+</div>
+
+{% endif %}
+
+<script src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
+<script>
+
+{% if object %}
+var $api_url="{% url 'agreement_api-detail' object.id %}"
+var $status = parseInt("{{ object.status.id }}")
+{% endif %}
+
+function updateDiv(target) {
+  $(target).load(window.location.href + " " + target);
+};
+  // Initial ---------------------------------------------------------
+  setInterval(function(){
+    $.getJSON($api_url, function(result){
+    if (result.status.id != $status){
+      updateDiv('div.stan_umowy');
+      $status = result.status.id
+    } else {
+      console.log("Agreement.status: identyczny")
+    }
+  });
+    console.log("update tick...")
+}, 3000);
+
+</script>
+
+{% endblock %}

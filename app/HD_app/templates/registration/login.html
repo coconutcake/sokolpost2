@@ -1,0 +1,29 @@
+<!-- templates/home.html-->
+{% extends 'HD_app/newbase.html' %}
+{% load static %}
+{% load rest_framework %}
+{% block title %}Strona logowania{% endblock %}
+
+{% block content %}
+<script src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
+
+    <div class="d-flex justify-content-center ">
+      <div class="row p-4">
+        <div class="col-12">
+          <div class="d-flex justify-content-center brand p-3">
+            <img class="text-center" src="{% static 'img/sokolm.png' %}" width=100 alt="logo">
+          </div>
+          <hr>
+          <div class="links p-3">
+            <h2>Login A</h2>
+          <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Login</button>
+          </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+{% endblock %}

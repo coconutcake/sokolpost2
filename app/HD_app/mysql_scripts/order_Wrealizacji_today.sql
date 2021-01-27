@@ -1,0 +1,1 @@
+SELECT * FROM `test`.`HD_app_order` WHERE order_status_id = 3 and DATE(created_date) = CURDATE();

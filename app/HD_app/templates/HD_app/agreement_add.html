@@ -1,0 +1,266 @@
+<!-- templates/home.html-->
+{% extends 'HD_app/newbase.html' %}
+{% load static %}
+{% load rest_framework %}
+{% block title %}Dodaj nową umowę{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+
+<!-- FORMULARZ -->
+  <section class="sec">
+    <!-- TITLE -->
+      <div class="row section_title">
+        <div class="col">
+          <h2><i class="fas fa-scroll"></i> Nowa Umowa</h2>
+          <hr class="hr_title">
+        </div>
+      </div>
+    <!-- DESCRIPTION -->
+      <div class="row mb-2 section_description">
+        <div class="col">
+          <span><i class="fas fa-info-circle text-danger"></i> Panel dodawania nowej umowy dla zaakcepeptowanej firmy</span>
+          <hr>
+        </div>
+      </div>
+    <!-- FORM -->
+      <form action="{% url 'Agreement_add' %}" method="post">
+        {% csrf_token %}
+        <div class="row">
+          <div class="col-12 col-sm-6">
+          {% for field in form %}
+            {% if forloop.counter < 5  %}
+             <div class="field-group">
+              <label>{{ field.label }}</label> {{ field }}
+              {{ field.errors }}
+              {% if field.help_text %}
+                  <span class="helptext">&nbsp;{{ field.help_text }}  </span>
+              {% endif %}
+            </div>
+            {% endif %}
+          {% endfor %}
+          </div>
+          <div class="col-12 col-sm-6">
+            {% for field in form %}
+              {% if forloop.counter >= 5 %}
+               <div class="field-group">
+                <label>{{ field.label }}</label> {{ field }}
+                {{ field.errors }}
+                {% if field.help_text %}<br>
+                  <span class="helptext">&nbsp;{{ field.help_text }}  </span>
+                {% endif %}
+                {% if field.name == "pakiet" %}
+                <div class="mt-2 text-right">
+                  <a href="#" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#pakiet_add"><i class="fas fa-plus"></i> Dodaj nowy</a>
+                </div>
+               {% endif %}
+              </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+        <hr>
+        <button type="submit" value="Zapisz" class="btn btn-danger btn-sm mt-3 shadow"><i class="fas fa-save text-light"></i>&nbsp;Zapisz</button>
+      </form>
+  </section>
+
+<!-- LISTA -->
+  <section class="sec">
+    <!-- TITLE -->
+      <div class="row section_title">
+        <div class="col col-12 col-sm-6 col-md-8 col-lg-9 section_header">
+          <h2><i class="fas fa-scroll"></i> Lista umów</h2>
+        </div>
+        <div class="col col-12 col-sm-6 col-md-4 col-lg-3 section_quicksearch">
+          <div class="d-flex justify-content-end">
+           <input type="text" class="input-sm form-control" id="k_search" placeholder="Szybkie szukanie..."></input>
+          </div>
+        </div>
+        <div class="col"><hr class="hr_title"></div>
+      </div>
+
+    <!-- KOLUMNY -->
+      <div class="row ls_columns">
+          <div class="col-6 col-xl-2 d-none d-xl-block">
+            <span>Nazwa</span>
+          </div>
+          <div class="col-6 col-xl-2 d-none d-xl-block">
+            <span>Data zawarcia</span>
+          </div>
+          <div class="col-6 col-xl-2 d-none d-xl-block">
+            <span>Data zakończenia</span>
+          </div>
+          <div class="col-6 col-xl-2 d-none d-xl-block">
+            <span>Firma</span>
+          </div>
+          <div class="col-6 col-xl-2 d-none d-xl-block">
+            <span>Stan</span>
+          </div>
+          <div class="col-6 col-xl-2 d-none d-xl-block text-right">
+            <span>Opcje</span>
+          </div>
+          <div class="w-100"></div>
+      </div>
+
+
+    <!-- LISTA -->
+      <div class="ls">
+        {% if agreements %}
+          {% for co in agreements %}
+          <div class="row ls_elem animated fadeInDown fast">
+
+            <div class="col-6 d-xl-none">
+              <span>Nazwa</span>
+            </div>
+            <div class="col-6 col-xl-2">
+              <i class="fas fa-scroll"></i><span>&nbsp;<b>{{ co.name }}</b></span>
+            </div>
+
+            <div class="col-6 d-xl-none">
+              <span>Data zawarcia</span>
+            </div>
+            <div class="col-6 col-xl-2">
+              <span>{{ co.start_date|date:"Y-m-d" }}</span>
+            </div>
+
+            <div class="col-6 d-xl-none">
+              <span>Data zakończenia</span>
+            </div>
+            <div class="col-6 col-xl-2">
+              <span>{{ co.end_date|date:"Y-m-d" }}</span>
+            </div>
+
+            <div class="col-6 d-xl-none">
+              <span>Firma</span>
+            </div>
+            <div class="col-6 col-xl-2">
+              <span>{{ co.company.name }}</span>
+            </div>
+
+            <div class="col-6 d-xl-none">
+              <span>Stan</span>
+            </div>
+            <div class="col-6 col-xl-2">
+              <span>{{ co.status.name }}</span>
+            </div>
+
+            
+            <div class="col text-right">
+              <span><a class="btn btn-sm btn-warning shadow-sm mt-1 mb-1" href="{% url 'Agreement_detail' co.id %}"><i class="fas fa-edit"></i> Edycja</a></span>
+              <span><a class="btn btn-sm btn-dark shadow-sm mt-1 mb-1" href="{% url 'Agreement_delete' co.id %}"><i class="fas fa-trash"></i> Usuń</a></span>
+            </div>
+            <div class="w-100"><hr class="m-0"></div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <span>Brak wpisanych adresów</span>
+        {% endif %}
+        <div class="col-12 col-sm-6">
+        </div>
+      </div>
+  </section>
+
+
+<!-- MODAL: Pakiet_add -->
+  <div class="modal fade" id="pakiet_add" tabindex="-1" role="dialog" aria-labelledby="pakiet_add_title" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content shadow">
+
+        <div class="modal-body">
+          <!-- FORMULARZ -->
+            <section class="sec">
+              <!-- TITLE -->
+                <div class="row section_title">
+                  <div class="col">
+                    <h2><i class="fas fa-box-open"></i> Nowy pakiet</h2>
+                    <hr class="hr_title">
+                  </div>
+                </div>
+
+              <!-- FORM: Pakiet -->
+                <div class="row">
+                  <div class="col">
+                    <form action="{% url 'Pakiet_add' %}" id="pakiet_add_form" method="post">
+                      {% csrf_token %}
+                        <div class="col-12">
+                        {% for field in form_pakiet %}
+                          <div class="field-group">
+                            <label>{{ field.label }}</label> {{ field }}
+                            {{ field.errors }}
+                            {% if field.help_text %}
+                              <span class="helptext">&nbsp;{{ field.help_text }}  </span>
+                            {% endif %}
+                          </div>                 
+                        {% endfor %}
+
+                        <button type="submit" value="Zapisz" class="btn btn-sm btn-block btn-danger mt-5 shadow"><i class="fas fa-save text-light"></i>&nbsp;Zapisz</button>
+                        </div>
+                    </form>
+                    </div>
+                  </div>
+            </section>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+<!-- JS-->
+  <script src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
+
+  <!-- Dodaj pakiet-->
+    <script>
+      $("#pakiet_add_form").on('submit',function(event){
+        event.preventDefault();
+        var data = $(this).serialize();
+        var method = $(this).attr('method')
+        var url = $(this).attr('action')
+        $.ajax({
+          data: data,
+          type: method,
+          url: url,
+          success: function(data){
+            console.log(data)
+            if (data.status == "OK"){
+              $("#pakiet_add").modal("hide");
+            } else {
+              $.each(data, function(key,value){
+                if(key=="errors"){
+                  res = JSON.parse(value)
+                  lista_bledow = [];
+                  $.each(res,function(k,v){
+                    lista_bledow.push("Problem z polem: "+k.toUpperCase()+" : "+v[0]['message'])
+                  });
+                  alert(lista_bledow);
+                }
+              });
+              
+            }
+          }
+        });
+        return false;
+      });
+    </script>
+
+
+
+{% else %}
+<div class="container">
+  <div class="row p-1">
+    <div class="col-12">
+      <p>Nie jestes zalogowany!</p>
+      <img src="{% static 'img/gob_logo.png' %}" alt="logo"><br>
+      <span><a href="{% url 'login' %}">Zaloguj</a></span><br>
+      <span><a href="{% url 'register2' %}">Zarejestuj</a></span>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+
+
+</script>
+
+
+{% endblock %}

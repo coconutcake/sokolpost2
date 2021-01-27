@@ -1,0 +1,1291 @@
+{% load static %}
+{% load rest_framework %}
+<!doctype html>
+<html lang="pl">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}"/>
+  <link rel="stylesheet" href="{% static 'css/jquery-ui.css' %}"/>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}"/>
+  <link rel="stylesheet" href="{% static 'css/owl.carousel.min.css' %}"/>
+  <link rel="stylesheet" href="{% static 'css/owl.theme.default.min.css' %}"/>
+  <link rel="stylesheet" href="{% static 'css/animate.css' %}"/>
+  <link rel="stylesheet" href="{% static 'css/jquery.datetimepicker.min.css' %}"/>
+  <link rel="stylesheet" href="{% static 'fullcalendar/core/main.css' %}" rel='stylesheet' />
+  <link rel="stylesheet" href="{% static 'fullcalendar/daygrid/main.css' %}" rel='stylesheet' />
+  <link rel="stylesheet" href="{% static 'css/style2.css' %}" rel='stylesheet' />
+  <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
+  integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous"/>
+  <script src="https://kit.fontawesome.com/3f06525f0c.js" crossorigin="anonymous"></script>
+    <title>
+    {% block title %}{% endblock %}
+  </title>
+  </head>
+
+<!-- body -->
+<body class="bg-noisy">
+
+<!-- Modal loading -->
+<!-- Button trigger modal -->
+<!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+  Launch demo modal
+</button> -->
+
+<!-- Modal loading -->
+<div class="modal fade" id="modal_loading" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered animated zoomIn faster" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Oczekiwanie...</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body text-center animated fadeInDown faster">
+        <i class="fas fa-3x fa-sync fa-spin"></i>
+        <p>Oczekuje na odświeżenie...</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Zamknij</button>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<div class="wrapper d-flex align-items-stretch">
+    {% if user.is_authenticated %}
+
+    
+    <nav id="sidebar">
+      <div class="p-4 pt-5 ">
+        <div class="m-auto rounded-circle d-flex justify-content-center text-center">
+          <a href="#" class="img logo zoom rounded-circle mb-2 mt-2" data-toggle="tooltip2" data-html="true" title="<span class='text-light text-weight-bold'>Sokół<br>Autor: Mateusz Ignatowicz</span>"><img src="{% static 'img/sokol_logo.png' %}" width=130/></a>
+        </div>
+
+        <div class="p-3 shadow-sm rounded text-middle border-dotted mt-4 mb-4">
+          <div class="d-flex justify-content-center">
+            <span class="zoom text-light">
+              <a href="{% url 'profile' %}">
+              {% if user.profile.thumb %}
+              <img class="rounded-circle border border-light shadow-sm thumb_min" src="{{ user.profile.thumb.url }}">
+              {% endif %}
+              <span class="align-middle">{{ user.email }}</span>      
+            </a>     
+            </span>
+          </div>
+          <div class="d-flex justify-content-center text-middle">
+            <a class="align-middle text-wrap" href="{% url 'logout' %}"><button class=" mt-1 btn text-danger btn-sm shadow" type="submit"><i class="fa text-danger fa-sign-out" aria-hidden="true"></i>Wyloguj
+              </button></a>
+          </div>
+        </div>
+
+
+
+
+        <ul class="list-unstyled components mb-5">
+      <li>
+        <a class="font-weight-bold" href="{% url 'home' %}"><i class="fa text-danger fa-television" aria-hidden="true"></i>
+          Dashboard</a>
+    </li>
+    <li>
+        <a class="font-weight-bold" href="{% url 'profile' %}"><i class="fa text-danger fa-user" aria-hidden="true"></i> &nbsp;Profil</a>
+    </li>
+    <li>
+        <a class="font-weight-bold" href="{% url 'messages' %}"><i class="fa text-danger fa-commenting" aria-hidden="true"></i>
+          &nbsp;Wiadomości <span style="display:none;" class="rounded bg-danger p-1 liczba_wiadomosci">{% if unread_messages %}{{ unread_messages.count }}{% else %}{% endif %}</span></a>
+    </li>
+    {% if user.is_staff %}
+    <li>
+        <a class="font-weight-bold" class="font-weight-bold" href="{% url 'api-router' %}" target="_blank"><i class="fa text-danger fa-plug" aria-hidden="true"></i>
+          Przeglądarka API</a>
+    </li>
+    {% endif %}
+    {% if user.is_staff %}
+    <li>
+        <a class="font-weight-bold" href="{% url 'admin-page' %}" target="_blank"><i class="fa text-danger fa-th-list" aria-hidden="true"></i> CMS</a>
+    </li>
+    {% endif %}
+
+    {% if user.is_staff %}
+    {% else %}
+      <li>
+      <a class="font-weight-bold" href="{% url 'orders2' %}"><i class="fa text-danger fa-pencil-square-o" aria-hidden="true"></i> Zlecenia </a>
+      </li>
+      {% endif %}
+
+      {% if user.is_staff %}
+      <li>
+        <a class="font-weight-bold" href="{% url 'orders1' %}"><i class="fa text-danger fa-pencil-square-o" aria-hidden="true"></i> Zlecenia <span style="display:none;" class="rounded bg-danger p-1 liczba_zlecen">{% if myorders %}{{ myorders.count }}{% endif %}</span></a>
+      </li>
+      {% else %}
+      {% endif %}
+
+      {% if user.is_staff %}
+      <li>
+        <a class="font-weight-bold" href="{% url 'service_orders1' %}"><i class="fa fa-cog text-danger" aria-hidden="true"></i> Zlecenia serwisowe <span style="display:none;" class="rounded bg-danger p-1 liczba_zlecen_serwisowych">{% if myserviceorders %}{{ myserviceorders.count }}{% endif %}</span></a>
+      </li>
+      {% else %}
+      {% endif %}
+
+      {% if user.is_staff %}
+     <li class="active">
+      <a class="font-weight-bold" href="#faqSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle"><i class="fas fa-folder-open text-danger" aria-hidden="true"></i>
+        &nbsp;&nbsp;Kartoteka</a>
+      <ul class="collapse list-unstyled" id="faqSubmenu">
+      <li>
+        {% if user.is_staff %}
+        <a class="font-weight-bold" href="{% url 'Company_add' %}"><i class="fas fa-building text-danger" aria-hidden="true"></i> Firmy </a>
+        <a class="font-weight-bold" href="{% url 'User_add' %}"><i class="fas fa-users text-danger"></i> Użytkownicy </a>
+        {% endif %}
+      </li>
+      </ul>
+    </li>
+
+      {% endif %}      
+      
+
+    <!-- <li class="active">
+        <a class="font-weight-bold" href="#homeSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle"><i class="fa text-danger fa-pencil-square-o" aria-hidden="true"></i> Zlecenia</a>
+        <ul class="collapse list-unstyled" id="homeSubmenu">
+        <li>
+          {% if user.is_staff %}
+          {% else %}
+          <a href="{% url 'orders2' %}">Moje Zlecenia</a>
+          {% endif %}
+
+          {% if user.is_staff %}
+            <a href="{% url 'orders1' %}">Moje Zlecenia</a>
+          {% else %}
+          {% endif %}
+
+        </li>
+        <li>
+          {% if user.is_staff %}
+            <a href="{% url 'orders1_not_completed' %}">Niezrealizowane</a>
+            {% else %}
+            {% endif %}
+        </li>
+        <li>
+          {% if user.is_staff %}
+            <a href="{% url 'orders1_completed' %}">Zrealizowane</a>
+            {% else %}
+          {% endif %}
+        </li>
+
+        </ul>
+      </li> -->
+
+
+
+
+
+
+
+    <li>
+        <a class="font-weight-bold" href="{% url 'Agreement_add' %}"><i class="fa text-danger fa-newspaper-o" aria-hidden="true"></i>
+          Umowy</a>
+    </li>
+
+    {% if user.is_staff %}
+    <li>
+        <a class="font-weight-bold" href="{% url 'Company_add' %}">
+
+          <i class="fa text-danger fa-building-o" aria-hidden="true"></i>
+           Firmy <span style="display:none;" class="{% if companies_not_accepted %}rounded bg-danger p-1 {% endif %}liczba_firm">{% if companies_not_accepted %}{{ companies_not_accepted.count }}{% endif %}</span></a>
+    </li>
+    {% endif %}
+
+    <li class="active">
+      <a class="font-weight-bold" href="#faqSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle"><i class="fa text-danger fa-question" aria-hidden="true"></i>
+        &nbsp;&nbsp;Faq</a>
+      <ul class="collapse list-unstyled" id="faqSubmenu">
+      <li>
+        {% if user.is_staff %}
+        <a href="">API</a>
+        {% endif %}
+      </li>
+      </ul>
+    </li>
+    </ul>
+
+    <div class="footer text-left">
+      
+        <p>Aplikacja Sokół (Nowa Sowa) Gobit</p>
+        <img class="rounded-circle" src="{% static 'img/logogb.jpg' %}" width=25/>
+        <span class="text-sm-left text-secondary">P.I.E.S.E GOBIT<br>
+ul. Walczaka 20, 66-400 Gorzów Wlkp., <br>tel. 95 735 05 00, <br>email: info@gobit.com.pl, www.gobit.com.pl, NIP 599-100-54-02</span>
+
+
+  
+
+</div>
+<div class="mt-4">
+
+</div>
+  </div>
+</nav>
+
+<!-- Page Content  -->
+<div id="content" class="p-3 p-md-5">
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container-fluid">
+
+    <button type="button" id="sidebarCollapse" class="btn btn-primary">
+      <i class="fa fa-bars"></i>
+      <span class="sr-only">Toggle Menu</span>
+    </button>
+    <button class="btn btn-dark d-inline-block d-lg-none ml-auto" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fa fa-bars"></i>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="nav navbar-nav ml-auto">
+        <li class="nav-item active">
+            <a class="nav-link" href="{% url 'home' %}">Home</a>
+        </li>
+        <li>
+          {% if user.is_staff %}
+          <a class="nav-link" href="{% url 'orders1' %}">Moje Zlecenia</a>
+          {% else %}
+          <a class="nav-link" href="{% url 'orders2' %}">Moje Zlecenia</a>
+          {% endif %}
+
+
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'profile' %}">Profil</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'agreements' %}">umowy</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+{% block content %}
+{% endblock %}
+
+</div>
+
+
+
+{% else %}
+    <div class="d-flex justify-content-center ">
+        <div class="row p-4">
+          <div class="col-12">
+            <div class="d-flex justify-content-center brand p-3">
+              <img class="text-center" src="{% static 'img/gob_logo.png' %}" alt="logo">
+            </div>
+            <hr>
+            <div class="links p-3">
+            <p class="text-center"><a href="{% url 'login' %}"><button type="button" class="shadow-sm btn btn-sm btn-primary btn-lg btn-block">Zaloguj się</button></a></p class="m-2">
+            <p class="text-center"><a href="{% url 'register2' %}"><button type="button" class="shadow-sm btn btn-sm btn-danger btn-lg btn-block">Rejestracja pracownika</button></a></p>
+            <p class="text-center"><a href="{% url 'register3' %}"><button type="button" class="shadow-sm btn btn-sm btn-danger btn-lg btn-block">Rejestracja klienta</button></a></p>
+          </div>
+          </div>
+        </div>
+      </div>
+      
+{% endif %}
+
+</div>
+</div>
+
+
+
+<script src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
+<script src="{% static 'js/jquery-ui.min.js' %}"></script>
+<script src="{% static 'js/csrf.js' %}"></script>
+<script src="{% static 'js/inputmask.min.js' %}"></script>
+<script src="{% static 'js/jquery.inputmask.min.js' %}"></script>
+<script src="{% static 'js/popper.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/owl.carousel.min.js' %}"></script>
+<script src="{% static 'js/jquery.datetimepicker.full.js' %}"></script>
+<script src="{% static 'fullcalendar/core/main.js' %}"></script>
+<script src="{% static 'fullcalendar/daygrid/main.js' %}"></script>
+<script src="{% static 'js/owls.js' %}"></script>
+<script src="{% static 'js/search.js' %}"></script>
+<script src="{% static 'js/bootstrap-notify.js' %}"></script>
+<script src="{% static 'js/main.js' %}"></script>
+<script src="https://kit.fontawesome.com/3f06525f0c.js" crossorigin="anonymous"></script>
+
+<script src="https://momentjs.com/downloads/moment.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.js"></script> 
+<script src="{% static 'js/chartjs-plugin-datalabels.js' %}"></script>
+
+<script>
+  $("input[type='checkbox']").removeClass("form-control")
+
+      // search
+      $("#k_search").on("keyup", function() {
+      var value = $(this).val().toLowerCase();
+      console.log(value)
+      $(".ls .ls_elem").filter(function() {
+          $(this).toggle($(this).find('span').text().toLowerCase().indexOf(value) > -1)
+          console.log($(this).toggle($(this).find('span').text().toLowerCase().indexOf(value) > -1))
+      });
+      });
+
+</script>
+
+
+<script>
+
+        $(document).ready(function () {
+    
+          
+          
+          $('[tip="tooltip"]').tooltip({
+            trigger: "hover"
+          });  
+
+          $(".ih").each(function(index) {
+            $(this).delay(70*index).show(300);
+          });
+          $(".ih2").each(function(index) {
+            $(this).delay(40*index).addClass('animated fadeInDown fast').show(300);
+          });
+          $(".ih3").each(function(index) {
+            $(this).delay(40*index).addClass('animated bounceIn fast').show(300);
+          });
+          $(".ih4").each(function(index) {
+            $(this).delay(100*index).addClass('animated fadeInDown fast').show(500);
+          });
+          $(".ih5").each(function(index) {
+            $(this).delay(100*index).addClass('animated fadeInDown').show(500);
+          });
+          $(".ih6").each(function(index) {
+            $(this).delay(100*index).addClass('animated bounceInDown').show(500);
+          });
+          $(".ih7").each(function(index) {
+            $(this).delay(100*index).addClass('animated fadeInDown').show(500);
+          });
+    
+          //Globale -----------------------------------------------------------
+          var user = "{{ user.username }}"
+          var token = "{{ token }}"
+          var loc = window.location.href;
+          var $origin = document.location.origin;
+    
+          //Dodawanie klas css ------------------------------------------------
+          $('textarea, input, select').addClass('shadow-sm');
+          $("select, input[type='text']").addClass('register-form color1')
+          $("textarea").addClass('bg-textarea')
+          jQuery('input[name="start_datetime"], input[name="end_datetime"]').datetimepicker({
+            format: 'Y-m-d H:i',
+            step: 15, 
+          });
+          jQuery('input[name="start_date"], input[name="end_date"], .dates').datetimepicker({
+            format: 'Y-m-d',
+          });
+          
+          $( function() {
+            $( ".datepicker" ).datepicker({
+              dateFormat: 'yy-mm-dd',
+            });
+          } );
+    
+    
+          //Buttony modalne -----------------------------------------------------------
+          $('#add_order_btn').on('click', function () {
+            $('#add_order_modal').modal('show');
+          });
+          $('#new_message_btn').on('click', function () {
+            $('#newmessage_modal').modal('show');
+          });
+          $('div.nowosc').on('click', function () {
+            var $targetnews = $(this).attr('id');
+            console.log($targetnews)
+            $('#news_modal_'+$targetnews).modal('show');
+          });
+          $(document).on('click', 'div.message_ur', function () {
+            var $targetmessage = $(this).attr('id');
+            console.log($targetmessage)
+            $('#messages_modal_'+$targetmessage).modal('show');
+          });
+          $(document).on('click', 'div.message_r',function () {
+            var $targetmessage = $(this).attr('id');
+            console.log($targetmessage)
+            $('#messages_modal_'+$targetmessage).modal('show');
+          });
+          $(document).on('click', 'div.message_s',function () {
+            var $targetmessage = $(this).attr('id');
+            console.log($targetmessage)
+            $('#messages_modal_'+$targetmessage).modal('show');
+          });
+          $('#add_customer_btn').on('click', function () {
+            $('#add_customer_modal').modal('show');
+          });
+          $('#add_agreement_btn').on('click', function () {
+            $('#add_agreement_modal').modal('show');
+          });
+          $('#add_company_btn').on('click', function () {
+            $('#add_company_modal').modal('show');
+          });
+          $('#add_service_order_btn').on('click', function () {
+            $('#add_service_order_modal').modal('show');
+          });
+          $(document).on('click', '.open_modal_button', function () {
+            open_sound();
+          });
+          $(document).on('click', 'div.nowosc', function () {
+            open_sound();
+          });
+          $(document).on('click', 'div.message', function () {
+            open_sound();
+          });
+          $(document).on('click', '.close_modal_button', function () {
+            close_sound();
+          });
+    
+          //FORMULARZE AJAX ----------------------------------------------------
+    
+          // Dodawanie umowy
+          $('#add_agreement').submit(function (e) {
+            $('h5.modal-title').text("")
+            purge('div.divalert');
+    
+            e.preventDefault();
+            $form = $(this)
+            var url = $form.attr('action');
+            var formData = new FormData(this);
+            $.ajax({
+              url: url,
+              type: 'POST',
+              data: formData,
+              success: function (data) {
+                if (data.status == "OK") {
+                  $('#modal_loading').modal('show');
+                  $('#add_agreement_modal').modal('hide')
+                  success_sound();
+                  purge('div.divalert');
+                  $('h5.modal-title').text("Dodano")
+                  $('div.divalert').hide().fadeIn(200).append(
+                    "<i class='fa fa-check fa-3x text-success animated bounceIn' aria-hidden='true' style='text-shadow: 1px 1px #424242;'></i>\
+                  &nbsp;&nbsp;Umowa wprowadzona!");
+                  //$('#exampleModalCenter').modal('show');
+                  //$('#add_agreement_modal').modal('show')
+                  $('#exampleModalCenter').modal('show');
+                  updateDiv('div.agreements')
+                }
+              },
+              error: function () {
+                console.log("[ERROR] - Błąd dodawania");
+                purge('div.divalert');
+                $('h5.modal-title').text("Błąd")
+                $('div.divalert').hide().fadeIn(200).append(
+                  "<i class='fa fa-check fa-3x text-danger animated bounceIn' aria-hidden='true' style='text-shadow: 1px 1px #424242;'></i>&nbsp;&nbsp;Błąd!"
+                  );
+                $('#exampleModalCenter').modal('show');
+              },
+              cache: false,
+              contentType: false,
+              processData: false
+            });
+          });
+    
+          // Dodawanie zlecenia
+          $('#add_order').submit(function (e) {
+            $('h5.modal-title').text("")
+            purge('div.divalert');
+    
+            e.preventDefault();
+            $form = $(this)
+            var url = $form.attr('action');
+            var formData = new FormData(this);
+            $.ajax({
+              url: url,
+              type: 'POST',
+              data: formData,
+              success: function (data) {
+                if (data.status == "OK") {
+                  $('#modal_loading').modal('show');
+                  console.log(formData)
+                  $('#add_order_modal').modal('hide')
+                  //get_value_notify("http://127.0.0.1:8000/orders_length/", "div.here")
+                  success_sound();
+                  purge('div.divalert');
+                  $('h5.modal-title').text("Dodano")
+                  $('div.divalert').hide().fadeIn(200).append(
+                    "<i class='fa fa-check fa-3x text-success animated bounceIn' aria-hidden='true' style='text-shadow: 1px 1px #424242;'></i>\
+                  &nbsp;&nbsp;Zlecenie wprowadzone!");
+                  //$('#exampleModalCenter').modal('show');
+                  updateDiv('div.fresh-div')
+                }
+              },
+              error: function () {
+                console.log("[ERROR] - Błąd dodawania");
+                purge('div.divalert');
+                $('h5.modal-title').text("Błąd")
+                $('div.divalert').hide().fadeIn(200).append(
+                  "<i class='fa fa-check fa-3x text-danger animated bounceIn' aria-hidden='true' style='text-shadow: 1px 1px #424242;'></i>&nbsp;&nbsp;Błąd!"
+                  );
+                $('#exampleModalCenter').modal('show');
+              },
+              cache: false,
+              contentType: false,
+              processData: false
+            });
+          });
+    
+          // Dodanie zlecenia przez klienta
+          $('#add_order2').submit(function (e) {
+            
+            purge('div.divalert');
+    
+            e.preventDefault();
+            $form = $(this)
+            var url = $form.attr('action');
+            var formData = new FormData(this);
+            $.ajax({
+              url: url,
+              type: 'POST',
+              data: formData,
+              success: function (data) {
+                $('#modal_loading').modal('show');
+                $('#add_order_modal').modal('hide')
+                updateDiv('div.fresh-div')
+                success_sound();
+                purge('div.divalert');
+                
+                $('div.divalert').hide().fadeIn(200).append(
+                  "<i class='fa fa-check fa-3x text-success animated bounceIn' aria-hidden='true' style='text-shadow: 1px 1px #424242;'></i>\
+                &nbsp;&nbsp;Zlecenie wprowadzone!");
+                $('#exampleModalCenter').modal('show');
+                if (data.status == "OK") {
+                  
+                }
+              },
+              error: function () {
+                console.log("[ERROR] - Błąd dodawania");
+                purge('div.divalert');
+                
+                $('div.divalert').hide().fadeIn(200).append(
+                  "<i class='fa fa-check fa-3x text-danger animated bounceIn' aria-hidden='true' style='text-shadow: 1px 1px #424242;'></i>&nbsp;&nbsp;Błąd!"
+                  );
+                $('#exampleModalCenter').modal('show');
+              },
+              cache: false,
+              contentType: false,
+              processData: false
+            });
+          });
+    
+          // Dodawanie typu zlecenia
+          $('#add_ordertype').submit(function (e) {
+            console.log("----------------------")
+            console.log("[SUBMIT] add_ordertype")
+            e.preventDefault();
+            $form = $(this)
+            var url = $form.attr('action');
+            var formData = new FormData(this);
+            $.ajax({
+              url: url,
+              type: 'POST',
+              data: formData,
+              success: function (data) {
+                if (data.status == "OK") {
+                  $('#modal_loading').modal('show');
+                  var obj = document.createElement("audio");
+                  obj.src = "{% static 'sounds/success.wav' %}";
+                  obj.play();
+                  console.log("[OK] Dodano typ zlecenia!")
+                  $('div.divalert').empty();
+                  $('h5.modal-title').text("Wprowadzono typ zlecenia")
+                  $('div.divalert').hide().fadeIn(200).append(
+                    "<i class='fa fa-check fa-3x text-success animated bounceIn' aria-hidden='true' style='text-shadow: 1px 1px #424242;'></i>&nbsp;&nbsp;Typ Zlecenia wprowadzony!"
+                    );
+                  $('#exampleModalCenter').modal('show');
+                  $('input[type="text"]').val("");
+                  $('textarea').val("")
+                  updateDiv('div.fresh-div')
+                } else if (data.status == "COM1") {
+                  console.log(data.status);
+                }
+              },
+              error: function () {
+                console.log("[ERROR] - Błąd dodawania");
+                $('div.divalert').empty();
+                $('h5.modal-title').text("Błąd")
+                $('div.divalert').hide().fadeIn(200).append(
+                  "<i class='fa fa-check fa-3x text-danger animated bounceIn' aria-hidden='true' style='text-shadow: 1px 1px #424242;'></i>&nbsp;&nbsp;Błąd!"
+                  );
+                $('#exampleModalCenter').modal('show');
+              },
+              cache: false,
+              contentType: false,
+              processData: false
+            });
+          });
+    
+          // Dodawanie implementacji
+          $('#add_implementation').submit(function (e) {
+            console.log("----------------------")
+            console.log("[SUBMIT] add_implementation")
+            e.preventDefault();
+            $form = $(this)
+            var url = $form.attr('action');
+            var formData = new FormData(this);
+            $.ajax({
+              url: url,
+              type: 'POST',
+              data: formData,
+              success: function (data) {
+                if (data.status == "OK") {
+                  $('#modal_loading').modal('show');
+                  var obj = document.createElement("audio");
+                  obj.src = "{% static 'sounds/success.wav' %}";
+                  obj.play();
+                  console.log("[OK] Dodano typ realizacji!")
+                  $('div.divalert').empty();
+                  $('h5.modal-title').text("Wprowadzono typ zlecenia")
+                  $('div.divalert').hide().fadeIn(200).append(
+                    "<i class='fa fa-check fa-3x text-success animated bounceIn' aria-hidden='true' style='text-shadow: 1px 1px #424242;'></i>&nbsp;&nbsp;Typ realizacji dodany!"
+                    );
+                  $('#exampleModalCenter').modal('show');
+                  $('input[type="text"]').val("");
+                  $('textarea').val("")
+                  updateDiv('div.fresh-div')
+                } else if (data.status == "COM1") {
+                  console.log(data.status);
+                }
+              },
+              error: function () {
+                console.log("[ERROR] - Błąd dodawania");
+                $('div.divalert').empty();
+                $('h5.modal-title').text("Błąd")
+                $('div.divalert').hide().fadeIn(200).append(
+                  "<i class='fa fa-check fa-3x text-danger animated bounceIn' aria-hidden='true' style='text-shadow: 1px 1px #424242;'></i>&nbsp;&nbsp;Błąd!"
+                  );
+                $('#exampleModalCenter').modal('show');
+              },
+              cache: false,
+              contentType: false,
+              processData: false
+            });
+          });
+    
+          //Wyślij wiadomosc
+          $('#new_message').submit(function (e) {
+            purge('div.fresh-div-nointerval')
+            e.preventDefault();
+            $form = $(this)
+            var url = $form.attr('action');
+            var formData = new FormData(this);
+            $.ajax({
+              url: url,
+              type: 'POST',
+              data: formData,
+              success: function (data) {
+                if (data.status == "OK") {
+                  $('#modal_loading').modal('show');
+                  updateDiv('div.fresh-div-sent');
+                  updateDiv('div.fresh-div-sent-m');
+                  updateDiv('div.fresh-div-unread');
+                  updateDiv('div.fresh-div-unread-m');
+                  console.log(formData)
+                  $('#newmessage_modal').modal('hide')
+                  success_sound();
+                  //alert("Wiadomość została wysłana!")
+                }
+              },
+              error: function () {
+                console.log("[ERROR] - Błąd dodawania");
+                alert("Nie udało sie wysłać wiadomości!")
+              },
+              cache: false,
+              contentType: false,
+              processData: false
+            });
+          });
+
+          // Nowa firma
+          $('#new_company').submit(function (e) {
+            purge('div.fresh-div-nointerval')
+            e.preventDefault();
+            $form = $(this)
+            var url = $form.attr('action');
+            var formData = new FormData(this);
+            $.ajax({
+              url: url,
+              type: 'POST',
+              data: formData,
+              success: function (data) {
+                if (data.status == "OK") {
+                  updateDiv('div.fresh-div-companies_accepted');
+                  updateDiv('div.fresh-div-companies_not_accepted');
+                  console.log(formData)
+                  $('#add_company_modal').modal('hide')
+                  success_sound();
+                  alert("Firma dodana!")
+                }
+              },
+              error: function () {
+                console.log("[ERROR] - Błąd dodawania");
+                alert("Nie udało sie dodać firmy!")
+              },
+              cache: false,
+              contentType: false,
+              processData: false
+            });
+          });
+          
+          // Nowa zlecenie serwisowe
+          $('#add_service_order').submit(function (e) {
+            e.preventDefault();
+            $form = $(this)
+            var url = $form.attr('action');
+            var formData = new FormData(this);
+            $.ajax({
+              url: url,
+              type: 'POST',
+              data: formData,
+              success: function (data) {
+                if (data.status == "OK") {
+                  $('#modal_loading').modal('show');
+                  console.log(formData)
+                  $('#add_service_order_modal').modal('hide')
+                  success_sound();
+                  //updateDiv('#lista_zlecen_serwisowych_w_realizacji')
+                }
+              },
+              error: function () {
+                console.log("[ERROR] - Błąd dodawania");
+              },
+              cache: false,
+              contentType: false,
+              processData: false
+            });
+          });
+
+          //Przeczytaj wiadomosc
+          $(document).on('click','.readms',function (e) {
+            e.preventDefault();
+            var url = "{% url 'readms' %}"
+            var id = parseInt($(this).attr('ids'));
+            console.log("To jest id -> "+id)
+            $.ajax({
+              url: url,
+              type: 'POST',
+              contentType: "application/json; charset=utf-8",
+              dataType: 'json',
+              data: JSON.stringify({"csrfmiddlewaretoken": "{{ csrf_token }}", "id": id}),
+              success: function (data) {
+                if (data.status == "OK") {
+                  success_sound();
+                  updateDiv('div.fresh-div-unread');
+                }
+              },
+              error: function () {
+                console.log("[ERROR] - Błąd dodawania");
+              },
+              cache: false,
+              contentType: false,
+              processData: false
+            });
+          });
+
+          // Dzwięki ---------------------------------------------------------
+          function success_sound() {
+            var obj = document.createElement("audio");
+            obj.src = "{% static 'sounds/success.wav' %}";
+            obj.play();
+            console.log("success played!")
+          };
+          function open_sound() {
+            var obj = document.createElement("audio");
+            obj.src = "{% static 'sounds/modal_open2.wav' %}";
+            obj.play();
+          };
+          function close_sound() {
+            var obj = document.createElement("audio");
+            obj.src = "{% static 'sounds/clicked01.wav' %}";
+            obj.play();
+          };
+          function new_message_sound() {
+            var obj = document.createElement("audio");
+            obj.src = "{% static 'sounds/bamboo.wav' %}";
+            obj.play();
+          };
+          function new_message_sound_2() {
+            var obj = document.createElement("audio");
+            obj.src = "{% static 'sounds/bamboo2.wav' %}";
+            obj.play();
+          };
+          function new_message_sound_3() {
+            var obj = document.createElement("audio");
+            obj.src = "{% static 'sounds/bamboo3.wav' %}";
+            obj.play();
+          };
+
+          // Live -----------------------------------------------------------
+          $json_url = "{% url 'stats' %}"
+          $json_url2 = "{% url 'mystats' %}"
+      
+          //Początkowe stany zleceń
+          {% if user.is_staff %}
+          var $wrealizacji_counter = parseInt("{{ myorders.count }}")
+          var $zrealizowane_counter = parseInt("{{ my_completed_orders.count }}")
+          var $messages_counter = parseInt("{{ unread_messages.count }}")
+          var $companies_counter = parseInt("{{ companies_not_accepted.count }}")
+          //var $serwisowe_wrealizacji_counter = parseInt("{{ myserviceorders.count }}")
+          var $serwisowe_wrealizacji_counter = parseInt("{{ myserviceorders_per_company.count }}")
+          var $serwisowe_zrealizowane_counter = parseInt("{{ myserviceorders_per_company_zrealizowane.count }}")
+          
+          
+          {% else %}
+          var $wrealizacji_counter2 = parseInt("{{ myorders2.count }}")
+          var $zrealizowane_counter2 = parseInt("{{ my_completed_orders2.count }}")
+          var $messages_counter = parseInt("{{ unread_messages.count }}")
+          //var $serwisowe_wrealizacji_counter = parseInt("{{ myserviceorders.count }}")
+          var $serwisowe_wrealizacji_counter = parseInt("{{ myserviceorders_per_company.count }}")
+          var $serwisowe_zrealizowane_counter = parseInt("{{ myserviceorders_per_company_zrealizowane.count }}")
+          {% endif %}
+      
+
+          // Czyszczenie pola wiadomsci przy starcie
+          if ($messages_counter == 0) {
+            console.log("Weryfikacja ilości wiadomosci...")
+            $('.liczba_wiadomosci').hide().text('').addClass('animated bounceIn').hide();
+          } else {
+            $('.liczba_wiadomosci').show();
+          }
+          // Czyszczenie pola firmy przy starcie
+          if ($companies_counter == 0) {
+            console.log("Weryfikacja ilości firm...")
+            $('.liczba_firm').hide().text('').addClass('animated bounceIn').hide();
+          } else {
+            $('.liczba_firm').show();
+          }
+          // Czyszczenie pola w relaizacji
+          if ($wrealizacji_counter == 0) {
+            console.log("Weryfikacja ilości zleceń...")
+            $('.liczba_zlecen').hide().text('').addClass('animated bounceIn').hide();
+          } else {
+            $('.liczba_zlecen').show();
+          }
+          // Czyszczenie pola serwisowe w realizacji
+          if ($serwisowe_wrealizacji_counter == 0) {
+            console.log("Weryfikacja ilości zleceń serwisowych...")
+            $('.liczba_zlecen_serwisowych').hide().text('').addClass('animated bounceIn').hide();
+          } else {
+            $('.liczba_zlecen_serwisowych').show();
+          }
+
+
+          //Pobierz JSON
+          {% if user.is_staff %}
+          console.log("Zalogowany użytkown</b>ik - Superuser")
+          console.log("----------------------------------")
+          function get_stats() {
+            console.log("\n")
+              console.log("Aktualizacja stanów...")
+              
+              //Sprawdzanie stanów zleceń
+              console.log("*****************************")
+              console.log("* w realizacji -> "+$wrealizacji_counter)
+              console.log("* zrealizowane -> "+$zrealizowane_counter)
+              console.log("* wiadomosci -> "+$messages_counter)
+              console.log("* companies -> "+$companies_counter)
+              console.log("* serwisowe -> "+$serwisowe_wrealizacji_counter)
+              console.log("* serwisowe_zrealizowane -> "+$serwisowe_zrealizowane_counter)
+
+              $.getJSON($json_url, function(data) {
+                  //Aktualne stany zleceń
+                  var $wrealizacji_counter_now = data['order_processing']
+                  var $zrealizowane_counter_now = data['order_completed']
+                  var $messages_counter_now = data['unread_messages']
+                  var $companies_counter_now = data['companies_not_accepted']
+                  //var $serwisowe_wrealizacji_counter_now = data['serviceorders_processing']
+                  var $serwisowe_wrealizacji_counter_now = data['serviceorders_processing_per_company']
+                  var $serwisowe_zrealizowane_counter_now = data['serviceorders_complated_per_company']
+
+                  console.log("** w realizacji_now -> "+$wrealizacji_counter_now)
+                  console.log("** zrealizowane_now -> "+$zrealizowane_counter_now)
+                  console.log("** messages_now -> "+$messages_counter_now)
+                  console.log("** companies_now -> "+$companies_counter_now)
+                  console.log("** serisowe_now -> "+$serwisowe_wrealizacji_counter_now)
+                  console.log("** serisowe_now_completed -> "+$serwisowe_zrealizowane_counter_now)
+                  
+                  //Porównanie ----------------------------------------------
+                  // 1
+                  if ($wrealizacji_counter_now > $wrealizacji_counter){
+                      console.log("Nowe zlecenie w relizacji!")
+                      new_processing_order();
+                      new_message_sound_3();
+                      updateDiv("#live_wrealizacji")
+                      $('.liczba_zlecen, liczba_zlecenia').hide().text($wrealizacji_counter_now).addClass('animated bounceIn').show();
+                      $wrealizacji_counter = $wrealizacji_counter_now
+                  } else {
+                      console.log("= Same!")
+                  }
+
+                  // 2
+                  if ($zrealizowane_counter_now > $zrealizowane_counter){
+                      console.log("Nowe zlecenie zrealizowane!")
+                      new_completed_order();
+                      new_message_sound_3();
+                      updateDiv("#live_zrealizowane")
+
+                      $('.liczba_zrealizowane').hide().text($zrealizowane_counter_now).addClass('animated bounceIn').show();
+                      $zrealizowane_counter = $zrealizowane_counter_now
+                  } else {
+                      console.log("= Same!")
+                  }
+
+                  // 3
+                  if ($messages_counter_now > $messages_counter){
+                      console.log("Nowe wiadiomosci!")
+                      new_message();
+                      new_message_sound();
+                      updateDiv("div.fresh-div-unread-m")
+                      updateDiv("div.fresh-div-unread")
+
+                      updateDiv("div.fresh-div-read-m")
+                      updateDiv("div.fresh-div-sent-m")
+                      $('.liczba_wiadomosci').hide().text($messages_counter_now).addClass('p-1 animated bounceInDown slow').show();
+                      $messages_counter = $messages_counter_now
+                  } else {
+                    if ($messages_counter_now == 0) {
+                      $('.liczba_wiadomosci').hide().text('').addClass('animated bounceIn').hide();
+                      $messages_counter = $messages_counter_now
+                    }
+                      console.log("= Same!")
+                  }
+
+                  // 4
+                  if ($companies_counter_now > $companies_counter){
+                      console.log("Nowa niezakceptowana firma!")
+                      new_message_sound();
+                      new_company();
+                      updateDiv("div.fresh-div-companies_not_accepted")
+                      $('.liczba_firm').hide().text($companies_counter_now).addClass('p-1 animated bounceInDown slow').show();
+                      $companies_counter = $companies_counter_now
+                  } else {
+                    if ($companies_counter_now == 0) {
+                      $('.liczba_firm').hide().text('').addClass('animated bounceIn').hide();
+                      $companies_counter = $companies_counter_now
+                    }
+                      console.log("= Same!")
+                  }
+
+                  // 5
+                  if ($serwisowe_wrealizacji_counter_now > $serwisowe_wrealizacji_counter){
+                      console.log("Nowe zlecenie serwisowe w realizacji!")
+                      new_message_sound_3();
+                      new_processing_service_order();
+                      updateDiv("div.lista_zlecen_serwisowych_w_realizacji")
+                      //updateDiv('#lista_zlecen_serwisowych_w_realizacji')
+
+                      $('.liczba_zlecen_serwisowych').hide().text($serwisowe_wrealizacji_counter_now).addClass('p-1 animated bounceInDown slow').show();
+                      $serwisowe_wrealizacji_counter = $serwisowe_wrealizacji_counter_now
+                  } else {
+                    if ($serwisowe_wrealizacji_counter_now == 0) {
+                      $('.liczba_zlecen_serwisowych').hide().text('').addClass('animated bounceIn').hide();
+                      $serwisowe_wrealizacji_counter = $serwisowe_wrealizacji_counter_now
+                    }
+                      console.log("= Same!")
+                  }
+                  // 6
+                  if ($serwisowe_zrealizowane_counter_now > $serwisowe_zrealizowane_counter){
+                      console.log("Nowe zlecenie serwisowe zrealizowane!")
+                      new_message_sound_3();
+                      new_completed_service_order();
+                      updateDiv("div.lista_zlecen_serwisowych_zrealizowane")
+                      //updateDiv('#lista_zlecen_serwisowych_w_realizacji')
+
+                      //$('.liczba_zlecen_serwisowych').hide().text($serwisowe_wrealizacji_counter_now).addClass('p-1 animated bounceInDown slow').show();
+                      $serwisowe_zrealizowane_counter = $serwisowe_zrealizowane_counter_now
+                  } else {
+                    if ($serwisowe_zrealizowane_counter_now == 0) {
+                      //$('.liczba_zlecen_serwisowych').hide().text('').addClass('animated bounceIn').hide();
+                      $serwisowe_wrealizacji_counter = $serwisowe_wrealizacji_counter_now
+                    }
+                      console.log("= Same!")
+                  }
+                  console.log("*****************************")
+                  console.log("\n")
+              });
+              
+              
+          }
+
+          {% else %}
+          console.log("Zalogowany Użytkownik - user zwyczajny")
+          function get_stats2() {
+              console.log("Aktualizacja stanów...")
+              //Sprawdzanie stanów zleceń
+              console.log("w realizacji -> "+$wrealizacji_counter2)
+              console.log("zrealizowane -> "+$zrealizowane_counter2)
+              console.log("wiadomosci -> "+$messages_counter)
+      
+              $.getJSON($json_url2, function(data) {
+                  //Aktualne stany zleceń
+                  var $wrealizacji_counter_now = data['order_processing']
+                  var $zrealizowane_counter_now = data['order_completed']
+                  var $messages_counter_now = data['unread_messages']
+                  console.log("w realizacji_now -> "+$wrealizacji_counter_now)
+                  console.log("zrealizowane_now -> "+$zrealizowane_counter_now)
+                  console.log("messages_now -> "+$messages_counter_now)
+
+                  //Porównaj
+                  //1
+                  if ($wrealizacji_counter_now > $wrealizacji_counter2){
+                      console.log("Nowe zlecenie w relizacji!")
+                      new_processing_order();
+                      success_sound();
+                      updateDiv("#live_wrealizacji")
+                      $('.liczba_zlecenia').hide().text($wrealizacji_counter_now).addClass('animated bounceIn').show();
+                      $wrealizacji_counter2 = $wrealizacji_counter_now
+                  } else {
+                      console.log("Same!")
+                  }
+
+                  //2
+                  if ($zrealizowane_counter_now > $zrealizowane_counter2){
+                      console.log("Nowe zlecenie zrealizowane!")
+                      new_completed_order();
+                      success_sound();
+                      updateDiv("#live_zrealizowane")
+                      $('.liczba_zrealizowane').hide().text($zrealizowane_counter_now).addClass('animated bounceIn').show();
+                      $zrealizowane_counter2 = $zrealizowane_counter_now
+                  } else {
+                      console.log("Same!")
+                  }
+                  // 3
+                  if ($messages_counter_now > $messages_counter){
+                    console.log("Nowe wiadiomosci!")
+                    new_message();
+                    new_message_sound();
+                    updateDiv("div.fresh-div-unread-m")
+                    updateDiv("div.fresh-div-read-m")
+                    updateDiv("div.fresh-div-sent-m")
+                    $('.liczba_wiadomosci').hide().text($messages_counter_now).addClass('p-1 animated bounceInDown slow').show();
+                    $messages_counter = $messages_counter_now
+                } else {
+                  if ($messages_counter_now == 0) {
+                    console.log("liczba 0")
+                    $('.liczba_wiadomosci').hide().text('').addClass('animated bounceIn').hide();
+                    $messages_counter = $messages_counter_now
+                  }
+                    console.log("Same!")
+                }
+              });
+          }
+          {% endif %}
+      
+          //Alerty ------------------------------------------------------------
+          function new_processing_order() {
+            $('#modal_loading').modal('hide');
+              $.notify({
+                  title: '<span class="align-middle message_box_title">Nowe zlecenie w realizacji!</span>',
+                  icon: 'fa fa-1x fa-plus',
+                  message: '<hr>Masz nowe zlecenie!' 
+                },{
+                  type: 'warning',
+                  offset: 30,
+                  delay: 5000,
+                  animate: {
+                    enter: 'animated bounceInDown',
+                    exit: 'animated bounceOutUp'
+                  },
+                  placement: {
+                    from: "top",
+                    align: "center"
+                  },
+                });
+          }
+          function new_message() {
+            $('#modal_loading').modal('hide');
+              $.notify({
+                  title: '<span class="align-middle message_box_title"> Nowa wiadomość!</span>',
+                  icon: 'fa fa-1x fa-commenting-o',
+                  message: '<hr>Masz nową wiadomość!' 
+                },{
+                  type: 'danger',
+                  offset: 30,
+                  delay: 5000,
+                  animate: {
+                    enter: 'animated bounceInDown',
+                    exit: 'animated bounceOutUp'
+                  },
+                  placement: {
+                    from: "top",
+                    align: "center"
+                  },
+                });
+          }
+          function copy_alert() {
+            $('#modal_loading').modal('hide');
+              $.notify({
+                  title: '<span class="align-middle message_box_title"> Skopiowano!</span>',
+                  icon: 'fa fa-1x fa-commenting-o',
+                  message: '' 
+                },{
+                  type: 'danger',
+                  offset: 30,
+                  delay: 5000,
+                  animate: {
+                    enter: 'animated bounceInDown',
+                    exit: 'animated bounceOutUp'
+                  },
+                  placement: {
+                    from: "top",
+                    align: "center"
+                  },
+                });
+          }
+          function new_company() {
+            $('#modal_loading').modal('hide');
+              $.notify({
+                  title: '<span class="align-middle message_box_title"> Nowa firma!</span>',
+                  icon: 'fa fa-1x fa-building-o',
+                  message: '<hr>Nowa niezaakceptowana firma!' 
+                },{
+                  type: 'warning',
+                  offset: 30,
+                  delay: 5000,
+                  animate: {
+                    enter: 'animated bounceInDown',
+                    exit: 'animated bounceOutUp'
+                  },
+                  placement: {
+                    from: "top",
+                    align: "center"
+                  },
+                });
+          }
+          function new_completed_order() {
+            $('#modal_loading').modal('hide');
+              $.notify({
+                  title: '<span class="align-middle message_box_title"> Nowe zlecenie zrealizowane!</span>',
+                  icon: 'fa fa-1x fa-plus',
+                  message: '<hr>Masz nowe zlecenie!' 
+                },{
+                  type: 'success',
+                  offset: 30,
+                  delay: 5000,
+                  animate: {
+                    enter: 'animated bounceInDown',
+                    exit: 'animated bounceOutUp'
+                  },
+                  placement: {
+                    from: "top",
+                    align: "center"
+                  },
+                });
+          }
+          function new_completed_service_order() {
+            $('#modal_loading').modal('hide');
+              $.notify({
+                  title: '<span class="align-middle message_box_title"> Nowe zlecenie serwisowe zrealizowane!</span>',
+                  icon: 'fa fa-1x fa-plus',
+                  message: '<hr>Masz nowe zlecenie zrealzowane!' 
+                },{
+                  type: 'success',
+                  offset: 30,
+                  delay: 5000,
+                  animate: {
+                    enter: 'animated bounceInDown',
+                    exit: 'animated bounceOutUp'
+                  },
+                  placement: {
+                    from: "top",
+                    align: "center"
+                  },
+                });
+          }
+          function new_processing_service_order() {
+            $('#modal_loading').modal('hide');
+            $.notify({
+                title: '<span class="align-middle message_box_title">Nowe zlecenie serwisowe w realizacji!</span>',
+                icon: 'fa fa-1x fa-cog',
+                message: '<hr>Masz nowe zlecenie serwisowe!' 
+              },{
+                type: 'warning',
+                offset: 30,
+                delay: 5000,
+                animate: {
+                  enter: 'animated bounceInDown',
+                  exit: 'animated bounceOutUp'
+                },
+                placement: {
+                  from: "top",
+                  align: "center"
+                },
+              });
+        }    
+
+
+          // Zegar -----------------------------------------------------------
+          {% if user.is_staff %}
+          setInterval(get_stats, 5000);
+          {% else %}
+          setInterval(get_stats2, 5000);
+          {% endif %}
+
+
+          // Fukcje ----------------------------------------------------------
+          function purge(div) {
+            var $div = div
+            $($div).empty();
+            console.log($div + " purged!")
+          };
+          function updateDiv(target) {
+            $(target).load(window.location.href + " " + target);
+          };
+  
+          $('section').fadeIn();
+
+          //tooltipy
+          $('[data-toggle="tooltip2"]').tooltip({
+            placement: 'right',
+            delay: {
+                show: 0,
+                hide: 0
+            }
+        });
+          $('[data-toggle="tooltip"]').tooltip({
+            placement: 'top',
+            delay: {
+                show: 0,
+                hide: 0
+            }
+        });
+          $('[data-toggle="tooltip3"]').tooltip({
+            tooltipClass: "my-tooltip-styling",
+            placement: 'top',
+            delay: {
+                show: 0,
+                hide: 0
+            }
+        });
+          $('[data-toggle="tooltip2"]').tooltip({
+          open: function (event, ui) {
+              ui.tooltip.css("max-width", "800px");
+          }
+      });
+
+          $('.tooltip').addClass('animated fadeInDown');
+
+          // Zegar 2 ---------------------------------------------------------
+          setInterval(function(){
+            updateDiv('div.fresh-div');
+            $('#modal_loading').modal('hide');
+        }, 3000);  
+        });
+
+</script>
+
+</body>

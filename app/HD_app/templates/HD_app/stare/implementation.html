@@ -1,0 +1,68 @@
+<!-- templates/home.html-->
+{% extends 'HD_app/base.html' %}
+{% load static %}
+{% load rest_framework %}
+{% block title %}Typ Realizacji{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+
+
+
+    <div class="row p-3">
+      <div class="col-12 p-3">
+        <div class="d-flex justify-content-between">
+          <div class="" id="">
+            <h1><i class="fa fa-list color1" aria-hidden="true"></i>
+              Typ realizacji</h1> 
+  
+          </div>
+          <!-- <button class="btn btn-success shadow-sm open_modal_button" id="add_customer_btn" type="button">
+           Dodaj
+          </button> -->
+        </div>
+        <hr>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+      <div class="fresh-div" id="implementations_lst">
+      {% if object %}
+        {{ object }}
+      {% endif %}
+      </div>
+      <hr>
+      {% if form %}
+      <form id="update_implementation" action="{% url 'implementations' %}" method="post">
+        {% csrf_token %}
+        {% render_form form %}
+
+        <!-- {% render_field form.name style=style %} -->
+
+      <input type="submit" value="Zapisz" class="btn btn-danger mt-3 shadow">
+    </form>
+      {% endif %}
+        
+    </div>
+  </div>
+</div>
+
+
+
+{% else %}
+
+<div class="container">
+  <div class="row p-1">
+    <div class="col-12">
+      <p>Nie jestes zalogowany!</p>
+      <img src="{% static 'img/gob_logo.png' %}" alt="logo"><br>
+      <span><a href="{% url 'login' %}">Zaloguj</a></span><br>
+      <span><a href="{% url 'register2' %}">Zarejestuj</a></span>
+    </div>
+  </div>
+</div>
+
+{% endif %}
+{% endblock %}

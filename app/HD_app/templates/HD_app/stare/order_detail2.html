@@ -1,0 +1,141 @@
+<!-- templates/home.html-->
+{% extends 'HD_app/newbase.html' %}
+{% load static %}
+{% load rest_framework %}
+{% block title %}Klient{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+{% if user.is_staff %}
+
+<!-- Header -->
+<div class="row p-2">
+  <div class="col-12 header-div">
+    <div class="d-flex justify-content-between">
+      <div class="" id="">
+        <h2 class="mb-4">Szczegóły zlecenia</h2>
+      </div>
+    </div>
+    <hr class="m-0">
+  </div>
+</div>
+
+
+<!-- Content -->
+    <div class="row p-3 animated fadeIn">
+
+
+
+
+
+      <div class="col-12 col-md-3">
+      <div class="mt-5 p-2" id="customer_lst">
+      {% if object %}
+
+      <div class="text-center animated zoomIn">
+      <i class="fa fa-5x fa-file-text-o" aria-hidden="true"></i>
+      <h1 class="mt-4 data text-secondary" name="name" id="{{ object.id }}"><b>Zlecenie</b></h1>
+      <h3 class="text-secondary mt-2 data" name="name" id="{{ object.id }}"><b>{{ object.title }}</b></h3><hr>
+      <span><b>ID: </b></span><span class="data" name="id" id="{{ object.id }}">{{ object.id }}</p>
+      {% comment %} <span><b>Klient: </b></span><span class="data" name="id" id="{{ object.id }}">{{ object.user.username }}</p> {% endcomment %}
+
+      
+      
+      <div class="stan_zamowienia">
+
+      <hr>
+      <div class="bg-1 p-2 pb-3 pt-3 bg-dark rounded shadow-sm mb-2 border border-secondary">
+      {% if object.order_status.id == 1 %}
+      <p class="text-secondary"><b>{{ order.order_status.name|upper }}</b></p>
+      <i class="text-danger fa fa-refresh fa-spin fa-3x fa-fw"></i>
+      {% endif %}
+      {% if object.order_status.id == 2 %}
+      <p class="text-secondary"><b>{{ order.order_status.name|upper }}</b></p>
+      <i class="text-success fa fa fa-shield fa-spin fa-3x fa-fw"></i>
+      {% endif %}
+      {% if object.order_status.id == 3 %}
+      <p class="color7"><b>{{ order.order_status.name|upper }}</b></p>
+      <i class="color7 fa fa-refresh fa-spin fa-3x fa-fw"></i>
+      {% endif %}
+      {% if object.order_status.id == 4 %}
+      <p class="text-secondary"><b>{{ order.order_status.name|upper }}</b></p>
+      <i class="text-secondary fa fa-pause-circle-o fa-spin fa-3x fa-fw"></i>
+      {% endif %}
+      {% if object.order_status.id == 5 or object.order_status.id == 6 or object.order_status.id == 7 %}
+      <p class="text-success"><b>{{ order.order_status.name|upper }}</b></p>
+      <i class="text-success fa-3x fa fa-check" aria-hidden="true"></i>
+      {% endif %}
+      </div>
+
+      <a href="{% url 'order_delete' object.id %}">
+      <button class=" btn shadow btn btn-danger mt-2" id="{{ object.id }}" ><i class="fa fa-trash" aria-hidden="true"></i> Usuń</button>
+      </a>
+      </div>
+        </div>
+      {% endif %}
+
+      </div>
+    </div>
+    <div class="col-12 col-md-9">
+
+      <form  class="animated fadeInLeft faster" method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+
+
+          <!-- <input type="submit" value="Zapisz" class="btn btn-primary mt-3 shadow"> -->
+          <button type="submit" class=" btn shadow btn btn-primary mt-2"><i class="fa fa-floppy-o" aria-hidden="true"></i> Zapisz</button>
+        </form>
+      
+      
+              
+          </div>
+  </div>
+
+
+{% else %}
+<h1>Brak uprawnień</h1>
+{% endif %}
+
+{% else %}
+
+<div class="container">
+  <div class="row p-1">
+    <div class="col-12">
+      <p>Nie jestes zalogowany!</p>
+      <img src="{% static 'img/gob_logo.png' %}" alt="logo"><br>
+      <span><a href="{% url 'login' %}">Zaloguj</a></span><br>
+      <span><a href="{% url 'register2' %}">Zarejestuj</a></span>
+    </div>
+  </div>
+</div>
+
+{% endif %}
+
+<script src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
+<script>
+
+{% if object %}
+var $api_url="{% url 'order_api-detail' object.id %}"
+var $status = parseInt("{{ object.order_status.id }}")
+{% endif %}
+
+function updateDiv(target) {
+  $(target).load(window.location.href + " " + target);
+};
+  // Initial ---------------------------------------------------------
+  setInterval(function(){
+    $.getJSON($api_url, function(result){
+    if (result.order_status.id != $status){
+      updateDiv('div.stan_zamowienia');
+      $status = result.order_status.id
+    } else {
+      console.log("OrderStatus: identyczny")
+    }
+  });
+    console.log("update tick...")
+}, 3000);
+
+</script>
+
+{% endblock %}

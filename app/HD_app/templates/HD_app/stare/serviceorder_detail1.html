@@ -1,0 +1,82 @@
+<!-- templates/home.html-->
+{% extends 'HD_app/newbase.html' %}
+{% load static %}
+{% load rest_framework %}
+{% block title %}Zlecenie serisowe {{ order.id }}/{{ order.title }}| SOKÓŁ{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+<!-- Header -->
+<page_header>
+<div class="row p-2">
+  <div class="col-12 header-div">
+    <div class="d-flex justify-content-between">
+      <div class="" id="">
+        <h2 class=""><i class="fa fa-file-text-o text-danger rounded" aria-hidden="true"></i>
+
+          Szczegoły zlecenia</h2>{{ myorders }}
+      </div>
+      <div class="" id="">
+
+      </div>
+    </div>
+  </div>
+</div>
+<hr class="mb-3 mt-0">
+</page_header>
+
+
+
+
+<!-- Content -->
+
+<section id="sekcja_zlecenie" style="display:none;">
+{% if order %}
+<div class="section_header">
+  <h4 class="" >
+    <i class="fa fa-file-text-o text-danger rounded" aria-hidden="true"></i>
+     {{ order.title }}</h4><hr>
+</div>
+
+{% endif %}
+
+  <div class="order_detail">
+    <form  class="text-left" method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+
+          <button type="submit" class=" btn shadow btn btn-primary mt-2"><i class="fa fa-floppy-o" aria-hidden="true"></i> Zapisz</button>
+        </form>
+  </div>
+
+</div>
+</section>
+
+
+{% else %}
+
+<div class="container">
+  <div class="row p-1">
+    <div class="col-12">
+      <p>Nie jestes zalogowany!</p>
+      <img src="{% static 'img/gob_logo.png' %}" alt="logo"><br>
+      <span><a href="{% url 'login' %}">Zaloguj</a></span><br>
+      <span><a href="{% url 'register2' %}">Zarejestuj</a></span>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<script>
+//Kopiuj do schowka
+function copy() {
+  var copyText = document.getElementById("copy_input");
+  copyText.select();
+  copyText.setSelectionRange(0, 99999)
+  document.execCommand("copy");
+  console.log("Copied the text: " + copyText.value);
+}
+</script>
+
+{% endblock %}

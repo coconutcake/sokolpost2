@@ -1,0 +1,69 @@
+<!-- templates/home.html-->
+{% extends 'HD_app/base.html' %}
+{% load static %}
+{% load rest_framework %}
+{% block title %}Klient{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+
+
+
+    <div class="row p-3">
+      <div class="col-12 col-md-4">
+      <div class="fresh-div p-3" id="customer_lst">
+      {% if object %}
+      <div class="text-center">
+      <h1 class="data" name="name" id="{{ object.id }}"><b>{{ object.name }}</b></h1><hr>
+      <span>ID / </span><span class="data" name="id" id="{{ object.id }}">{{ object.id }}</p>
+      <br>
+      <a href="{% url 'customer_delete' object.id %}">
+      <button class=" btn shadow btn btn-danger mt-2" id="{{ object.id }}" ><i class="fa fa-trash" aria-hidden="true"></i> Usuń</button>
+      </a>
+      <p class="data" style="display:none;" name="street" id="{{ object.id }}">{{ object.street }}</p>
+      <p class="data" style="display:none;" name="postal_code" id="{{ object.id }}">{{ object.postal_code }}</p>
+      <p class="data" style="display:none;" name="nip" id="{{ object.id }}">{{ object.nip }}</p>
+      <p class="data" style="display:none;" name="phone" id="{{ object.id }}">{{ object.phone }}</p>
+      <p class="data" style="display:none;" name="cellphone" id="{{ object.id }}">{{ object.cellphone }}</p>
+      <p class="data" style="display:none;" name="email" id="{{ object.id }}">{{ object.email }}</p>
+      </div>
+        
+      {% endif %}
+
+      </div>
+    </div>
+      <div class="col-12 col-md-8">
+
+<form  method="post">
+{% csrf_token %}
+    {{ form.as_p }}
+    <!-- <input type="submit" value="Zapisz" class="btn btn-primary mt-3 shadow"> -->
+    <button type="submit" class=" btn shadow btn btn-primary mt-2"><i class="fa fa-floppy-o" aria-hidden="true"></i> Zapisz</button>
+  </form>
+
+
+        
+    </div>
+  </div>
+
+
+
+
+{% else %}
+
+<div class="container">
+  <div class="row p-1">
+    <div class="col-12">
+      <p>Nie jestes zalogowany!</p>
+      <img src="{% static 'img/gob_logo.png' %}" alt="logo"><br>
+      <span><a href="{% url 'login' %}">Zaloguj</a></span><br>
+      <span><a href="{% url 'register2' %}">Zarejestuj</a></span>
+    </div>
+  </div>
+</div>
+
+{% endif %}
+
+
+{% endblock %}

@@ -1,0 +1,73 @@
+<!-- templates/home.html-->
+{% extends 'HD_app/newbase.html' %}
+{% load static %}
+{% load rest_framework %}
+{% block title %}Dodaj nowy pakiet{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+<!-- FORMULARZ -->
+  <section class="sec">
+    <!-- TITLE -->
+      <div class="row section_title">
+        <div class="col">
+          <h2><i class="fas fa-box-open"></i> Nowy pakiet</h2>
+          <hr class="hr_title">
+        </div>
+      </div>
+
+    <!-- FORM: Pakiet -->
+      <form action="{% url 'Pakiet_add' %}" method="post">
+        {% csrf_token %}
+        <div class="row">
+          <div class="col-12 col-sm-6">
+          {% for field in form %}
+            {% if forloop.counter < 3  %}
+            <div class="field-group">
+              <label>{{ field.label }}</label> {{ field }}
+              {{ field.errors }}
+              {% if field.help_text %}
+                <span class="helptext">&nbsp;{{ field.help_text }}  </span>
+              {% endif %}
+            </div>
+            {% endif %}
+          {% endfor %}
+          </div>
+          <div class="col-12 col-sm-6">
+            {% for field in form %}
+              {% if forloop.counter >= 3 %}
+              <div class="field-group">
+                <label>{{ field.label }}</label> {{ field }}
+                {{ field.errors }}
+                {% if field.help_text %}
+                  <span class="helptext">&nbsp;{{ field.help_text }}  </span>
+                {% endif %}
+              </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+        <hr>
+        <button type="submit" value="Zapisz" class="btn btn-danger"><i class="fas fa-save text-light"></i>&nbsp;Zapisz</button
+      </form>
+  </section>
+
+
+
+{% else %}
+<!-- Authentication alert -->
+  <div class="container">
+    <div class="row p-1">
+      <div class="col-12">
+        <p>Nie jestes zalogowany!</p>
+        <img src="{% static 'img/gob_logo.png' %}" alt="logo"><br>
+        <span><a href="{% url 'login' %}">Zaloguj</a></span><br>
+        <span><a href="{% url 'register2' %}">Zarejestuj</a></span>
+      </div>
+    </div>
+  </div>
+{% endif %}
+<!-- JS-->
+  <script src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
+
+{% endblock%}

@@ -1,0 +1,44 @@
+<!-- templates/home.html-->
+{% extends 'HD_app/base.html' %}
+{% load static %}
+{% load rest_framework %}
+{% block title %}Twoje Zlecenie{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+
+
+
+    <div class="row p-3">
+      <div class="col-12 p-3">
+        <div class="d-flex justify-content-center">
+          <div class="" id="">
+            <hr>
+            <h1>
+              404 Brak rekordu</h1> 
+              <hr>
+          </div>
+          <!-- <button class="btn btn-success shadow-sm open_modal_button" id="add_customer_btn" type="button">
+           Dodaj
+          </button> -->
+        </div>
+
+      </div>
+    </div>
+
+{% else %}
+
+<div class="container">
+  <div class="row p-1">
+    <div class="col-12">
+      <p>Nie jestes zalogowany!</p>
+      <img src="{% static 'img/gob_logo.png' %}" alt="logo"><br>
+      <span><a href="{% url 'login' %}">Zaloguj</a></span><br>
+      <span><a href="{% url 'register2' %}">Zarejestuj</a></span>
+    </div>
+  </div>
+</div>
+
+{% endif %}
+{% endblock %}

@@ -1,0 +1,1 @@
+[{"model": "HD_app.documentstatus", "pk": 1, "fields": {"name": "Aktywna", "description": "Umowa aktywna"}}, {"model": "HD_app.documentstatus", "pk": 2, "fields": {"name": "Zamkni\u0119ta", "description": "Umowa zamkni\u0119ta"}}, {"model": "HD_app.documentstatus", "pk": 3, "fields": {"name": "Zawieszona", "description": "Umowa zawieszona"}}]

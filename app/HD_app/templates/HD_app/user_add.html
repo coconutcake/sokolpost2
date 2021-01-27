@@ -1,0 +1,259 @@
+<!-- templates/home.html-->
+{% extends 'HD_app/newbase.html' %}
+{% load static %}
+{% load rest_framework %}
+{% block title %}Dodaj nowego Usera{% endblock %}
+
+{% if user.is_authenticated %}
+{% block modals %}
+  <!-- MODAL WINDOW -->
+    <div class="modal fade" id="modal_window" tabindex="-1" role="dialog" aria-labelledby="modal_window_title" aria-hidden="true">
+      <div class="modal-dialog modal-dialog" role="document">
+        <div class="modal-content shadow">
+        <!-- MODAL BODY-->
+          <div class="modal-body">
+          </div>
+        </div>
+      </div>
+    </div>
+{% endblock %}
+{% endif %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+
+<!-- LISTA KLIENTÓW-->
+  <section class="sec">
+
+    <!-- ACTION BAR-->
+      <nav class="action-bar">
+       <!-- HEADER -->
+       <div class="row upper-bar">
+        <div class="col-12 col-sm-3 action-bar-header">
+        <h2 class=""><i class="fas fa-user-alt"></i> Użytkownicy <span class="mark_counter align-middle"></span></h2>
+        </div>
+
+        <!-- Links -->
+          <div class="col-12 col-sm-9 action-bar-items text-right">
+
+            <div class="d-flex justify-content-end">
+            <div>
+            <ul class="action-bar-list">
+              
+              <li class="action-bar-item">
+                <a href="#" class="btn btn-sm btn-primary action-bar-item-link select_all" name="user"><i class="fas fa-check-square"></i> Wszystko</a>
+              </li>
+              <li class="action-bar-item">
+                <a href="#" class="btn btn-sm btn-primary action-bar-item-link deselect_all" name="user"><i class="far fa-check-square"></i> Zaden</a>
+              </li>
+              <li class="action-bar-item">
+                <a href="#" class="btn btn-sm btn-primary modal_button action-bar-item-link m-0" url="{% url 'User_add' %}" type="GET" pk="" data-toggle="modal" data-target="#modal_window" ><i class="fas fa-plus"></i> Dodaj</a>
+              </li>
+
+              <li class="action-bar-item">
+                <button class="btn btn-primary btn-sm dropdown-toggle" id="dropdown-options" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-sliders-h"></i> Opcje</button>
+                <div class="dropdown-menu p-0 m-0" aria-labelledby="dropdownd-options">
+                 <a href="#" class="btn-block btn-sm btn-primary action-bar-item-link dark-mode m-0"><i class="fas fa-moon"></i> Tryb ciemny</a>
+                  <a href="#" class="btn-block btn-sm btn-primary action-bar-item-link full-screen m-0"><i class="fas fa-expand"></i> Pełny ekran</a>
+                  <a class="btn-block btn-sm btn-primary action-bar-item-link subiektapi-dict-mapper-button m-0" template="HD_app/subiekt/user/user_list.html" keys="" values="" endpoint="uzytkownicy" import-to="#uzytkownicy" href="#"><i class="fas fa-download"></i> Importuj aktywnych z subiekta</a>
+                  <a class="btn-block btn-sm btn-primary action-bar-item-link add-users m-0" successurl="{% url 'User_add' %}" name="user" href="#"><i class="fas fa-users"></i> Zapisz wybranych w aplikacji</a>
+                  <a class="btn-block btn-sm btn-primary action-bar-item-link reset m-0" name="user" url="{% url 'User_reset_ajax' %}" successurl="{% url 'User_add' %}" href="#"><i class="fas fa-key"></i> Zresetuj hasło</a>
+                  <a class="btn-block btn-sm btn-primary action-bar-item-link delete m-0" name="user" url="{% url 'User_delete_ajax' %}" successurl="{% url 'User_add' %}" href="#"><i class="fas fa-trash"></i> Usuń</a>
+                </div>
+              </li>
+              <li class="action-bar-item action-bar-item-link">
+                  <input type="text" class="input-sm form-control" id="k_search" placeholder="Szybkie szukanie..."></input> 
+              </li>
+            </ul>
+            </div>
+            </div>
+          </div>
+          <!--
+          <div class="col-12 col-sm-6 mt-4">
+
+              {% if search %}
+                <form action="" type="POST" method="post" class="subiekt_search_form" id="subiekt_search_user" type="POST">
+                {% csrf_token %}
+                {% for field in search %}
+                <div class="field-group">
+                  <label>{{ field.label }}</label> {{ field }}
+                  {{ field.errors }}
+                  {% if field.help_text %}<br>
+                    <span class="helptext">&nbsp;{{ field.help_text }}  </span>
+                  {% endif %}
+                  </div>
+                {% endfor %}
+              {% endif %}
+
+            <form class="subiekt_search_form" id="subiekt_search_user" type="POST">
+              <input type="number" class="input-sm form-control subiekt-search-field" name="nip" placeholder="wpisz nip"></input>
+              <input type="text" class="input-sm form-control subiekt-search-field" name="name" placeholder="wpisz nazwe"></input>
+            </form>
+
+            <a class="btn btn-sm btn-primary action-bar-item-link subiekt-button-form-send" form="#subiekt_search_user" template="HD_app/subiekt/user_list.html" endpoint="uzytkownicy" href="#"><i class="fas fa-search"></i> Szukaj</a>
+          </div>
+         -->
+        </div>
+      </nav>
+
+
+
+      {% comment %} <div class=""><hr class="hr_title"></div> {% endcomment %}
+    <!-- KOLUMNY -->
+    <div id="uzytkownicy" class="subiekt-list">
+      <div class="row ls ls_columns">
+          <div class="col-6 col-md-2 d-none d-md-block">
+            <span>Nazwa</span>
+          </div>
+          <div class="col-6 col-md-2 d-none d-md-block">
+            <span>Imie</span>
+          </div>
+          <div class="col-6 col-md-2 d-none d-md-block">
+            <span>Nazwisko</span>
+          </div>
+          <div class="col-6 col-md-2 d-none d-md-block">
+            <span>Email</span>
+          </div>
+          <div class="col-6 col-md-2 d-none d-md-block">
+            <span>Id subiekta</span>
+          </div>
+
+
+          <div class="w-100"></div>
+      </div>
+
+
+    <!-- LISTA -->
+      <div class="ls">
+        {% if users %}
+          {% for co in users %}
+          <div class="row ls_elem animated fadeInDown fast markon" name="user" pk="{{ co.id }}" idf="{% if profiles %}{% for profile in profiles %}{% if profile.user.id == co.id %}{{ profile.idf }}{% endif %}{% endfor %}{% endif %}">
+
+            <div class="col-12 col-md-2 first_elem">
+              <input type="checkbox" class="mark" url="" name="user" pk="{{ co.id }}">&nbsp;
+              <span class="ls_spans modal_button" url="{% url 'User_detail' co.id %}" type="GET" pk="{{ co.id }}" data-toggle="modal" data-target="#modal_window"><i class="fas fa-user-alt"></i>&nbsp;<b>{{ co.username }}</b></span>
+
+            </div>
+
+            <div class="col-6 d-md-none">
+              <span>Imie</span>
+            </div>
+            <div class="col-6 col-md-2 elem middle_elem">
+              <span class="">{{ co.first_name }}</span>
+            </div>
+
+            <div class="col-6 d-md-none">
+              <span>Nazwisko</span>
+            </div>
+            <div class="col-6 col-md-2 elem middle_elem">
+              <span>{{ co.last_name }}</span>
+            </div>
+
+            <div class="col-6 d-md-none">
+              <span>Email</span>
+            </div>
+            <div class="col-6 col-md-2 elem middle_elem">
+              <span>{{ co.email }}</span>
+            </div>
+            <div class="col-6 col-md-2 elem middle_elem">
+              <span>{% if profiles %}{% for profile in profiles %}{% if profile.user.id == co.id %}{{ profile.idf }}{% endif %}{% endfor %}{% endif %}</span>
+            </div>
+
+
+
+            
+          </div>
+          {% endfor %}
+        {% else %}
+          <span>Brak danych</span>
+        {% endif %}
+        <div class="col-12 col-sm-6">
+        </div>
+      </div>
+      </div>
+  </section>
+
+
+
+
+<!-- JS-->
+  <script src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
+<!-- Reset hasła -->
+  <script>
+    $(".reset_btn").click(function(){
+        if(confirm("Czy chcesz wysłać formularz zmiany hasła do użytkownika?")){
+          return true;
+        }
+        else{
+            return false;
+        }
+    });
+  </script>
+
+
+
+<!-- MODAL -->
+  <script>
+
+    function dissmis_modal(modal){
+      $(modal).modal("hide");
+    }
+
+    function correct_checkboxes(){
+        $("input[type='checkbox']").each(function(){
+          $(this).removeClass("form-control");
+        });
+      }
+
+    function populate_modal_body(modal_body,content){
+      modal_body.html(content);
+    }
+
+    $(".modal_button").on('click',function(){
+      var $th = $(this);
+      var $url = $th.attr("url");
+      var $pk = $th.attr("pk");
+      var $data = {"pk":$pk}
+      var $type = $th.attr("type");
+      var $data_target = $th.attr("data-target");
+      var $modal_body = $($data_target+" div.modal-body");
+      console.log($modal_body)
+      $.ajax({
+        url:$url,
+        data:$data,
+        type:$type,
+        success: function(content){
+          console.log(content)
+            populate_modal_body($modal_body,content);
+            correct_checkboxes();
+        }
+      });
+    });
+  </script>
+
+  <script>
+
+
+  </script>
+
+ 
+{% else %}
+<div class="container">
+  <div class="row p-1">
+    <div class="col-12">
+      <p>Nie jestes zalogowany!</p>
+      <img src="{% static 'img/gob_logo.png' %}" alt="logo"><br>
+      <span><a href="{% url 'login' %}">Zaloguj</a></span><br>
+      <span><a href="{% url 'register2' %}">Zarejestuj</a></span>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+
+
+</script>
+
+
+{% endblock %}

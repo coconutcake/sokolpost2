@@ -1,0 +1,59 @@
+<!-- templates/home.html-->
+{% extends 'HD_app/base.html' %}
+{% load static %}
+{% load rest_framework %}
+{% block title %}Dodaj nowy typ zlecenia{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+    <div class="row p-3">
+    <div class="col-12 col-md-6 mb-5 p-3">
+        <h1><i class="fa fa-plus color1" aria-hidden="true"></i> Dodaj typ zlecenia</h1>
+        <hr>
+        <form class="forms" id="add_ordertype" action="{% url 'implementations' %}" method="post">
+            {% csrf_token %}
+            {% render_form form %}
+           
+            <input type="submit" value="Zapisz" class="btn btn-danger mt-3 shadow">
+        </form>
+    </div>
+    <div class="col-12 col-md-6 p-3">
+      <h1><i class="fa fa-list color1" aria-hidden="true"></i>
+        Lista typów zleceń</h1>
+      <hr>
+      <div class="fresh-div" id="ordertype_lst">
+      {% if implementations %}
+        {% for i in implementations %}
+        <div class="d-flex justify-content-center">
+          <div class="col">
+            <p id="{{ i.id }}"><i class="fa fa-handshake-o" aria-hidden="true"></i> {{ i.name }}</p>
+          </div>
+          <div class="col text-right">
+            <a href="{% url 'implementations' i.id %}">
+            <button class="btn-sm shadow-sm btn btn-warning show_ordertype" id="{{ i.id }}" url="{% url 'implementations' i.id %}">
+             <i class="fa fa-trash" aria-hidden="true"></i> Zmień</button></a>
+            <button class="btn-sm shadow-sm btn btn-danger cancel_order" id="{{ i.id }}" url="{% url 'implementations' %}"><i class="fa fa-trash" aria-hidden="true"></i> Usuń</button>
+          </div>
+        </div>
+        <hr class="m-0 p-1">
+        {% endfor %}
+      {% endif %}
+      </div>
+  </div>
+</div>
+
+{% else %}
+
+<div class="container">
+  <div class="row p-1">
+    <div class="col-12">
+      <p>Nie jestes zalogowany!</p>
+      <img src="{% static 'img/gob_logo.png' %}" alt="logo"><br>
+      <span><a href="{% url 'login' %}">Zaloguj</a></span><br>
+      <span><a href="{% url 'register2' %}">Zarejestuj</a></span>
+    </div>
+  </div>
+</div>
+
+{% endif %}
+{% endblock %}

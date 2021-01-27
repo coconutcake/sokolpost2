@@ -1,0 +1,716 @@
+<!-- templates/home.html-->
+{% extends 'HD_app/newbase.html' %}
+{% load static %}
+{% load rest_framework %}
+{% block title %}Dashboard{% endblock %}
+
+{% if user.is_authenticated %}
+{% block modals %}
+  <!-- MODAL WINDOW -->
+    <div class="modal fade" id="modal_window" tabindex="-1" role="dialog" aria-labelledby="modal_window_title" aria-hidden="true">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content shadow">
+        <!-- MODAL BODY-->
+          <div class="modal-body">
+          </div>
+        </div>
+      </div>
+    </div>
+  <!-- MODAL WINDOW 2 -->
+    <div class="modal fade" id="modal_window_2" tabindex="-1" role="dialog" aria-labelledby="modal_window_2_title" aria-hidden="true">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content shadow">
+        <!-- MODAL BODY-->
+          <div class="modal-body">
+          </div>
+        </div>
+      </div>
+    </div>
+{% endblock %}
+{% endif %}
+
+
+{% block content %}
+{% if user.is_authenticated %}
+
+<!-- LISTA KLIENTÓW -->
+  <section class="sec">
+    <!-- ACTION BAR-->
+      <nav class="action-bar">
+       <!-- HEADER -->
+       <div class="row upper-bar">
+        <div class="col-12 col-sm-3 action-bar-header">
+        <h2 class=""><i class="fas fa-home"></i> Dashboard <span class="mark_counter align-middle"></span></h2>
+        </div>
+
+        <!-- Links -->
+          <div class="col-12 col-sm-9 action-bar-items text-right">
+            <div class="d-flex justify-content-end">
+            <div>
+            <ul class="action-bar-list">
+              
+              <li class="action-bar-item">
+               
+                <button class="btn btn-primary btn-sm dropdown-toggle" id="dropdown-options" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-sliders-h"></i> Opcje</button>
+                <div class="dropdown-menu p-0 m-0" aria-labelledby="dropdown-options">
+                  <a href="#" class="btn-block btn-sm btn-primary action-bar-item-link dark-mode m-0"><i class="fas fa-moon"></i> Tryb ciemny</a>
+                  <a href="#" class="btn-block btn-sm btn-primary action-bar-item-link full-screen m-0"><i class="fas fa-expand"></i> Pełny ekran</a>
+
+                </div>
+              </li>
+              <li class="action-bar-item action-bar-item-link">
+                  <input type="text" class="input-sm form-control" id="k_search" placeholder="Szybkie szukanie..."></input> 
+              </li>
+            </ul>
+            </div>
+            </div>
+          </div>
+        </div>
+</nav>
+<!-- Section row #2 -->
+      <div class="row subiekt-section-row">
+        <div class="col-12 col-sm-12 subiekt-section-column">
+          <div class="section-container">
+
+          <div class="d-flex justify-content-between">
+            
+            <div class="section-header">
+               <span><i class="fas fa-envelope"></i> Wiadomości</span>
+                
+            </div>
+            
+
+            <div class="section-action-bar">
+             
+              <ul class="action-bar-list">
+
+                <li class="action-bar-item">
+                    <a href="#" class="btn btn-sm btn-primary action-bar-item-link subiekt-modal-form-create send-msg m-0" name="message" url="{% url 'Message_add' %}" type="GET" pk=""  data-toggle="modal" data-target="#modal_window" ><i class="fas fa-paper-plane"></i> Nowa</a>
+                </li>   
+
+                <li class="action-bar-item">
+                    <button class="btn btn-primary btn-sm dropdown-toggle" id="dropdown-msg-options" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-sliders-h"></i> Opcje</button>
+                    <div class="dropdown-menu p-0 m-0" aria-labelledby="dropdownd-msg-options">
+                    <a class="btn-block btn-sm btn-primary action-bar-item-link delete m-0" name="msg" url="{% url 'Message_delete_ajax' %}" successurl="{% url 'DashboardView' %}" href="#"><i class="fas fa-trash"></i> Usuń</a>
+                    </div>
+                </li>
+                
+              </ul>
+             
+
+
+            </div>
+          </div>
+          <hr class="section-header-hr mt-0">
+            <div class="section-content">
+            
+<!-- LISTA -->
+    <div class="ls subiekt-list" id="subiekt-msg" name="msg">
+
+      <!-- Wiadomosc 1 -->
+      {% for msg in inbox %}
+        <div class="ls_elem bg-white animated fadeInDown fast markon" name="msg" pk="{{ msg.pk }}">
+          <div class="d-flex flex-row">
+            <div class="w-75">
+              <div class="pt-1">
+                <input type="checkbox" class="mark" url="" name="msg" pk="{{ msg.pk }}">&nbsp;
+                
+                <a href="#" class="modal_button" url="{% url 'Message_detail' %}" type="GET" pk="{{ msg.pk }}" data-toggle="modal" data-target="#modal_window" >
+                <label for="msg"><i class="fas fa-envelope {% if msg.is_read == False %}text-danger{% else %}text-success{% endif %}"></i> </label>
+                <span class="ls-spans" name="msg" pk="{{ msg.pk }}"> Od: {{ msg.sender.first_name }} - {{ msg.name }}</span>
+                </a>
+                
+                </div>
+              </div>
+            <div class="w-25">
+              <div class="text-right pl-2 pr-2 pt-1 flex-shrink-1">
+                <span class="ls-spans" name="msg" pk="{{ msg.pk }}"> 21.02.2020</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %} 
+
+
+
+
+      <div class="col-12 col-sm-6">
+      </div>
+      </div>
+
+            </div>
+          </div>
+        </div>
+
+<!-- nowa kolumna tutaj-->
+
+
+
+      </div>
+
+    <!-- Section row #1 -->
+      <div class="row subiekt-section-row">
+        <div class="col-12 col-xl-8 subiekt-section-column bg-white">
+          <div class="section-container">
+            <div class="section-header">
+            
+              <span><i class="fas fa-clipboard-check"></i> Moje zlecenia z miesiąca bierzącego</span>
+              <hr>
+
+
+
+
+            </div>
+            <div class="section-content">
+            <canvas id="myorders-chart" width="400" height="200"></canvas>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-12 col-xl-4 subiekt-section-column">
+<div class="row section-container">
+<div class="col-12">
+          
+            <div class="section-header">
+            
+              <span><i class="fas fa-sort-numeric-up-alt"></i> Liczbowo</span>
+              <hr>
+            </div>
+            <div class="section-content">
+            <canvas id="counter-status-chart" width="400" height="200"></canvas>
+            </div>
+
+</div>
+<div class="col-12 mt-2">
+            
+            <div class="section-content">
+            <canvas id="counter-implementationtype-chart" width="400" height="200"></canvas>
+            </div>
+
+</div>
+</div>
+        </div>
+
+
+      </div>
+      
+
+
+
+
+
+<!-- LISTA -->
+      <!-- Section row #2 -->
+      <div class="row subiekt-section-row">
+        <div class="col-12 col-sm-12 subiekt-section-column">
+          <div class="section-container">
+
+          <div class="d-flex justify-content-between">
+            
+            <div class="section-header">
+               <span><i class="fas fa-envelope"></i> Zlecenia nierozliczone</span>
+              
+            </div>
+
+            <div class="section-action-bar">
+             
+              <ul class="action-bar-list">
+<!--
+                <li class="action-bar-item">
+                    <a href="#" class="btn btn-sm btn-primary action-bar-item-link subiekt-modal-form-create send-msg m-0" name="message" url="{% url 'Message_add' %}" type="GET" pk=""  data-toggle="modal" data-target="#modal_window" ><i class="fas fa-paper-plane"></i> Nowa</a>
+                </li>   
+-->
+                <li class="action-bar-item">
+                    <button class="btn btn-primary btn-sm dropdown-toggle" id="dropdown-msg-options" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-sliders-h"></i> Opcje</button>
+                    <div class="dropdown-menu p-0 m-0" aria-labelledby="dropdownd-msg-options">
+                    <a class="btn-block btn-sm btn-primary action-bar-item-link delete m-0"  name="order" url="{% url 'Order_delete_ajax' %}" successurl="{% url 'DashboardView' %}" href="#"><i class="fas fa-trash"></i> Usuń</a>
+                    </div>
+                </li>
+                
+              </ul>
+             
+
+
+            </div>
+          </div>
+          <hr class="section-header-hr mt-0">
+            <div class="section-content">
+
+ <div id="subiekt_order_list" >
+    
+    <!-- KOLUMNY -->
+      <div class="row ls ls_columns">
+          <div class="col-6 col-md-2 d-none d-md-block">
+            <span>Firma</span>
+          </div>
+          <div class="col-6 col-md-2 d-none d-md-block">
+            <span>Nazwa</span>
+          </div>
+          <div class="col-6 col-md-2 d-none d-md-block">
+            <span>Koszt</span>
+          </div>
+          <div class="col-6 col-md-2 d-none d-md-block">
+            <span>Opiekun</span>
+          </div>
+          <div class="col-6 col-md-2 d-none d-md-block">
+            <span>Status</span>
+          </div>
+          <div class="col-6 col-md-2 d-none d-md-block">
+            <span>Utworzono</span>
+          </div>
+          <div class="w-100"></div>
+      </div>
+        <!-- LISTA -->
+      <div class="ls subiekt_list" name="order">
+        {% if get_not_completed_orders %}
+          {% for co in get_not_completed_orders %}
+          <div class="row ls_elem animated fadeInDown fast markon {% if co.order_status.id == 5 %}not-yet-completed{% endif %}{% if co.order_status.id == 3 %}inprogress{% endif %}{% if co.order_status.id == 6 %}completed{% endif %}" name="order" pk="{{ co.id }}" idf="">
+
+            <div class="col-12 col-md-2 first_elem">
+              <input type="checkbox" class="mark" url="" name="order" pk="{{ co.id }}">&nbsp;
+              <span class="ls_spans modal_button" url="{% url 'Order_detail' co.id %}" type="GET" pk="{{ co.id }}" data-toggle="modal" data-target="#modal_window"><i class="fas fa-building"></i>&nbsp;<b>{{ co.document.get_subiekt_company_name }}</b></span>
+
+            </div>
+
+            <div class="col-6 d-md-none">
+              <span>Imie</span>
+            </div>
+            <div class="col-6 col-md-2 elem middle_elem">
+              <span class="">{{ co.name }}</span>
+            </div>
+
+            <div class="col-6 d-md-none">
+              <span>Koszt/+Dojazd</span>
+            </div>
+            <div class="col-6 col-md-2 elem middle_elem">
+              <span>{{ co.calculate_order }} PLN / {{ co.calculate_order_with_distance }} PLN</span>
+            </div>
+
+            <div class="col-6 d-md-none">
+              <span>Opiekun</span>
+            </div>
+            <div class="col-6 col-md-2 elem middle_elem">
+              <span>{{ co.care }}</span>
+            </div>
+
+            <div class="col-6 d-md-none">
+              <span>Status</span>
+            </div>
+            <div class="col-6 col-md-2 elem middle_elem">
+              <span>{{ co.order_status }}</span>
+            </div>
+
+            <div class="col-6 d-md-none">
+              <span>Utworzono</span>
+            </div>
+            <div class="col-6 col-md-2 elem middle_elem">
+              <span>{{ co.created_date|date:"Y-m-d" }} - {{ co.end_datetime|timeuntil:co.start_datetime }}</span>
+            </div>
+
+
+            
+
+          </div>
+          {% endfor %}
+        {% else %}
+          <span>Brak danych</span>
+        {% endif %}
+        <div class="col-12 col-sm-6">
+        </div>
+      
+      </div>
+      
+      </div>
+    </div>
+
+
+            </div>
+            </div>
+            </div>
+            </div>
+    
+   
+
+
+
+
+  <!-- LISTA -->
+    <div id="subiekt_company_list">
+    </div>
+
+    
+  </section>
+<!-- JS -->
+  <script src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
+  <script type="text/javascript" src="{% static 'js/date-pl-PL.js' %}"></script>
+  <script src="{% static 'js/moment.js' %}"></script>
+  <script src="{% static 'js/Chart.bundle.js' %}"></script>
+  <script src="{% static 'js/chartjs-plugin-datalabels.js' %}"></script>
+<!-- MODAL -->
+  <script>
+
+
+ 
+
+    function dissmis_modal(modal){
+      $(modal).modal("hide");
+    }
+
+    function correct_checkboxes(){
+        $("input[type='checkbox']").each(function(){
+          $(this).removeClass("form-control");
+        });
+      }
+
+    function populate_modal_body(modal_body,content){
+      modal_body.html(content);
+    }
+
+    $(".modal_button").on('click',function(){
+      console.log("modal_button clicked")
+      var $th = $(this);
+      var $url = $th.attr("url");
+      var $pk = $th.attr("pk");
+      var $data = {"pk":$pk} 
+      var $type = $th.attr("type");
+      var $data_target = $th.attr("data-target");
+      var $modal_body = $($data_target+" div.modal-body");
+      $.ajax({
+        url:$url,
+        data:$data,
+        type:$type,
+        
+        success: function(content){
+            populate_modal_body($modal_body,content);
+            correct_checkboxes();
+        }
+      });
+    });
+  </script>
+
+
+<script>
+  // Charts
+    var ctx = document.getElementById('myorders-chart').getContext('2d');
+    var completed = {{ get_my_current_month_orders_counter_completed }}
+    var notcompleted = {{ get_my_current_month_orders_counter_notcompleted }}
+    var all = {{ get_my_current_month_orders_counter }}
+    var inprogres = {{ get_my_current_month_orders_counter_in_progress }}
+    var time_spent = {{ get_my_current_month_orders_counter_spent }}
+    var costs = {{ get_my_current_month_orders_counter_costs }}
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: {{ get_current_month_days }},
+            datasets: [
+
+            {
+                label: 'Rozliczone ',
+                data: completed,
+                backgroundColor:'rgba(47, 244, 155, 0.5)',
+                borderColor: 'rgba(47, 244, 155, 1)',
+                borderWidth: 2,
+                stack: "Base",
+                steppedLine: true, 
+                fill: true
+            },
+            {
+                label: 'Oczekujące na rozliczenie ',
+                data: notcompleted,
+                backgroundColor: 'rgba(254, 216, 77, 0.5)',
+                borderColor: 'rgba(254, 216, 77, 1)',
+                borderWidth: 2,
+                stack: "Base",
+                steppedLine: true, 
+                fill: true
+            },
+            {
+                label: 'W trakcie realizacji ',
+                data: inprogres,
+                backgroundColor: 'rgba(50, 182, 226, 0.5)',
+                borderColor: 'rgba(50, 182, 226, 1)',
+                borderWidth: 2,
+                stack: "Base",
+                steppedLine: true, 
+                fill: true
+            },
+            {
+                label: 'Czas spędzony ',
+                yAxisID: "times",
+                data: time_spent,
+                backgroundColor: 'rgba(220, 50, 226, 0.5)',
+                borderColor: 'rgba(220, 50, 226, 1)',
+                borderWidth: 2,
+                steppedLine: false, 
+                type: 'line',
+                fill: false
+            },
+            {
+                label: 'Koszta z dojazdem',
+                yAxisID: "koszta",
+                data: costs,
+                backgroundColor: 'rgba(235, 135, 20, 0.5)',
+                borderColor: 'rgba(235, 135, 20, 1)',
+                borderWidth: 2,
+                steppedLine: false, 
+                type: 'line',
+                fill: false
+            }
+            
+            ]
+        },
+        options: {
+          animation: {
+              duration: 1000,
+              easing:'easeInOutElastic',
+              
+          },
+    scales: {
+      xAxes: [{
+        //stacked: true,
+        stacked: true,
+        ticks: {
+          beginAtZero: true,
+          maxRotation: 0,
+          minRotation: 0
+        }
+      }],
+      yAxes: [
+      {
+        scaleLabel: {
+          display: true,
+          labelString: 'zlecenia [szt]'
+        },
+        stacked: true,
+        ticks: {
+            suggestedMin: 0,
+            suggestedMax: 5,
+            stepSize: 1
+         }
+      },
+      {
+        id: "all",
+        stacked: true,
+        display: false, //optional if both yAxes use the same scale
+        ticks: {
+          beginAtZero: true,
+          suggestedMin: 0,
+          suggestedMax: 5,
+        },
+      type: 'linear'
+      },
+      {
+        id: "times",
+        scaleLabel: {
+          display: true,
+          labelString: 'czas [h]'
+        },
+        stacked: true,
+        display: true, //optional if both yAxes use the same scale
+        ticks: {
+          beginAtZero: true,
+          suggestedMin: 0,
+          suggestedMax: 8,
+        },
+      type: 'linear'
+      },
+      {
+        id: "koszta",
+        scaleLabel: {
+          display: true,
+          labelString: 'koszt [PLN]'
+        },
+        stacked: true,
+        display: true, //optional if both yAxes use the same scale
+        ticks: {
+          beginAtZero: true,
+          suggestedMin: 0,
+          suggestedMax: 500,
+        },
+      type: 'linear'
+      }
+      ]
+    },
+  }
+    });
+
+    var ctx = document.getElementById('counter-status-chart').getContext('2d');
+    var keys = "{{ get_month_orders_statuses.keys|join:", "|safe}}".split(",")
+    var values = "{{ get_month_orders_statuses.values|join:", "|safe}}".split(",")
+    var myChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: keys,
+            datasets: [{
+                label: '#',
+                data: values,
+                backgroundColor: [
+                    'rgba(47, 244, 155, 0.2)',
+                    'rgba(255, 150, 132, 0.2)',
+                    
+                ],
+                borderColor: [
+                    'rgba(47, 244, 155, 1)',
+                    'rgba(255, 150, 132, 1)',
+                    
+                ],
+                borderWidth: 2,
+            }]
+        },
+        options: {
+          layout: {
+          },
+          legend:{
+            position:'top'
+            
+          },          
+          animation: {
+              duration: 1300,
+              easing:'easeInOutExpo',
+              
+          },
+            scales: {
+                yAxes: [{
+                    display:false,
+                    gridLines: {
+                      display:false
+                    },
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+            
+        }
+    });
+
+    var ctx = document.getElementById('counter-implementationtype-chart').getContext('2d');
+    var keys = "{{ get_month_orders_types.keys|join:", "|safe}}".split(",")
+    var values = "{{ get_month_orders_types.values|join:", "|safe}}".split(",")
+    var myChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: keys,
+            datasets: [{
+                label: '#',
+                data: values,
+                backgroundColor: [
+                    'rgba(63, 191, 191,0.2)',
+                    'rgb(191, 63, 191,0.2)',
+                    'rgba(191, 191, 63,0.2)'
+                    
+                ],
+                borderColor: [
+                    'rgba(63, 191, 191,1)',
+                    'rgb(191, 63, 191,1)',
+                    'rgba(191, 191, 63,1)'
+                    
+                ],
+                borderWidth: 2,
+            }]
+        },
+        options: {
+          legend:{
+            position:'top'
+          },
+          animation: {
+              duration: 1300,
+              easing:'easeInOutExpo',
+              
+          },
+            scales: {
+                yAxes: [{
+                    display:false,
+                    gridLines: {
+                      display:false
+                    },
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]            
+              }
+            
+        }
+    });
+  </script>
+
+
+<!-- MODAL -->
+  <script>
+
+    function dissmis_modal(modal){
+      $(modal).modal("hide");
+    }
+
+    function correct_checkboxes(){
+        $("input[type='checkbox']").each(function(){
+          $(this).removeClass("form-control");
+        });
+      }
+
+    function populate_modal_body(modal_body,content){
+      modal_body.html(content);
+    }
+
+    $(".subiekt-modal-form-create").on('click',function(){
+      console.log("subiekt-modal-form-create clicked");
+      var $th = $(this);
+      var $url = $th.attr("url");
+      var $pk = $th.attr("pk");
+      var $data = {"pk":$pk} 
+      var $type = $th.attr("type");
+      var $data_target = $th.attr("data-target");
+      var $modal_body = $($data_target+" div.modal-body");
+      $modal_body.html("<div class='text-center'><h6 class='text-center text-dark'><i class='fas fa-circle-notch fa-spin'></i> Ładowanie...</h6></div>")
+      $.ajax({
+        url:$url,
+        data:$data,
+        type:$type,        
+        success: function(content){
+            populate_modal_body($modal_body,content);
+            correct_checkboxes();
+ 
+        }
+      });
+    });
+        $(".modal_button").on('click',function(){
+
+      var $th = $(this);
+      var $url = $th.attr("url");
+      var $pk = $th.attr("pk");
+      var $data = {"pk":$pk}
+      var $type = $th.attr("type");
+      var $data_target = $th.attr("data-target");
+      var $modal_body = $($data_target+" div.modal-body");
+
+      $modal_body.html("<div class='text-center'><h6 class='text-center text-dark'><i class='fas fa-circle-notch fa-spin'></i> Ładowanie...</h6></div>")
+
+
+      console.log($modal_body)
+      $.ajax({
+        url:$url,
+        data:$data,
+        type:$type,
+        success: function(content){
+          console.log(content)
+            populate_modal_body($modal_body,content);
+            correct_checkboxes();
+        }
+      });
+    });
+  </script>
+
+{% else %}
+<div class="container">
+  <div class="row p-1">
+    <div class="col-12">
+      <p>Nie jestes zalogowany!</p>
+      <img src="{% static 'img/gob_logo.png' %}" alt="logo"><br>
+      <span><a href="{% url 'login' %}">Zaloguj</a></span><br>
+      <span><a href="{% url 'register2' %}">Zarejestuj</a></span>
+    </div>
+  </div>
+</div>
+{% endif %}
+</script>
+{% endblock %}

@@ -1,0 +1,165 @@
+{% load static %}
+{% load rest_framework %}
+<!doctype html>
+<html lang="pl">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/jquery-ui.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/owl.carousel.min.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/owl.theme.default.min.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/animate.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/jquery.datetimepicker.min.css' %}" />
+  <link rel="stylesheet" href="{% static 'fullcalendar/core/main.css' %}" rel='stylesheet' />
+  <link rel="stylesheet" href="{% static 'fullcalendar/daygrid/main.css' %}" rel='stylesheet' />
+  <link rel="stylesheet" href="{% static 'css/style2.css' %}" rel='stylesheet' />
+  <link href="{% static 'css/all.css' %}" rel="stylesheet" />
+  <script defer src="{% static 'js/all.js' %}"></script>
+  
+  <title>
+    {% block title %}{% endblock %}
+  </title>
+</head>
+
+<body class="bg-noisy">
+
+
+<div class="content" style="display:none;">
+  <div class="wrapper d-flex align-items-stretch">
+    {% if user.is_authenticated %}
+    <!-- CONTENT  -->
+      <div id="content" class="p-2 p-md-5">
+      {% block content %}
+      {% endblock %}
+      </div>
+
+    {% else %}
+          <div class="container mt-5">
+        <div class="row justify-content-md-center">
+          <div class="col">
+          </div>
+          <div class="col-md-auto text-center">
+          <img class="text-center" src="{% static 'img/sokolm.png' %}" width=100 alt="logo">
+          <h2>Zaloguj do platformy</h2>
+            <hr>
+              <form method="post">
+              {% csrf_token %}
+              <div class="text-center">
+                <div class="">
+                  <div class="mt-3">
+                    <div class="">Email:</div>
+                    <div class="">{{ form.username }}</div>
+                    
+                  </div>
+                <div class="mt-3">
+                  <div class="">Hasło:</div>
+                  <div class="">{{ form.password }}</div>
+                </div>
+                </div>
+              </div>
+              <br>
+              <button class="btn btn-danger" type="submit">Zaloguj</button>
+            </form>
+          </div>
+          <div class="col">
+          </div>
+        </div>
+      </div>
+
+
+    {% endif %}
+  </div>
+  </div>
+  </div>
+
+  <script src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
+  <script src="{% static 'js/jquery-ui.min.js' %}"></script>
+  <script src="{% static 'js/csrf.js' %}"></script>
+  <script src="{% static 'js/inputmask.min.js' %}"></script>
+  <script src="{% static 'js/jquery.inputmask.min.js' %}"></script>
+  <script src="{% static 'js/popper.min.js' %}"></script>
+  <script src="{% static 'js/bootstrap.min.js' %}"></script>
+  <script src="{% static 'js/owl.carousel.min.js' %}"></script>
+  <script src="{% static 'js/jquery.datetimepicker.full.js' %}"></script>
+  <script src="{% static 'fullcalendar/core/main.js' %}"></script>
+  <script src="{% static 'fullcalendar/daygrid/main.js' %}"></script>
+  <script src="{% static 'js/owls.js' %}"></script>
+  <script src="{% static 'js/search.js' %}"></script>
+  <script src="{% static 'js/bootstrap-notify.js' %}"></script>
+  <script src="{% static 'js/main.js' %}"></script>
+  <script type="text/javascript" src="{% static 'js/date-pl-PL.js' %}"></script>
+  <script src="{% static 'js/moment.js' %}"></script>
+  <script src="{% static 'js/Chart.bundle.js' %}"></script>
+  <script src="{% static 'js/chartjs-plugin-datalabels.js' %}"></script>
+  <script>
+    $(document).ready(function () {
+      $('a.hideafterclick').on('click', function(){
+        $('body').addClass('animated fadeOut faster')
+      })
+      $('div.content').addClass('animated fadeIn faster').show()
+
+      // Zmienne ----------------------------------------------------------
+        var user = "{{ user.username }}"
+        var token = "{{ token }}"
+        var loc = window.location.href;
+        var $origin = document.location.origin;
+
+      // Inicjacja --------------------------------------------------------
+        $('section').fadeIn();
+        $('.tooltip').addClass('animated fadeInDown');
+        $("input[type='checkbox']").removeClass("form-control")
+
+      // Tooltipy ---------------------------------------------------------
+        $('[tip="tooltip"]').tooltip({
+          trigger: "hover"
+        });
+        $('[data-toggle="tooltip"]').tooltip({
+          placement: 'top',
+          delay: {
+            show: 0,
+            hide: 0
+          }
+        });
+
+      // Płynny show -----------------------------------------------------
+        $(".ih").each(function(index) {
+          $(this).delay(70*index).fadeIn(300);
+        });
+        $(".section_title").each(function(index) {
+          $(this).delay(70*index).hide().addClass('animated fadeInDown').show(130)
+        });
+        $("section input,select, textarea").each(function(index) {
+          $(this).delay(70*index).hide().addClass('animated fadeInDown fast').show(130)
+        });
+        $("section").each(function(index) {
+          $(this).delay(70*index).hide().addClass('animated fadeInDown fast shadow-sm').show()
+        });
+        $(".ih2").each(function(index) {
+          $(this).delay(100).delay(70*index).fadeIn(300);
+        });
+        $(".ls_elem,.collapse_sumy").hide()
+        setTimeout(function(){
+          $(".ls_elem,.collapse_sumy").each(function(index) {
+            $(this).delay(70*index).hide().addClass('animated fadeIn').show(130)
+          });
+        },600); 
+      
+      // Fukcje dodatkowe -------------------------------------------------
+        function purge(div) {
+          var $div = div
+          $($div).empty();
+          console.log($div + " purged!")
+        };
+
+        function updateDiv(target) {
+          $(target).load(window.location.href + " " + target);
+        };
+
+    });
+  </script>
+</body>

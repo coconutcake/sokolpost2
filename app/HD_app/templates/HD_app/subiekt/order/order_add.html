@@ -1,0 +1,367 @@
+<!-- templates/home.html-->
+{% extends 'HD_app/newbase.html' %}
+{% load static %}
+{% load rest_framework %}
+{% block title %}Dodaj nowe zlecenie{% endblock %}
+
+{% if user.is_authenticated %}
+{% block modals %}
+  <!-- MODAL WINDOW -->
+    <div class="modal fade" id="modal_window" tabindex="-1" role="dialog" aria-labelledby="modal_window_title" aria-hidden="true">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content shadow">
+        <!-- MODAL BODY-->
+          <div class="modal-body">
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+  <!-- MODAL WINDOW 2 -->
+    <div class="modal fade" id="modal_window_2" tabindex="-1" role="dialog" aria-labelledby="modal_window_2_title" aria-hidden="true">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content shadow">
+        <!-- MODAL BODY-->
+          <div class="modal-body">
+
+          </div>
+        </div>
+      </div>
+    </div>
+{% endblock %}
+{% endif %}
+
+
+{% block content %}
+{% if user.is_authenticated %}
+
+<!-- LISTA KLIENTÓW -->
+  <section class="sec">
+    <!-- ACTION BAR-->
+      <nav class="action-bar">
+       <!-- HEADER -->
+       <div class="row upper-bar">
+        <div class="col-12 col-sm-3 action-bar-header">
+        <h2 class=""><i class="fas fa-clipboard-list"></i> Zlecenia <span class="mark_counter align-middle"></span></h2>
+        </div>
+
+        <!-- Links -->
+          <div class="col-12 col-sm-9 action-bar-items text-right">
+            <div class="d-flex justify-content-end">
+            <div>
+            <ul class="action-bar-list">
+              <li class="action-bar-item">
+                <a href="#" class="btn btn-sm btn-primary action-bar-item-link select_all" name="order"><i class="fas fa-check-square"></i> Wszystko</a>
+              </li>
+              <li class="action-bar-item">
+                <a href="#" class="btn btn-sm btn-primary action-bar-item-link deselect_all" name="order"><i class="far fa-check-square"></i> Zaden</a>
+              </li>
+              <li class="action-bar-item">
+                <a href="#" class="btn btn-sm btn-primary action-bar-item-link subiekt-modal-form-create" url="{% url 'Order_add' %}" type="GET" pk="" data-toggle="modal" data-target="#modal_window" ><i class="fas fa-plus"></i> Dodaj</a>
+              </li>
+              <li class="action-bar-item">
+                <button class="btn btn-primary btn-sm dropdown-toggle" id="dropdown-options" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-sliders-h"></i> Opcje</button>
+                <div class="dropdown-menu p-0 m-0" aria-labelledby="dropdown-options">
+                   <a href="#" class="btn-block btn-sm btn-primary action-bar-item-link dark-mode m-0"><i class="fas fa-moon"></i> Tryb ciemny</a>
+                  <a href="#" class="btn-block btn-sm btn-primary action-bar-item-link full-screen m-0"><i class="fas fa-expand"></i> Pełny ekran</a>
+                  <a class="btn-block btn-sm btn-primary action-bar-item-link account m-0" name="order" url="{% url 'Order_account_ajax' %}" successurl="{% url 'Order_add' %}" href="#"><i class="fas fa-calculator"></i> Rozlicz</a>
+                  <a class="btn-block btn-sm btn-primary action-bar-item-link delete m-0" name="order" url="{% url 'Order_delete_ajax' %}" successurl="{% url 'Order_add' %}" href="#"><i class="fas fa-trash"></i> Usuń</a>
+                </div>
+              </li>
+              <li class="action-bar-item action-bar-item-link">
+                  <input type="text" class="input-sm form-control" id="k_search" placeholder="Szybkie szukanie..."></input> 
+              </li>
+            </ul>
+            </div>
+            </div>
+          </div>
+        </div>
+
+            <!-- SEARCH SUBIEKT -->
+      <div class="row subiekt-section-row">
+        <div class="col-12 subiekt-section-column" id="order-search-div">
+          <div class="section-container">
+            <div class="section-header">
+              <span><i class="fas fa-search"></i> Wyszukiwanie</span>
+              <hr>
+            </div>
+          <div class="section-search-form">
+            <form id="order-search-form" type="POST" url="{% url 'Order_add' %}">
+              <div class="row">
+              {% csrf_token %}
+                {% for field in search_form.visible_fields %}
+                  <div class="col-12 col-sm-auto">
+                    <div class="field-group">
+                      <label>{{ field.label }}</label> {{ field }}
+                      {{ field.errors }}
+                      {% if field.help_text %}
+                          <span class="helptext">&nbsp;{{ field.help_text }}  </span>
+                      {% endif %}
+                      </div>  
+                    </div>
+                {% endfor %}
+              </div>
+            </form>
+
+            <a value="Zapisz" url="{% url 'Order_add' %}" href="#" class="btn btn-sm btn-primary mt-3 shadow-sm subiekt-get-list-from-form" div="#order-search-div" forms="#order-search-form" import-to="#subiekt_order_list"><i class="fas fa-search text-light"></i>&nbsp;Szukaj</a>
+            <!--
+            <a class="btn btn-sm btn-primary action-bar-item-link subiekt-get-list-from-form" import-to="#subiekt_company_list" form="#company-search-form" href="#"><i class="fas fa-search"></i> Szukaj</a>
+            -->
+          </div>
+        </div>
+      </div>
+
+
+
+      </nav>
+
+
+  <!-- LISTA -->
+    
+    <div id="subiekt_order_list">
+    
+    <!-- KOLUMNY -->
+      <div class="row ls ls_columns">
+          <div class="col-6 col-md-2 d-none d-md-block">
+            <span>Firma</span>
+          </div>
+          <div class="col-6 col-md-2 d-none d-md-block">
+            <span>Nazwa</span>
+          </div>
+          <div class="col-6 col-md-2 d-none d-md-block">
+            <span>Koszt</span>
+          </div>
+          <div class="col-6 col-md-2 d-none d-md-block">
+            <span>Opiekun</span>
+          </div>
+          <div class="col-6 col-md-2 d-none d-md-block">
+            <span>Status</span>
+          </div>
+          <div class="col-6 col-md-2 d-none d-md-block">
+            <span>Utworzono</span>
+          </div>
+          <div class="w-100"></div>
+      </div>
+        <!-- LISTA -->
+      <div class="ls">
+        {% if orders %}
+          {% for co in orders %}
+          <div class="row ls_elem animated fadeInDown fast markon {% if co.order_status.id == 5 %}not-yet-completed{% endif %}{% if co.order_status.id == 3 %}inprogress{% endif %}{% if co.order_status.id == 6 %}completed{% endif %}" name="order" pk="{{ co.id }}" idf="">
+
+            <div class="col-12 col-md-2 first_elem">
+              <input type="checkbox" class="mark" url="" name="order" pk="{{ co.id }}">&nbsp;
+              <span class="ls_spans modal_button" url="{% url 'Order_detail' co.id %}" type="GET" pk="{{ co.id }}" data-toggle="modal" data-target="#modal_window"><i class="fas fa-building"></i>&nbsp;<b>{{ co.document.get_subiekt_company_name }}</b></span>
+
+            </div>
+
+            <div class="col-6 d-md-none">
+              <span>Imie</span>
+            </div>
+            <div class="col-6 col-md-2 elem middle_elem">
+              <span class="">{{ co.name }}</span>
+            </div>
+
+            <div class="col-6 d-md-none">
+              <span>Koszt/+Dojazd</span>
+            </div>
+            <div class="col-6 col-md-2 elem middle_elem">
+              <span>{{ co.calculate_order }} PLN / {{ co.calculate_order_with_distance }} PLN</span>
+            </div>
+
+            <div class="col-6 d-md-none">
+              <span>Opiekun</span>
+            </div>
+            <div class="col-6 col-md-2 elem middle_elem">
+              <span>{{ co.care }}</span>
+            </div>
+
+            <div class="col-6 d-md-none">
+              <span>Status</span>
+            </div>
+            <div class="col-6 col-md-2 elem middle_elem">
+              <span>{{ co.order_status }}</span>
+            </div>
+
+            <div class="col-6 d-md-none">
+              <span>Utworzono</span>
+            </div>
+            <div class="col-6 col-md-2 elem middle_elem">
+              <span>{{ co.created_date|date:"Y-m-d" }} - {{ co.end_datetime|timeuntil:co.start_datetime }}</span>
+            </div>
+
+
+            
+
+          </div>
+          {% endfor %}
+        {% else %}
+          <span>Brak danych</span>
+        {% endif %}
+        <div class="col-12 col-sm-6">
+        </div>
+      
+      </div>
+      
+      </div>
+    </div>
+
+
+  </section>
+<!-- JS -->
+  <script src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mojs/core"></script>
+<!-- MODAL -->
+  <script>
+
+    function dissmis_modal(modal){
+      $(modal).modal("hide");
+    }
+
+    function correct_checkboxes(){
+        $("input[type='checkbox']").each(function(){
+          $(this).removeClass("form-control");
+        });
+      }
+
+    function populate_modal_body(modal_body,content){
+      modal_body.html(content).show();
+    }
+
+    function is_only_one_allowed(val){
+      if(val == "true"){
+        return true
+      } else {
+        return false
+      }
+    }
+
+    function marked_counter(marker){
+      var $name = marker
+      var $list = [];
+      var $checked = $(document).find(".mark[name='"+$name+"']:checked")
+      console.log($checked.length)
+      return $checked.length;
+    }
+    function get_pk(marker){
+      var $name = marker
+      var $checked = $(document).find(".mark[name='"+$name+"']:checked")
+      console.log($checked.attr("pk"))
+      return $checked.attr("pk");
+    }
+
+    function is_only_1_marked(marker){
+      var $counter = marked_counter(marker);
+      if($counter == 1){
+        return true
+      } else {
+        return false
+      }
+      }
+
+      function send_ajax(url,data,type,modal_body){
+        var $url = url;
+        var $data = data;
+        var $type = type;
+        var $modal_body = modal_body;
+        console.log($data)
+
+          $.ajax({
+            url:$url,
+            data:{"data":JSON.stringify($data)},
+            type:$type,        
+            success: function(content) {
+              populate_modal_body($modal_body,content);
+              correct_checkboxes();
+            }
+          });
+      }
+
+    $(".subiekt-modal-form-create").on('click',function(){
+      console.log("subiekt-modal-form-create clicked");
+      var $th = $(this);
+      var $onlyone = $th.attr("only-one");
+      var $url = $th.attr("url");
+      var $keyid = $th.attr("keyid");
+      var $marker = $th.attr("marker");
+      console.log($marker)
+      var $pk = $th.attr("pk");
+      var $data = {} 
+      $data[$keyid] = $pk
+      var $type = $th.attr("type");
+      var $data_target = $th.attr("data-target");
+      var $modal_body = $($data_target+" div.modal-body");
+      
+      $modal_body.html("<div class='text-center'><h6 class='text-center text-dark'><i class='fas fa-circle-notch fa-spin'></i> Ładowanie...</h6></div>")
+
+      
+
+      if(is_only_one_allowed($onlyone)){
+        if(is_only_1_marked($marker)){
+          $pk = get_pk($marker)
+          $data[$keyid] = $pk
+          send_ajax($url,$data,$type,$modal_body)
+        } else {
+          var $counter = marked_counter($marker)
+          populate_modal_body($modal_body,"Zaznaczyłeś: "+$counter+" elementów. Dozwolona ilość wynosi zaznaczeń to: 1");
+        }
+      } else {
+        send_ajax($url,$data,$type,$modal_body)
+      }
+
+    });
+
+
+    $('#company-search-form input').keypress(function (e) {
+      if (e.which == 13) {
+          $('a[forms="#company-search-form"]').click();
+          
+          return false;
+      }
+    });
+
+
+    $(".modal_button").on('click',function(){
+
+      var $th = $(this);
+      var $url = $th.attr("url");
+      var $pk = $th.attr("pk");
+      var $data = {"pk":$pk}
+      var $type = $th.attr("type");
+      var $data_target = $th.attr("data-target");
+      var $modal_body = $($data_target+" div.modal-body");
+
+      $modal_body.html("<div class='text-center'><h6 class='text-center text-dark'><i class='fas fa-circle-notch fa-spin'></i> Ładowanie...</h6></div>")
+
+
+      console.log($modal_body)
+      $.ajax({
+        url:$url,
+        data:$data,
+        type:$type,
+        success: function(content){
+          console.log(content)
+            populate_modal_body($modal_body,content);
+            correct_checkboxes();
+        }
+      });
+    });
+  </script>
+<script>
+
+
+</script>
+{% else %}
+<div class="container">
+  <div class="row p-1">
+    <div class="col-12">
+      <p>Nie jestes zalogowany!</p>
+      <img src="{% static 'img/gob_logo.png' %}" alt="logo"><br>
+      <span><a href="{% url 'login' %}">Zaloguj</a></span><br>
+      <span><a href="{% url 'register2' %}">Zarejestuj</a></span>
+    </div>
+  </div>
+</div>
+{% endif %}
+</script>
+{% endblock %}

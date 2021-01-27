@@ -1,0 +1,780 @@
+<!-- templates/home.html-->
+{% extends 'HD_app/base.html' %}
+{% load static %}
+{% load rest_framework %}
+{% block title %}Zlecenia | SOKÓŁ{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+
+{% if request.user.is_superuser %}
+  
+<!-- Modal ADD order -->
+<div class="modal fade" id="add_order_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content bg-noisy p-1">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle"><i class="fa fa-plus color1" aria-hidden="true"></i> Dodawanie zlecenia</h5>
+        <button type="button" class="close close_modal_button" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        
+        <form id="add_order" action="{% url 'orders1' %}" method="post">
+
+          {% csrf_token %}
+          {{ form.as_p }}
+            <!-- <input type="submit" value="Zapisz" class="btn btn-danger mt-3 shadow"> -->
+        
+
+
+      </div>
+      <div class="modal-footer">
+        <input type="submit" value="Zapisz" class="btn btn-danger mt-3 shadow">
+        <button type="button" class="btn btn-secondary mt-3 shadow close_modal_button" data-dismiss="modal">Zamknij</button>
+        
+      </form><!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal detail order -->
+<div class="modal fade" id="update_order_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered " role="document">
+    <div class="modal-content bg-noisy p-1">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle"><i class="fa fa-plus color1" aria-hidden="true"></i> Edycja zlecenia</h5>
+        <button type="button" class="close close_modal_button" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        
+        <form id="update_order" action="{% url 'orders1' %}" method="post" enctype="multipart/form-data">
+
+          {% csrf_token %}
+          {{ form.as_p }}
+            <!-- <input type="submit" value="Zapisz" class="btn btn-danger mt-3 shadow"> -->
+        
+
+
+      </div>
+      <div class="modal-footer">
+        
+        <input type="submit" value="Zapisz" class="btn btn-danger mt-3 shadow">
+        <button type="button" class="btn btn-secondary mt-3 shadow close_modal_button" data-dismiss="modal">Zamknij</button>
+        
+      </form><!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal show order -->
+<div class="modal fade" id="order_detail" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered " role="document">
+    <div class="modal-content bg-noisy p-1">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle"> Zlecenie</h5>
+        <button type="button" class="close close_modal_button" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      </div>
+      <div class="modal-footer">
+        <a id="modyfikuj" href=""><button type="button" class="btn btn-warning mt-3 shadow"><i class="fa fa-pencil" aria-hidden="true"></i> Modifikuj</button></a>
+        <button type="button" class="btn btn-secondary mt-3 shadow close_modal_button" data-dismiss="modal">Zamknij</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<div class="row p-3">
+    <div class="col-12 ih">
+      <div class="d-flex justify-content-between">
+        <div class="" id="">
+          <h2 class=""><i class="fa fa-file-text-o text-danger rounded" aria-hidden="true"></i>
+            Moje zlecenia</h2> 
+        </div>
+        <button class="animated bounceInDown fa btn btn-success shadow-sm open_modal_button" id="add_order_btn" type="button">
+          <i class="rotate-center fa fa-plus" aria-hidden="true"></i> Dodaj</button>
+      </div>
+      <div class="here"></div>
+      <hr class="">
+
+
+<!-- Search -->
+<section id="search_q">
+  <div class="row animated fadeInDown">
+    <div class="col-4 col-sm-3 d-none d-sm-block">
+        <b><p class="">Klient:<p></b>
+
+            <hr class="">
+
+    </div>
+    <div class="col-4 col-sm-3 d-none d-sm-block">
+      <b><p class="">Tytuł:</p></b> 
+<hr class="">
+    </div>
+    <div class="col col-sm-3 d-none d-sm-block">
+      <b><p class="">Start:</p></b> 
+<hr class="">
+    </div>
+    <div class="col-4 col-sm-3 d-none d-sm-block">
+      <b><p class="">Koniec:</p></b> 
+<hr class="">
+    </div>
+    
+
+  </div>
+<form class="mb-4 rounded" action="{% url 'search_orders' %}" method="get">
+  <div class="row mb-1 ">
+  <div class="col-12 col-sm-6">
+    <input class="ih5 form-control shadow-sm input-sm" name="q" type="text" placeholder="Szukaj...">
+  </div>
+  <div class="col-3 d-none d-sm-block">
+    <input class="ih5 datepicker form-control shadow-sm input-sm" name="s" type="text" placeholder="Szukaj...">
+  </div>
+  <div class="col-3 d-none d-sm-block">
+    <input class="ih5 datepicker form-control shadow-sm input-sm" name="e" type="text" placeholder="Szukaj...">
+  </div>
+  <div class="col-12 col-sm-6 mt-4">
+    <label><b>Status:</b></label>
+    <hr class="mt-0">
+    <select class="ih5 form-control shadow-sm input-sm" name="t">
+      <option></option>
+      {% if orderstatus %}
+      {% for o in orderstatus %}
+      <option>{{ o }}</option>
+      {% endfor %}
+      {% endif %}
+    </select>
+    <!-- <input class="ih5 form-control shadow-sm input-sm" name="t" type="text" placeholder="Szukaj..."> -->
+  </div>
+  <div class="col-12 col-sm-3 mt-4">
+    <label><b>Typ:</b></label>
+    <hr class="mt-0">
+    <select class="ih5 form-control shadow-sm input-sm" name="ty">
+      <option></option>
+      {% if ordertypes %}
+      {% for o in ordertypes %}
+      <option>{{ o }}</option>
+      {% endfor %}
+      {% endif %}
+    </select>
+    <!-- <input class="ih5 form-control shadow-sm input-sm" name="t" type="text" placeholder="Szukaj..."> -->
+  </div>
+
+
+    <div class="col-12 col-sm-3 d-flex align-items-end">
+      <button type="submit" class=" animated fadeInDown btn p-2 btn-block btn-primary shadow-sm"><i class="fa fa-search" aria-hidden="true"></i>
+        Szukaj</button>
+    </div>
+
+
+  
+</div>
+
+</form>
+</section>
+
+<hr>
+
+<!-- Pokaz zlecenia -->
+<section id="sekcja_zlecenia" style="display:none;">
+  <div class="row mt-5">
+      <div id="" class="col-xs-12 col-sm-12 col-md-6 col-lg-6 mt-3">
+          <h4 class="mb-4">W realizacji</h4>
+          <div class="form-group">
+              <label for="r_search">Szukaj:</label>
+              <input type="text" class="form-control input-sm" id="r_search"></input>
+            </div>
+          <hr>
+  
+          <div id="live_wrealizacji">
+          {% if user.is_staff %}
+          {% if myorders %}
+          {% for order in myorders|dictsort:"order_status.name" %}
+                  <div id="wrealizacjidiv">
+                    
+                  <div style="display:none;" id="{{ order.id }}{{ order.title }}" class="ih5 rounded border border-secondary order wrealizacji row bg-warning m-1 mb-2 p-2 shadow">
+                  <div class="col-8">
+                    <i class="fa fa-user align-middle" aria-hidden="true"></i> 
+                    <span class="align-middle"><b>{{ order.user.first_name }} {{ order.user.last_name }}</b></span><br>
+                    <span><i class="fa fa-building-o" aria-hidden="true"></i>
+                      Firma: {{ order.agreement.company }} </span><br>
+                    <span>Opis: {{ order.title }} </span>
+                  </div>
+                  <div class="col text-right">
+                    <span>{{ order.start_datetime|date:'' }}</span>
+                  <a href="{% if order.attachment %}{{ order.attachment.url }}{% endif %}"><button class="mb-1 btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-file" aria-hidden="true"></i>
+                    </button></a>
+                    <a href="{% url 'order_detail' order.id %}"><button class="mb-1 btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-pencil" aria-hidden="true"></i></button></a>
+                    <a href="{% url 'order_delete' order.id %}"><button class="mb-1 btn btn-danger shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_delete' order.id %}"><i class="fa fa-trash" aria-hidden="true"></i></button></a>
+                  </div>
+                </div> 
+              </div>
+              {% endfor %}
+          {% endif %}
+  
+          {% else %}
+  
+          {% if myorders2 %}
+          {% for order in myorders2|dictsort:"order_status.name" %}
+                  <div id="wrealizacjidiv">
+  
+                  <div style="display:none;" id="{{ order.id }}{{ order.title }}" class="ih5 rounded border border-secondary order wrealizacji row bg-warning m-1 mb-2 p-2 shadow">
+                  <div class="col-8">
+                    <i class="fa fa-user align-middle" aria-hidden="true"></i> 
+                    <span class="align-middle"><b>{{ order.user }}</b></span><br>
+                    <span class="align-middle">Opiekun: <b>{{ order.agreement.company.care }}</b></span><br>
+                    <span>Firma: {{ order.agreement.company.name }} </span><br>
+                    <span>Opis: {{ order.title }} </span>
+                  </div>
+  
+                  <div class="col text-right">
+                    <span>{{ order.start_datetime|date:'' }}</span>
+                  <a href="{% if order.attachment %}{{ order.attachment.url }}{% endif %}"><button class="mb-1 btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-file" aria-hidden="true"></i>
+                    </button></a>
+                    <a href="{% url 'order_detail' order.id %}"><button class="mb-1 btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-pencil" aria-hidden="true"></i></button></a>
+                    <a href="{% url 'order_delete' order.id %}"><button class="mb-1 btn btn-danger shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_delete' order.id %}"><i class="fa fa-trash" aria-hidden="true"></i></button></a>
+                  </div>
+                </div> 
+              </div>
+          {% endfor %}
+          {% endif %}
+          
+          {% endif %}
+  </div>
+          </div>
+      <div id="" class="col-xs-12 col-sm-12 col-md-6 col-lg-6 mt-3">
+          <h4 class="mb-4">Zrealizowane</h4>
+          <div class="form-group">
+              <label for="z_search">Szukaj:</label>
+              <input type="text" class="form-control input-sm" id="z_search"></input>
+            </div>
+          <hr>
+  
+      <div id="live_zrealizowane">
+          {% if user.is_staff %}
+          {% if my_completed_orders %}
+          {% for order in my_completed_orders|dictsort:"order_status.name" %}
+              <div id="zrealizowanediv">
+
+                  <div style="display:none;" id="{{ order.id }}{{ order.title }}" class="ih5 order rounded border border-secondary zrealizowane row bg-success m-1 mb-2 p-2 shadow">
+                  <div class="col-8">
+                    <i class="fa fa-user align-middle" aria-hidden="true"></i> 
+                    <span class="align-middle"><b>{{ order.user }}</b></span><br>
+                    <span>Firma: {{ order.user.profile.company_name }} </span><br>
+                    <span>Opis: {{ order.title }} </span>
+                  </div>
+  
+                  <div class="col text-right">
+                    <span>{{ order.start_datetime|date:'' }}</span>
+                  <a href="{% if order.attachment %}{{ order.attachment.url }}{% enif %}"><button class="mb-1 btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-file" aria-hidden="true"></i>
+                    </button></a>
+                    <a href="{% url 'order_detail' order.id %}"><button class="mb-1 btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-pencil" aria-hidden="true"></i></button></a>
+                    <a href="{% url 'order_delete' order.id %}"><button class="mb-1 btn btn-danger shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_delete' order.id %}"><i class="fa fa-trash" aria-hidden="true"></i></button></a>
+                  </div>
+                </div> 
+
+              </div>
+                {% endfor %}
+              {% endif %}
+  
+          {% else %}
+  
+          {% if my_completed_orders2 %}
+          {% for order in my_completed_orders2|dictsort:"order_status.name" %}
+              <div id="zrealizowanediv">
+                  <div style="display:none;" id="{{ order.id }}{{ order.title }}" class="ih5 order rounded border border-secondary zrealizowane row bg-success m-1 mb-2 p-2 shadow">
+                  <div class="col-8">
+                    <i class="fa fa-user align-middle" aria-hidden="true"></i> 
+                    <span class="align-middle"><b>{{ order.user }}</b></span><br>
+                    <span>Firma: {{ order.user.profile.company_name }} </span><br>
+                    <span>Opis: {{ order.title }} </span>
+                  </div>
+  
+                  <div class="col text-right">
+                    <span>{{ order.start_datetime|date:'' }}</span>
+                  <a href="{% if order.attachment %}{{ order.attachment.url }}{% endif %}"><button class="mb-1 btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-file" aria-hidden="true"></i>
+                    </button></a>
+                    <a href="{% url 'order_detail' order.id %}"><button class="mb-1 btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-pencil" aria-hidden="true"></i></button></a>
+                    <a href="{% url 'order_delete' order.id %}"><button class="mb-1 btn btn-danger shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_delete' order.id %}"><i class="fa fa-trash" aria-hidden="true"></i></button></a>
+                  </div>
+                </div> 
+              </div>
+                {% endfor %}
+              {% endif %}
+          {% endif %}
+          </div>
+      </div>
+      </div>
+</section>
+  
+
+
+
+<!-- Guziki -->
+<section>
+<div class="d-flex justify-content-center mb-2">
+
+  <button tip="tooltip" title="Pokaż wszystkie zakończone" id="btn-completed" class="ih7 m-1 completed text-center btn btn-success shadow-sm " type="button" data-toggle="collapse" data-target="#collapseCompleted" aria-expanded="false" aria-controls="collapseExample">
+    <i class="ih5 fa fa-arrow-down" aria-hidden="true"></i>
+  </button>
+  <button tip="tooltip" title="Pokaż zakończone - niezrealizowane" id="btn-completed" class="ih7 m-1 completed text-center btn btn-danger shadow-sm " type="button" data-toggle="collapse" data-target="#collapseCompletednoinvoice" aria-expanded="false" aria-controls="collapseExample">
+    <i class="ih5 fa fa-arrow-down" aria-hidden="true"></i>
+  </button>
+  <button tip="tooltip" title="Pokaż wyfakturowane" id="btn-completed" class="ih7 m-1 completed text-center btn btn-success shadow-sm " type="button" data-toggle="collapse" data-target="#collapseCompletedinvoice" aria-expanded="false" aria-controls="collapseExample">
+    <i class="ih5 fa fa-gavel" aria-hidden="true"></i>
+  </button>
+</div>
+</section>
+
+<!-- Collapsy -->
+<section>
+  <div class="collapse" id="collapseCompleted">
+    <div class="">
+      
+
+    <div class="animated bounceInDown fast">
+      {% if my_completed_orders %}
+      {% for order in my_completed_orders|dictsort:"order_status.name" %}
+     
+      {% if order.order_status.id == 5 or order.order_status.id == 6 or order.order_status.id == 7  %}
+       <div class="order order_completed row bg-success rounded mt-1 p-2 shadow border border-secondary">
+
+        {% endif %}
+        <div class="col-6 col-sm-3">
+          <i class="fa fa-user align-middle" aria-hidden="true"></i> 
+          <b class="align-middle">{{ order.user }}</b>
+        </div>
+        <div class="col-6 col-sm-4 border-left d-none d-sm-block">
+          {{ order.title }} 
+        </div>
+        <div class="col-6 col-sm-3 col-md-2 d-none d-md-block border-left">
+          {{ order.start_datetime|date:'' }} 
+        </div>
+        
+        <div class="col-6 col-sm-5 col-md-3 text-right">
+          
+        {% if order.order_status.id == 3 %}
+        <i class='mr-1 fa fa-refresh fa-spin fa-1x fa-fw'></i>
+        {% endif %}
+        
+        {% if order.order_status.id == 5 or order.order_status.id == 6 or order.order_status.id == 7 %}
+        <i class='mr-1 fa fa-check' aria-hidden='true'></i>
+        {% endif %}
+    
+        <a href="{% if order.attachment %}{{ order.attachment.url }}{% endif %}"><button class="btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-file" aria-hidden="true"></i>
+          Dokument</button></a>
+          <a href="{% url 'order_detail' order.id %}"><button class="btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-pencil" aria-hidden="true"></i>              Edytuj</button></a>
+          <!-- <button class="show_order_btn btn shadow-sm btn-secondary btn-sm" apiurl="{% url 'order_api-list' %}" id="{{ order.id }}" url="{% url 'orders1' %}"><i class="fa fa-info" aria-hidden="true"></i> Szczegóły</button> -->
+          <a href="{% url 'order_delete' order.id %}"><button class="btn btn-danger shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_delete' order.id %}"><i class="fa fa-trash" aria-hidden="true"></i></button></a>
+        </div>
+    
+      </div> 
+      
+      
+        
+      {% if order.order_status %}
+        <div class="order row mb-5 border bg-light rounded shadow-sm p-3">
+        <div class="col-6 p-2">
+          <b><i class="statusy fa fa-rocket" aria-hidden="true"></i>
+            Status: </b>{{ order.order_status.name }}: <br><span class="text-secondary">{{ order.order_status.description }}</span>
+          
+        </div>
+    
+        <div class="col-12 col-sm-6 p-2">
+          <b><i class="statusy fa fa-exclamation-triangle" aria-hidden="true"></i>
+    
+            Mój komunikat: </b><br><span class="text-secondary">{{ order.komunikat }}</span>
+        </div>
+        
+        <div class="col-12 col-sm-6 p-2">
+          <b><i class="statusy fa fa-address-card" aria-hidden="true"></i>
+            Opis klienta: </b><br><span class="text-secondary">{{ order.description }}</span>
+          
+        </div>
+    
+      </div>
+      {% endif %}
+      
+      {% endfor %}
+      {% endif %}
+    
+    </div>
+
+
+  </div>
+
+  <div class="mt-5 mb-5">&nbsp;</div>
+
+  </div>
+
+  
+  <div class="collapse" id="collapseCompletednoinvoice">
+    <div class="">
+      
+
+    <div class="animated bounceInDown fast">
+      {% if my_completed_orders_no_invoice %}
+      {% for order in my_completed_orders_no_invoice|dictsort:"order_status.name" %}
+     
+    
+       <div class="order order_completed row bg-danger rounded mt-1 p-2 shadow border border-secondary">
+
+
+        <div class="col-6 col-sm-3">
+          <i class="fa fa-user align-middle" aria-hidden="true"></i> 
+          <b class="align-middle">{{ order.user }}</b>
+        </div>
+        <div class="col-6 col-sm-4 border-left d-none d-sm-block">
+          {{ order.title }} 
+        </div>
+        <div class="col-6 col-sm-3 col-md-2 d-none d-md-block border-left">
+          {{ order.start_datetime|date:'' }} 
+        </div>
+        
+        <div class="col-6 col-sm-5 col-md-3 text-right">
+          
+        {% if order.order_status.id == 3 %}
+        <i class='mr-1 fa fa-refresh fa-spin fa-1x fa-fw'></i>
+        {% endif %}
+        
+        {% if order.order_status.id == 5 or order.order_status.id == 6 or order.order_status.id == 7 %}
+        <i class='mr-1 fa fa-check' aria-hidden='true'></i>
+        {% endif %}
+    
+        <a href="{{ order.attachment.url }}"><button class="btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-file" aria-hidden="true"></i>
+          Dokument</button></a>
+          <a href="{% url 'order_detail' order.id %}"><button class="btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-pencil" aria-hidden="true"></i>              Edytuj</button></a>
+          <!-- <button class="show_order_btn btn shadow-sm btn-secondary btn-sm" apiurl="{% url 'order_api-list' %}" id="{{ order.id }}" url="{% url 'orders1' %}"><i class="fa fa-info" aria-hidden="true"></i> Szczegóły</button> -->
+          <a href="{% url 'order_delete' order.id %}"><button class="btn btn-danger shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_delete' order.id %}"><i class="fa fa-trash" aria-hidden="true"></i></button></a>
+        </div>
+    
+      </div> 
+      
+      
+        
+      {% if order.order_status %}
+        <div class="order row mb-5 border bg-light rounded shadow-sm p-3">
+        <div class="col-6 p-2">
+          <b><i class="statusy fa fa-rocket" aria-hidden="true"></i>
+            Status: </b>{{ order.order_status.name }}: <br><span class="text-secondary">{{ order.order_status.description }}</span>
+          
+        </div>
+    
+        <div class="col-12 col-sm-6 p-2">
+          <b><i class="statusy fa fa-exclamation-triangle" aria-hidden="true"></i>
+    
+            Mój komunikat: </b><br><span class="text-secondary">{{ order.komunikat }}</span>
+        </div>
+        
+        <div class="col-12 col-sm-6 p-2">
+          <b><i class="statusy fa fa-address-card" aria-hidden="true"></i>
+            Opis klienta: </b><br><span class="text-secondary">{{ order.description }}</span>
+          
+        </div>
+    
+      </div>
+      {% endif %}
+      
+      {% endfor %}
+      {% endif %}
+    
+    </div>
+
+
+  </div>
+
+  <div class="mt-5 mb-5">&nbsp;</div>
+
+  </div>
+
+  <div class="collapse" id="collapseCompletedinvoice">
+    <div class="">
+      
+
+    <div class="animated bounceInDown fast">
+      {% if my_completed_orders_invoice %}
+      {% for order in my_completed_orders_invoice|dictsort:"order_status.name" %}
+     
+    
+       <div class="order order_completed row bg-success rounded mt-1 p-2 shadow border border-secondary">
+
+
+        <div class="col-6 col-sm-3">
+          <i class="fa fa-user align-middle" aria-hidden="true"></i> 
+          <b class="align-middle">{{ order.user }}</b>
+        </div>
+        <div class="col-6 col-sm-4 border-left d-none d-sm-block">
+          {{ order.title }} 
+        </div>
+        <div class="col-6 col-sm-3 col-md-2 d-none d-md-block border-left">
+          {{ order.start_datetime|date:'' }} 
+        </div>
+        
+        <div class="col-6 col-sm-5 col-md-3 text-right">
+          
+        {% if order.order_status.id == 3 %}
+        <i class='mr-1 fa fa-refresh fa-spin fa-1x fa-fw'></i>
+        {% endif %}
+        
+        {% if order.order_status.id == 5 or order.order_status.id == 6 or order.order_status.id == 7 %}
+        <i class='mr-1 fa fa-check' aria-hidden='true'></i>
+        {% endif %}
+    
+        <a href="{{ order.attachment.url }}"><button class="btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-file" aria-hidden="true"></i>
+          Dokument</button></a>
+          <a href="{% url 'order_detail' order.id %}"><button class="btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-pencil" aria-hidden="true"></i>              Edytuj</button></a>
+          <!-- <button class="show_order_btn btn shadow-sm btn-secondary btn-sm" apiurl="{% url 'order_api-list' %}" id="{{ order.id }}" url="{% url 'orders1' %}"><i class="fa fa-info" aria-hidden="true"></i> Szczegóły</button> -->
+          <a href="{% url 'order_delete' order.id %}"><button class="btn btn-danger shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_delete' order.id %}"><i class="fa fa-trash" aria-hidden="true"></i></button></a>
+        </div>
+    
+      </div> 
+      
+      
+        
+      {% if order.order_status %}
+        <div class="order row mb-5 border bg-light rounded shadow-sm p-3">
+        <div class="col-6 p-2">
+          <b><i class="statusy fa fa-rocket" aria-hidden="true"></i>
+            Status: </b>{{ order.order_status.name }}: <br><span class="text-secondary">{{ order.order_status.description }}</span>
+          
+        </div>
+    
+        <div class="col-12 col-sm-6 p-2">
+          <b><i class="statusy fa fa-exclamation-triangle" aria-hidden="true"></i>
+    
+            Mój komunikat: </b><br><span class="text-secondary">{{ order.komunikat }}</span>
+        </div>
+        
+        <div class="col-12 col-sm-6 p-2">
+          <b><i class="statusy fa fa-address-card" aria-hidden="true"></i>
+            Opis klienta: </b><br><span class="text-secondary">{{ order.description }}</span>
+          
+        </div>
+    
+      </div>
+      {% endif %}
+      
+      {% endfor %}
+      {% endif %}
+    
+    </div>
+
+
+  </div>
+
+  <div class="mt-5 mb-5">&nbsp;</div>
+
+  </div>
+</section>
+
+<!-- Zlecenia live -->
+<section id="sekcja_zlecenia_live">
+<!-- <hr class="hrgreen ih2 mb-5"> -->
+<div class="animated bounceInUp slow">
+  <div id="fresh-div" class="fresh-div mt-5">
+  {% if myorders %}
+  {% for order in myorders|dictsort:"order_status.name" %}
+  
+          <div class="order rounded row bg-warning rounded mt-1 p-2 shadow border border-secondary">
+          <div class="col-6 col-sm-3">
+            <i class="fa fa-user align-middle" aria-hidden="true"></i> 
+            <b class="align-middle">{{ order.user }}</b>
+          </div>
+          <div class="col-6 col-sm-4 border-left d-none d-sm-block">
+            {{ order.title }} 
+          </div>
+          <div class="col-6 col-sm-3 col-md-2 d-none d-md-block border-left">
+            {{ order.start_datetime|date:'' }} 
+          </div>
+          
+          <div class="col-6 col-sm-5 col-md-3 text-right">
+            
+          {% if order.order_status.id == 3 %}
+          <i class='mr-1 fa fa-refresh fa-spin fa-1x fa-fw'></i>
+          {% endif %}
+          
+          {% if order.order_status.id == 5 or order.order_status.id == 6 or order.order_status.id == 7 %}
+          <i class='mr-1 fa fa-check' aria-hidden='true'></i>
+          {% endif %}
+          <a href="{{ order.attachment.url }}"><button class="btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-file" aria-hidden="true"></i>
+            Dokument</button></a>
+            <a href="{% url 'order_detail' order.id %}"><button class="btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-pencil" aria-hidden="true"></i>              Edytuj</button></a>
+            <a href="{% url 'order_delete' order.id %}"><button class="btn btn-danger shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_delete' order.id %}"><i class="fa fa-trash" aria-hidden="true"></i></button></a>
+          </div>
+ 
+        </div> 
+
+        
+          
+        {% if order.order_status %}
+          <div class="order row mb-5 border bg-light rounded shadow-sm p-3">
+          <div class="col-6 p-2">
+            <b><i class="statusy fa fa-rocket" aria-hidden="true"></i>
+              Status: </b>{{ order.order_status.name }}: <br><span class="text-secondary">{{ order.order_status.description }}</span>
+            
+          </div>
+
+          <div class="col-12 col-sm-6 p-2">
+            <b><i class="statusy fa fa-exclamation-triangle" aria-hidden="true"></i>
+
+              Mój komunikat: </b><br><span class="text-secondary">{{ order.komunikat }}</span>
+          </div>
+          
+          <div class="col-12 col-sm-6 p-2">
+            <b><i class="statusy fa fa-address-card" aria-hidden="true"></i>
+              Opis klienta: </b><br><span class="text-secondary">{{ order.description }}</span>
+            
+          </div>
+
+        </div>
+        {% endif %}
+        {% endfor %}
+      {% endif %}
+  </div>
+  </div>
+</section>
+
+
+
+
+
+
+
+
+        </div>  
+      </div>
+    </div>
+
+<!-- <div id='calendar' class="bg-calendar p-3 rounded shadow-sm"></div> -->
+
+<script src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
+<script>
+
+  $(".completed").click(function(){
+    var $target = $(this).attr('data-target')
+    $(".completed").removeClass('shadow border-dark border bg-dark');
+    $(this).addClass('shadow border-dark border bg-dark')
+    $(".collapse").collapse('hide');
+    $($target).collapse('toggle');
+  });
+
+  // Nofity ----------------------------------------------------------
+  function updateDiv(target) {
+    $(target).load(window.location.href + " " + target);
+  };
+  
+  function success_sound() {
+    var obj = document.createElement("audio");
+    obj.src = "{% static 'sounds/success.wav' %}";
+    obj.play();
+    console.log("success played!")
+  };
+  function get_value(link){
+    $.get(link, {},
+    function get_this(returnedHtml) {
+      console.log("To jest returned initial: "+returnedHtml)
+      $flag = returnedHtml
+    });
+  };
+ var $flag = 0
+  get_value("http://127.0.0.1:8000/orders_length/");
+  console.log("To jest flaga init: "+$flag)
+  function get_value_notify(link, target){
+    $.get(link, {},
+    function (returnedHtml) {
+      console.log(returnedHtml)
+      $flag2 = parseInt(returnedHtml)
+      if ($flag2 > $flag){
+        console.log("Flaga 1: "+$flag+" Flaga 2: "+$flag2)
+        $.notify({
+          title: '<b>Nowe zlecenie!</b>',
+          icon: 'fa fa-plus',
+          message: '<hr>Masz nowe zlecenie!' 
+        },{
+          type: 'warning',
+          offset: 30,
+          delay: 5000,
+          animate: {
+            enter: 'animated bounceInDown',
+            exit: 'animated bounceOutUp'
+          },
+          placement: {
+            from: "top",
+            align: "center"
+          },
+        });
+        $flag = $flag2
+
+        success_sound();
+        // $(target).html(returnedHtml);
+      }
+    });
+  }
+      
+
+  //$(document).on('click', 'button.completed', function (event) {
+   // event.preventDefault();
+    //console.log('clicked')
+    //$('html, body').animate({
+    //    scrollTop: $(window).scrollTop() + 500
+    //}, 300);
+//});
+  // Initial ---------------------------------------------------------
+
+
+//FullCalendar -------------------------------------------------------
+var calendar = ''
+document.addEventListener('DOMContentLoaded', function() {
+  var calendarEl = document.getElementById('calendar');
+
+  calendar = new FullCalendar.Calendar(calendarEl, {
+    
+    plugins: [ 'dayGrid' ],
+    defaultView: 'dayGridWeek',
+    events: [
+    {% if myorders %}
+      {% for order in myorders %}
+    {
+      title:"{{ order.title }}",
+      start: "{{ order.start_datetime|date:'Y-m-d H:m' }}",
+      end: "{{ order.end_datetime|date:'Y-m-d H:m' }}",
+    },
+    {% endfor %}
+    {% endif %}
+    ]
+  });
+  calendar.render();
+});
+</script>
+
+{% endif %}
+
+
+
+{% else %}
+
+<div class="container">
+  <div class="row p-1">
+    <div class="col-12">
+      <p>Nie jestes zalogowany!</p>
+      <img src="{% static 'img/gob_logo.png' %}" alt="logo"><br>
+      <span><a href="{% url 'login' %}">Zaloguj</a></span><br>
+      <span><a href="{% url 'register2' %}">Zarejestuj</a></span>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

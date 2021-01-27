@@ -1,0 +1,510 @@
+<!-- templates/home.html-->
+{% extends 'HD_app/newbase.html' %}
+{% load static %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+<!-- Header -->
+<div class="row p-2">
+  <div class="col-12">
+    <div class="d-flex justify-content-between">
+      <div class="header-div" id="">
+        <h2 class="mb-4">Dashboard</h2>
+      </div>
+    </div>
+    <hr class="m-0">
+  </div>
+</div>
+
+<!-- Content -->
+
+
+
+<div class="row p-2">
+  <div class="content-div p-2 animated fadeInDown col-8">
+    <h5 class="mt-3 mb-3" >Dzisiejsze utworzone zlecenia</h5>
+    
+    <canvas id="myChart2" height=100></canvas>
+  </div>
+  <div class="p-2 animated fadeInDown col-4">
+    <h5 class="mt-3 mb-3">Wszystkie dzisiaj:</h5>
+    
+    <canvas id="pie2" height=170></canvas>
+  </div>
+  <div class="p-2 animated fadeInDown col-12">
+    <h5 class="mt-3 mb-3">Miesiac:</h5>
+    
+    <canvas id="myChart3" height=70></canvas>
+  </div>
+</div>
+
+
+
+
+
+
+<script src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
+<script src="https://momentjs.com/downloads/moment.js"></script>
+<!-- BUNDLE CHART.JS-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@0.7.0"></script>
+
+<script src="https://cdn.jsdelivr.net/gh/emn178/chartjs-plugin-labels/src/chartjs-plugin-labels.js"></script>
+
+<script>
+  $(document).ready(function () {
+    $api_url = "{% url 'stats' %}"
+
+    var $charts = []
+    function chart1(){
+
+      $json_url = "{% url 'stats' %}"
+      // Json
+      $.getJSON($json_url, function(data) {
+        // Współrzędne
+          var x=[]
+          var y=[]
+          var x2=[]
+          var y2=[]
+        for (var key in data['orders_created_per_day']) {
+          //1
+          x.push(data['orders_created_per_day'][key].x)
+          y.push(data['orders_created_per_day'][key].y)
+        }
+        //2
+        for (var key in data['orders_created_per_start']) {
+          x2.push(data['orders_created_per_start'][key].x)
+          y2.push(data['orders_created_per_start'][key].y)
+        }
+
+
+
+    // Selektor canvasa w template
+      var ctx = document.getElementById('myChart1').getContext('2d');
+
+        var all = x.concat(x2)
+        console.log(all)
+    // Instancja charta
+      var chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: x,
+            datasets: [{
+                order: 1,
+                label: 'Utworzone zlecenia',
+                borderColor: 'rgb(255, 99, 132)',
+                data: y,
+                steppedLine: true
+            },
+            {
+              label: 'Wystartowane',
+              borderColor: 'rgb(255, 99, 132)',
+              data: y2,
+              steppedLine: true
+          }]
+        },
+
+        options: {
+          tooltips: {
+            mode: 'nearest'
+          },
+          scales: {
+            xAxes: [{
+              type: "time",
+              time: {
+                  parser: "YYYY-MM-DD",
+                  unit: 'day',
+              },
+
+          }],
+          yAxes: [{   
+            id: 'first-y-axis',
+            type: 'linear',
+            position: 'right',
+            ticks: {
+              stepSize: 1
+            }
+          },
+          ]
+          }
+        }
+        
+      });
+
+    //Wrzuć każdy obiekt chart do listy 'charty'
+      $charts.push(chart);
+
+    //Sanity Check
+      console.log("To jest instancja -> "+$charts)
+    
+    });
+
+    }
+    function chart2(){
+
+      $json_url = "{% url 'stats' %}"
+      // Współrzędne
+    
+
+      // Json
+      $.getJSON($json_url, function(data) {
+        $x=[]
+        $y=[]
+        $shift_times=[]
+        $processing_graph=[]
+        $completed_graph=[]
+        $completed=data['order_td_completed']
+        $processing=data['order_td_proccessing']
+        $cm=[]
+        $cm2=[]
+        $cmv=[]
+        $cm3=[]
+        $cmv3=[]
+
+        $timeline_month = []
+        $timeline_month_v1 = []
+        $timeline_month_v2 = []
+        $timeline_month_v3 = []
+        //for (var key in data['orders_created_per_time_today']) {
+        //  $x.push(data['orders_created_per_time_today'][key].x.split('.')[0])
+       //  $y.push(data['orders_created_per_time_today'][key].y)
+        //}
+        for (var key in data['shift_times']) {
+          $shift_times.push(data['shift_times'][key])
+        }
+        for (var key in data['processing_graph']) {
+          $processing_graph.push(data['processing_graph'][key])
+        }
+        for (var key in data['completed_graph']) {
+          $completed_graph.push(data['completed_graph'][key])
+        }
+        for (var key in data['cm']){
+          $cm.push(data['cm'][key])
+        }
+        for (var key in data['qs']){
+            $cm2.push(data['qs'][key].updated_date__date)
+            $cmv.push(data['qs'][key].n)
+        }
+        for (var key in data['qs2']){
+            $cm3.push(data['qs2'][key].updated_date__date)
+            $cmv3.push(data['qs2'][key].n)
+        }
+        for (var key in data['timeline_month_1']){
+          $timeline_month.push([key][0])
+          $timeline_month_v1.push(data['timeline_month_1'][key])
+      }
+        for (var key in data['timeline_month_2']){
+          $timeline_month_v2.push(data['timeline_month_2'][key])
+      }
+        for (var key in data['timeline_month_3']){
+          $timeline_month_v3.push(data['timeline_month_3'][key])
+      }
+
+
+      // Selektor canvasa w template
+      var ctx = document.getElementById('myChart2').getContext('2d');
+      var ctx_pie = document.getElementById('pie2').getContext('2d');
+      var ctx3 = document.getElementById('myChart3').getContext('2d');
+
+      var min = new Date()
+      min.setHours(7,30,00,000)
+      var max = new Date()
+      max.setHours(16,59,59,999)  
+
+
+
+      // Instancja charta
+      var chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: $shift_times,
+            datasets: [{
+                label: 'W realizacji',
+                borderColor: 'rgba(255, 99, 132,1)',
+                backgroundColor: 'rgba(255, 99, 132,0.7)',
+                data: $processing_graph,
+                //steppedLine: true,
+            },{
+              label: 'Zrealizowane',
+              borderColor: 'rgba(128, 219, 101,1)',
+              backgroundColor: 'rgba(128, 219, 101,0.7)',
+              data: $completed_graph,
+              //steppedLine: true,
+          },]
+        },
+        options: {
+          //barValueSpacing: 10,
+          tooltips: {
+            mode: 'nearest',
+            titleFontSize:14,
+          },
+          scales: {
+            xAxes: [{
+              stacked: true,
+              //barPercentage: 0.5,
+              type: "time",
+              time: {
+                parser: 'h:mm:ss',
+                unit: 'hour',
+                minUnit:'hour',
+                min: min,
+                max: max,
+                stepSize: 1
+              },
+          }],
+          yAxes: [{
+            scaleLabel: {
+              display: true,
+              labelString: 'ilość',
+              fontSize: 13,
+              fontStyle: 'bold'
+          },   
+            stacked: true,
+            ticks: {
+              min:0,
+              stepSize: 1
+            }
+          },
+          ]
+          }
+        }
+        
+      });
+      $charts.push(chart);
+
+      var myPieChart = new Chart(ctx_pie, {
+        type: 'pie',
+        
+        data: {
+          datasets: [{
+            data: [$processing, $completed],
+            borderColor: 'rgba(255,255,255,0.0)',
+            backgroundColor: ['rgba(255,0,0,0.4)', 'rgba(0,255,0,0.4)'],
+          }],
+
+          labels: [
+              'W relizacji',
+              'Zrealizowane',
+          ]
+        },
+        options: {
+
+
+          tooltips: {
+
+
+            enabled: true
+          },
+          legend: {
+            position: 'right',
+            display: true,
+            labels: {
+
+
+            },
+          },
+          layout: {
+            padding: {
+                left: 50,
+                right: 0,
+                top: 50,
+                bottom: 0
+            }
+        },
+
+        }
+        
+        
+
+      });
+      $charts.push(myPieChart);
+
+      var chart3 = new Chart(ctx3, {
+        type: 'bar',
+        data: {
+            labels: $timeline_month,
+            datasets: [{
+                label: 'W realizacji',
+                borderColor: 'rgba(255,0,0,0.4)',
+                backgroundColor: 'rgba(255,0,0,0.4)',
+                data: $timeline_month_v1,
+                //steppedLine: true,
+
+            },{
+              label: 'Zrealizowane',
+              borderColor: 'rgba(0,255,0,0.4)',
+              backgroundColor: 'rgba(0,255,0,0.4)',
+              data: $timeline_month_v2,
+              //steppedLine: true,
+
+          },{
+            label: 'Wszystkie',
+            borderColor: 'rgba(17,17,17,0.2)',
+            backgroundColor: 'rgba(255,0,0,0.0)',
+            data: $timeline_month_v3,
+            //steppedLine: true,
+            lineTension: 0, 
+            type:'line',
+
+
+        },]
+        },
+        options: {
+          //barValueSpacing: 10,
+          tooltips: {
+            mode: 'nearest',
+            titleFontSize:14,
+          },
+          
+        //   animation: {
+        //     duration: 500,
+        //     onComplete: function() {
+        //         var ctx = this.chart.ctx;
+        //         ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontFamily, 'normal', Chart.defaults.global.defaultFontFamily);
+        //         ctx.fillStyle = "black";
+        //         ctx.textAlign = 'center';
+        //         ctx.textBaseline = 'bottom';
+    
+        //         this.data.datasets.forEach(function(dataset) {
+        //             for (var i = 0; i < dataset.data.length; i++) {
+        //                 for (var key in dataset._meta) {
+        //                     var model = dataset._meta[key].data[i]._model;
+        //                     ctx.fillText(dataset.data[i], model.x, model.y - 5);
+        //                 }
+        //             }
+        //         });
+        //     }
+        // },
+          scales: {
+            xAxes: [{
+              stacked: true,
+              barPercentage: 0.5,
+              type: "time",
+              time: {
+                parser: 'YYYY-MM-DD',
+                unit: 'day',
+                minUnit:'day',
+                //min: d,
+                //max: maxmonth,
+                stepSize: 1
+              },
+          }],
+          yAxes: [{   
+            stacked: true,
+            ticks: {
+
+              min:0,
+              stepSize: 1
+            },
+            scaleLabel: {
+              display: true,
+              labelString: 'ilość',
+              fontSize: 13,
+              fontStyle: 'bold'
+          },
+          },
+          ]
+          }
+        }
+        
+      });
+      $charts.push(chart3);
+    });
+    }
+
+
+
+    function updatecharts(){
+
+      console.log("TICK")
+      $json_url = "{% url 'stats' %}"
+
+    // Json
+      $.getJSON($json_url, function(data) {
+
+        $shift_times=[]
+        $processing_graph=[]
+        $completed_graph=[]
+
+        $timeline_month = []
+        $timeline_month_v1 = []
+        $timeline_month_v2 = []
+        $timeline_month_v3 = []
+
+        for (var key in data['shift_times']) {
+          $shift_times.push(data['shift_times'][key])
+        }
+        for (var key in data['processing_graph']) {
+          $processing_graph.push(data['processing_graph'][key])
+        }
+        for (var key in data['completed_graph']) {
+          $completed_graph.push(data['completed_graph'][key])
+        }
+
+        for (var key in data['timeline_month_1']){
+          $timeline_month.push([key][0])
+          $timeline_month_v1.push(data['timeline_month_1'][key])
+      }
+        for (var key in data['timeline_month_2']){
+          $timeline_month_v2.push(data['timeline_month_2'][key])
+      }
+        for (var key in data['timeline_month_3']){
+          $timeline_month_v3.push(data['timeline_month_3'][key])
+      }
+    
+       $charts[0].data.datasets[0].data = $processing_graph
+       $charts[0].data.datasets[1].data = $completed_graph
+
+       $charts[1].data.datasets[0].data[0] = $processing=data['order_td_proccessing']
+       $charts[1].data.datasets[0].data[1] = $processing=data['order_td_completed']
+
+       $charts[2].data.datasets[0].data = $timeline_month_v1
+       $charts[2].data.datasets[1].data = $timeline_month_v2
+       $charts[2].data.datasets[2].data = $timeline_month_v3
+
+
+
+       $charts[0].update();
+       $charts[1].update();
+       $charts[2].update();
+
+    });
+    }
+
+    //chart1();
+    chart2();
+    console.log($charts)
+    setInterval(updatecharts, 5000);
+    
+   
+  });
+</script>
+
+
+{% else %}
+
+
+<div class="d-flex justify-content-center ">
+  <div class="row p-4">
+    <div class="col-12">
+      <div class="d-flex justify-content-center brand p-3">
+        <img class="text-center" src="{% static 'img/gob_logo.png' %}" alt="logo">
+      </div>
+      <hr>
+      <div class="links p-3">
+      <p class="text-center"><a href="{% url 'login' %}"><button type="button" class="shadow-sm btn btn-sm btn-primary btn-lg btn-block">Zaloguj się</button></a></p class="m-2">
+      <p class="text-center"><a href="{% url 'register2' %}"><button type="button" class="shadow-sm btn btn-sm btn-danger btn-lg btn-block">Rejestracja pracownika</button></a></p>
+      <p class="text-center"><a href="{% url 'register3' %}"><button type="button" class="shadow-sm btn btn-sm btn-danger btn-lg btn-block">Rejestracja klienta</button></a></p>
+    </div>
+    </div>
+  </div>
+</div>
+
+
+{% endif %}
+{% endblock %}
+
+

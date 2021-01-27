@@ -1,0 +1,1133 @@
+<!-- templates/home.html-->
+{% extends 'HD_app/newbase.html' %}
+{% load static %}
+{% block title %}Dashboard | SOKÓŁ{% endblock %}
+
+{% block content %}
+
+<!-- Modal: news -->
+{% if news %}
+{% for n in news %}
+    <modal>
+<!-- Modal news detail -->
+<div class="modal fade" id="news_modal_nowosc_{{ n.id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered modal-lg " role="document">
+<div class="modal-content bg-noisy p-1">
+  <div class="modal-header">
+    <h5 class="modal-title" id="exampleModalLongTitle"> {{ n.name }}</h5>
+    <button type="button" class="close close_modal_button" data-dismiss="modal" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="row p-1">
+      {% if n.thumb %}
+      <div class="thumb col-12 p-1 col-lg-4 rounded text-center">
+        <img class="rounded" src="{{ n.thumb.url }}"/>
+      </div>
+      {% endif %}
+      <div class="col-12 p-1 col-lg-8">
+
+        <span>
+        Dodano przez: {% if n.user.profile.thumb %}
+        <img class="thumb_min" src="{{ n.user.profile.thumb.url }}"/>
+        {% endif %} {{ n.user.first_name }} {{ n.user.last_name }}
+      </span><hr>
+
+
+          {% autoescape off %}
+          {{ n.description }}
+          {% endautoescape %}
+
+      </div>
+    </div>
+
+    
+
+  
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary mt-3 shadow close_modal_button" data-dismiss="modal">Zamknij</button>
+  </div>
+</div>
+</div>
+</div>
+</modal>
+{% endfor %}
+{% endif %}
+
+
+
+
+<!-- Header -->
+<page_header id="sekcja_header">
+<div class="row p-2">
+    <div class="col-12">
+      <div class="d-flex justify-content-between">
+        <div class="header-div" id="">
+            <!-- <h2 class="">Witaj <b>{{ user }}</b></h2> -->
+          <h2 class=""><i class="fa fa-tablet text-danger" aria-hidden="true"></i>
+            Dashboard</h2>
+        </div>
+      </div>
+
+      
+    </div>
+  </div>
+  <hr class="mb-3 mt-0">
+</page_header>
+
+
+<!-- Modal: unread -->
+<div class="fresh-div-unread-m">
+  {% if unread_messages %}
+  {% for m in unread_messages %}
+  <modal>
+  <div class="modal fade" id="messages_modal_message_ur_{{ m.id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg " role="document">
+    <div class="modal-content bg-noisy p-1">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle"> <i class="fa fa-commenting-o text-danger" aria-hidden="true"></i>
+          {{ m.name }}</h5>
+        <button type="button" class="close close_modal_button" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row p-2">
+  
+          <div class="col-12">
+            <span><i class="fa fa-arrow-down" aria-hidden="true"></i>
+              Od: {% if m.sender.profile.thumb %}<img class="thumb_min" src="{{ m.sender.profile.thumb.url }}"/>{% endif %}{{ m.sender }}</span><br>
+            <span><i class="fa fa-arrow-up" aria-hidden="true"></i> Do: {% if m.receipt.profile.thumb %}<img class="thumb_min" src="{{ m.receipt.profile.thumb.url }}"/>{% endif %}{{ m.receipt }}</span>
+          </div>
+          <div class="col-12 mt-2">
+            <hr>
+            {{ m.description }}
+            {% if m.attachment %}<a href="{{ attachment.url }}">{{ attachment.name }}</a>{% endif %}
+          </div>
+  
+        </div>
+    
+    
+      
+      </div>
+      <div class="modal-footer">
+        
+        <button type="button" class="btn readms btn-secondary mt-3 shadow close_modal_button" ids="{{ m.id }}" data-dismiss="modal">Przeczytane</button>
+        <button type="button" class="btn btn-secondary mt-3 shadow close_modal_button" data-dismiss="modal">Zamknij</button>
+  
+      </div>
+    </div>
+    </div>
+  </div>
+  </modal>
+  {% endfor %}
+  {% endif %}
+</div>
+
+
+<!-- Pokaż nowosci -->
+{% if user.is_staff %}
+<div class="row">
+  <div class="col-12 col-md-6">
+    <section id="sekcja_nowosci" style="display:none;">
+      <div class="section_header">
+          <h4 class="" ><i class="fa fa-bar-chart" aria-hidden="true"></i>
+              Ostatnie nowości</h4><hr>
+      </div>
+      {% if news %}
+        {% for n in news %}
+        <div class="nowosc rounded" id="nowosc_{{ n.id }}">
+          <div class="row justify-content-between ">
+            
+        <div class="col-9">
+          <i class=" align-middle text-black fa fa-1x fa-newspaper-o" aria-hidden="true"></i>
+    <span class="align-middle font-weight-bold">{{ n.name }}</span> <br><span>Dodane przez: {% if n.user.profile.thumb %}<img class="thumb_min" src="{{ n.user.profile.thumb.url }}"/>{% endif %} {{ n.user.first_name }}</span><br>
+           
+         <!-- <div class="animated fadeInDown">
+           <span class="ih">{{ n.description }}</span>
+    
+         </div>    -->
+          </div>
+          <div class="col-3 text-right">
+            <span>{{ n.created_date|date:'' }}</span>
+          </div>
+    
+          
+        </div>
+          </div>
+        {% endfor %}
+        {% endif %}
+    </section>
+  </div>
+  <div class="col-12 col-md-6">
+    <section id="sekcja_unread_messages" style="display:none;">
+      <div class="section_header">
+        <h4 class="" >
+          <i class="fa fa-commenting-o" aria-hidden="true"></i>
+           Wiadomości</h4><hr>
+    </div>
+    
+    <div class="fresh-div-unread">
+      {% if unread_messages %}
+      {% for m in unread_messages %}
+      <div class="message message_ur rounded" id="message_ur_{{ m.id }}">
+        <div class="row justify-content-between">
+        <div class="col">
+          <span><b>"{{ m.name }}"</b> | </span>
+          <span>Od: {% if m.sender.profile.thumb %}<img class="thumb_min" src="{{ m.sender.profile.thumb.url }}"/>{% endif %}{{ m.sender }}</span>
+        </div>
+        <div class="col-3 text-right">
+          <a style="z-index:99;" href="{% url 'message_delete' m.id %}"><button class="btn btn-sm btn-danger">Usuń</button></a>
+        </div>
+      </div>
+      </div>
+      {% endfor %}
+      {% endif %}
+    </div>
+    </section>
+  </div>
+
+</div>
+{% endif %}
+
+
+<!-- Pokaz charty -->
+{% if user.is_staff %}
+<button type="button" class="btn btn-dark shadow-sm" onclick="openFullscreen();"><i class="fa fa-desktop text-light" aria-hidden="true"></i> Pełny ekran</button>
+<button type="button" class="btn btn-dark shadow-sm" onclick="closeFullscreen();"><i class="fa fa-times text-danger" aria-hidden="true"></i> Zamknij pełny ekran</button>
+<section id="sekcja_charty" style="display:none;">
+{% if user.is_staff %}
+<div class="d-none d-sm-block">
+<div class="row p-2">
+  <div class="content-div p-2 col-12 col-md-8">
+    <h4 class="mt-3 mb-3" >Dzisiejsze utworzone zlecenia</h4><hr>
+    <div class="wrapper">
+        <canvas id="myChart2" height="110"></canvas>
+    </div>
+  </div>
+  <div class="p-2 col-12 col-md-4">
+    <h4 class="mt-3 mb-3">Wszystkie dzisiaj:</h4><hr>
+    <div class="wrapper">
+        <canvas id="pie2" height="224" ></canvas>
+    </div>
+</div>
+  <div class="p-2 col-12">
+    <h4 class="mt-3 mb-3">Miesiac:</h4><hr>
+    <div class="wrapper">
+        <canvas id="myChart3" height="70"></canvas>
+    </div>  
+  </div>
+</div>
+</div>
+{% endif %}
+</section>
+{% endif %}
+
+<!-- Pokaż liczby -->
+<section id="sekcja_liczby" style="display:none;">
+<div class="section_header">
+    <h4 class="" ><i class="fa fa-bar-chart" aria-hidden="true"></i>
+        Liczby</h4><hr>
+</div>
+<div class="row">
+    <div class="col">
+    <div class="d-flex justify-content-center mt-5">
+      <div class="liczby col-4 text-center m-2 ih4">
+        <h2 class="liczba_umowy ih p-2 text-danger">
+            {% if user.is_staff %}
+            {% if umowy %}{{ umowy.count }}{% else %}0{% endif %}
+            {% else %}
+            {% if mojeumowy %}{{ mojeumowy.count }}{% else %}0{% endif %}
+            {% endif %}
+        </h2><br><span>Umowy</span>
+      </div>
+      <div class="liczby col-4 text-center  m-2 ih4">
+        <h2 class="liczba_zlecenia ih p-2 text-warning">
+            {% if user.is_staff %}
+            {% if myorders %}{{ myorders.count }}{% else %}0{% endif %}
+            {% else %}
+            {% if myorders2 %}{{ myorders2.count }}{% else %}0{% endif %}
+            {% endif %}
+        </h2><br><span>W realizacji</span>
+      </div>
+      <div class="liczby col-4 text-center  m-2 ih4">
+        <h2 class="liczba_zrealizowane ih p-2 text-success">
+            {% if user.is_staff %}
+            {% if my_completed_orders %}{{ my_completed_orders.count }}{% else %}0{% endif %}
+            {% else %}
+            {% if my_completed_orders2 %}{{ my_completed_orders2.count }}{% else %}0{% endif %}
+            {% endif %}
+        </h2><br><span>Zakończone</span>
+        
+      </div>
+
+    </div>
+    </div>
+    </div>
+</section>
+
+{% if user.is_staff %}
+{% else %}
+<!-- Pokaz zlecenia -->
+<section id="sekcja_zlecenia" style="display:none;">
+<div class="row">
+    <div id="" class="col-xs-12 col-sm-12 col-md-6 col-lg-6 mt-3">
+        <div class="section_header">
+            <h4 class=""><i class="fa fa-hourglass-start text-danger" aria-hidden="true"></i> W realizacji</h4><hr>
+        </div>
+        <div class="form-group">
+            <label for="r_search">Szukaj:</label>
+            <input type="text" class="form-control input-sm" id="r_search"></input>
+          </div>
+        <hr>
+
+        <div id="live_wrealizacji">
+        {% if user.is_staff %}
+        {% if myorders %}
+        {% for order in myorders|dictsort:"order_status.name" %}
+                <div id="wrealizacjidiv">
+                <div style="display:none;" id="{{ order.id }}{{ order.title }}" class="ih5 rounded border border-secondary order wrealizacji row bg-warning m-1 mb-2 p-2 shadow">
+                <div class="col-8">
+                  <i class="fa fa-user align-middle" aria-hidden="true"></i> 
+                  <span class="align-middle"><b>{{ order.agreement.company.first_name }} {{ order.agreement.company.last_name }}</b></span><br>
+                  <span>Firma: 
+                    {% if order.agreement.company.profile.thumb %}
+                    <img class="rounded-circle border border-secondary shadow-sm thumb_min" src="{{ order.agreement.company.profile.thumb.url }}"/>
+                    {% else %}
+                    <!-- <img class="rounded-circle border border-secondary shadow-sm thumb_min" src="{% static 'img/logogb.jpg' %}"/> -->
+                    {% endif %}
+                    {{ order.agreement.company.profile.company_name }} </span><br>
+                  <span>Opis: {{ order.title }} </span>
+                </div>
+                <div class="col text-right">
+                  <span>{{ order.start_datetime|date:'' }}</span>
+                  {% if order.attachment %}
+                <a href="{{ order.attachment.url }}"><button class="mb-1 btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-file" aria-hidden="true"></i>
+                  </button></a>
+                  {% endif %}
+                  <a href="{% url 'order_detail' order.id %}"><button class="mb-1 btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-pencil" aria-hidden="true"></i></button></a>
+                  <a href="{% url 'order_delete' order.id %}"><button class="mb-1 btn btn-danger shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_delete' order.id %}"><i class="fa fa-trash" aria-hidden="true"></i></button></a>
+                </div>
+              </div> 
+            </div>
+            {% endfor %}
+        {% endif %}
+
+        {% else %}
+
+        {% if myorders2 %}
+        {% for order in myorders2|dictsort:"order_status.name" %}
+                <div id="wrealizacjidiv">
+
+                <div style="display:none;" id="{{ order.id }}{{ order.title }}" class="ih5 rounded border border-secondary order wrealizacji row bg-warning m-1 mb-2 p-2 shadow">
+                <div class="col-8">
+                  <i class="fa fa-user align-middle" aria-hidden="true"></i> 
+                  <span class="align-middle"><b>{{ order.agreement.company }}</b></span><br>
+                  <span class="align-middle">Opiekun: <b>{{ order.agreement.company.care }}</b></span><br>
+                  <span>Firma: 
+                    {% if order.agreement.company.profile.thumb %}
+                    <img class="rounded-circle border border-secondary shadow-sm thumb_min" src="{{ order.agreement.company.profile.thumb.url }}"/>
+                    {% else %}
+                    <!-- <img class="rounded-circle border border-secondary shadow-sm thumb_min" src="{% static 'img/logogb.jpg' %}"/> -->
+                    {% endif %}
+                    {{ order.agreement.company.profile.company_name }} </span><br>
+                  <span>Opis: {{ order.title }} </span>
+                </div>
+
+                <div class="col text-right">
+                  <span>{{ order.start_datetime|date:'' }}</span>
+                  {% if order.attachment %}
+                <a href="{{ order.attachment.url }}"><button class="mb-1 btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-file" aria-hidden="true"></i>
+                  </button></a>
+                  {% endif %}
+                  <a href="{% url 'order_detail' order.id %}"><button class="mb-1 btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-pencil" aria-hidden="true"></i></button></a>
+                  <a href="{% url 'order_delete' order.id %}"><button class="mb-1 btn btn-danger shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_delete' order.id %}"><i class="fa fa-trash" aria-hidden="true"></i></button></a>
+                </div>
+              </div> 
+            </div>
+        {% endfor %}
+        {% endif %}
+        
+        {% endif %}
+</div>
+        </div>
+    <div id="" class="col-xs-12 col-sm-12 col-md-6 col-lg-6 mt-3">
+        <div class="section_header">
+            <h4 class=""><i class="fa fa-check text-success" aria-hidden="true"></i>
+                Zrealizowane</h4><hr>
+
+        </div>
+        <div class="form-group">
+            <label for="z_search">Szukaj:</label>
+            <input type="text" class="form-control input-sm" id="z_search"></input>
+          </div>
+        <hr>
+
+    <div id="live_zrealizowane">
+        {% if user.is_staff %}
+        {% if my_completed_orders %}
+        {% for order in my_completed_orders|dictsort:"order_status.name" %}
+            <div id="zrealizowanediv">
+                <div style="display:none;" id="{{ order.id }}{{ order.title }}" class="ih5 order rounded border border-secondary zrealizowane row bg-success m-1 mb-2 p-2 shadow">
+                <div class="col-8">
+                  <i class="fa fa-user align-middle" aria-hidden="true"></i> 
+                  <span class="align-middle"><b>{{ order.agreement.company }}</b></span><br>
+                  <span>Firma: 
+                    {% if order.agreement.company.profile.thumb %}
+                    <img class="rounded-circle border border-secondary shadow-sm thumb_min" src="{{ order.agreement.company.profile.thumb.url }}"/>
+                    {% else %}
+                    <!-- <img class="rounded-circle border border-secondary shadow-sm thumb_min" src="{% static 'img/logogb.jpg' %}"/> -->
+                    {% endif %}
+                    {{ order.agreement.company.profile.company_name }} </span><br>
+                  <span>Opis: {{ order.title }} </span>
+                </div>
+
+                <div class="col text-right">
+                  <span>{{ order.start_datetime|date:'' }}</span>
+                  {% if order.attachment %}
+                <a href="{{ order.attachment.url }}"><button class="mb-1 btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-file" aria-hidden="true"></i>
+                  </button></a>
+                  {% endif %}
+                  <a href="{% url 'order_detail' order.id %}"><button class="mb-1 btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-pencil" aria-hidden="true"></i></button></a>
+                  <a href="{% url 'order_delete' order.id %}"><button class="mb-1 btn btn-danger shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_delete' order.id %}"><i class="fa fa-trash" aria-hidden="true"></i></button></a>
+                </div>
+              </div> 
+            </div>
+              {% endfor %}
+            {% endif %}
+
+        {% else %}
+
+        {% if my_completed_orders2 %}
+        {% for order in my_completed_orders2|dictsort:"order_status.name" %}
+            <div id="zrealizowanediv">
+                <div style="display:none;" id="{{ order.id }}{{ order.title }}" class="ih5 order rounded border border-secondary zrealizowane row bg-success m-1 mb-2 p-2 shadow">
+                <div class="col-8">
+                  <i class="fa fa-user align-middle" aria-hidden="true"></i> 
+                  <span class="align-middle"><b>{{ order.agreement.company }}</b></span><br>
+                  <span>Firma: 
+                    {% if order.agreement.company.profile.thumb %}
+                    <img class="rounded-circle border border-secondary shadow-sm thumb_min" src="{{ order.agreement.company.profile.thumb.url }}"/>
+                    {% else %}
+                    <!-- <img class="rounded-circle border border-secondary shadow-sm thumb_min" src="{% static 'img/logogb.jpg' %}"/> -->
+                    {% endif %}
+                    {{ order.agreement.company.profile.company_name }} </span><br>
+                  <span>Opis: {{ order.title }} </span>
+                </div>
+
+                <div class="col text-right">
+                  <span>{{ order.start_datetime|date:'' }}</span>
+                  {% if order.attachment %}
+                <a href="{{ order.attachment.url }}"><button class="mb-1 btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-file" aria-hidden="true"></i>
+                  </button></a>
+                  {% endif %}
+                  <a href="{% url 'order_detail' order.id %}"><button class="mb-1 btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-pencil" aria-hidden="true"></i></button></a>
+                  <a href="{% url 'order_delete' order.id %}"><button class="mb-1 btn btn-danger shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_delete' order.id %}"><i class="fa fa-trash" aria-hidden="true"></i></button></a>
+                </div>
+              </div> 
+            </div>
+              {% endfor %}
+            {% endif %}
+        {% endif %}
+        </div>
+    </div>
+    </div>
+</section>
+{% endif %}
+
+{% if user.is_staff %}
+<!-- Nowe zlecenia -->
+<section id="sekcja_zlecenia" style="display:none;">
+  <div class="section_header">
+    <h4 class="" ><i class="fa fa-bar-chart" aria-hidden="true"></i>
+        Lista zleceń</h4><hr>
+</div>
+
+<div class="row">
+<div class="col-12 col-md-6">
+  <div class="section_header">
+    <h4 class=""><i class="fa fa-hourglass-start text-danger" aria-hidden="true"></i> W realizacji</h4><hr>
+  </div>
+<!-- 1 search -->
+  <div class="form-group">
+    <label for="r_search">Szukaj:</label>
+    <input type="text" class="form-control input-sm" id="r2_search">
+  </div>
+
+<!-- 1 -->
+  <div class="lista_zlecen lista_w_realizacji">
+        {% if user.is_staff %}
+        {% if myorders %}
+        {% for order in myorders|dictsort:"order_status.name" %}
+      <div class="zoom1">
+        <div class="row zlecenie shadow-sm rounded zlecenie_w_realizacji animated fadeInDown fast">
+          <div class="col">
+            <span class="font-weight-bold">
+              {% if order.agreement.company.thumb %}
+              <img class="rounded-circle border border-secondary shadow-sm thumb_min" src="{{ order.agreement.company.thumb.url }}"/>
+              {% endif %}
+              {{ order.agreement.company }}
+            </span>
+          </div>
+
+          <div class="col text-right">
+            {% if order.attachment %}
+          <a href="{{ order.attachment.url }}"><button data-toggle="tooltip" data-html="true" data-placement="top" title="Pobierz dokument" class="mb-1 btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-file" aria-hidden="true"></i>
+            </button></a>
+            {% endif %}
+            <a href="{% url 'order_detail' order.id %}"><button data-toggle="tooltip" data-html="true" data-placement="top" title="Edytuj" class="mb-1 btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-pencil" aria-hidden="true"></i></button></a>
+            <a href="{% url 'order_delete' order.id %}"><button data-toggle="tooltip" data-html="true" data-placement="top" title="Usuń" class="mb-1 btn btn-danger shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_delete' order.id %}"><i class="fa fa-trash" aria-hidden="true"></i></button></a>
+          </div>
+          <div class="col-12 zlecenie_info">
+            <span>{{ order.title }}</span> / <span>{{ order.created_date|date:'' }}</span>
+
+            <!-- <div class="zlecenie_info_1 rounded">
+              
+              <span>Opiekun IT: {% if order.agreement.company.care.profile.thumb %}<img class="rounded-circle border border-secondary shadow-sm thumb_min" src="{{ order.agreement.company.care.profile.thumb.url }}"/>{% endif %}{{ order.agreement.company.care }}</span><br>
+            <span><i class="fa fa-arrow-up" aria-hidden="true"></i> Start: {{ order.start_datetime|date:'d-M h:m' }}</span>
+            <span><i class="fa fa-arrow-down" aria-hidden="true"></i>
+              Koniec: {{ order.end_datetime|date:'d-M h:m' }}</span><br>
+              <span><i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                Komunikat: {% if order.komunikat %}<span class="zlecenie_komunikat">{{ order.komunikat }}</span>{% endif %}</span><br>
+                <div class="zlecenie_status rounded">
+                <span>Status: 
+                  <i class="fa fa-refresh fa-spin fa-1x fa-fw"></i> {{ order.order_status }}</span>
+                </div>
+              </div>
+              <hr>
+
+              <div class="row">
+              
+
+              
+
+      
+            </div> -->
+        </div>
+        </div>
+      </div>
+        {% endfor %}
+        {% endif %}
+        {% endif %}
+  </div>
+</div>
+
+<!-- 2 search -->
+<div class="col-12 col-md-6">
+  <div class="section_header">
+    <h4 class=""><i class="fa fa-check text-success" aria-hidden="true"></i> Zrealizowane</h4><hr>
+  </div>
+  <div class="form-group">
+      <label for="z_search">Szukaj:</label>
+      <input type="text" class="form-control input-sm" id="z2_search">
+  </div>
+      
+<!-- 2 -->
+  <div class="lista_zlecen lista_zrealizowane">
+        {% if user.is_staff %}
+        {% if my_completed_orders %}
+        {% for order in my_completed_orders|dictsort:"order_status.name" %}
+        <div class="zoom1">
+        <div class="row zlecenie shadow-sm rounded zlecenie_zrealizowane animated fadeInDown fast">
+          <div class="col">
+            <span class="font-weight-bold">
+              {% if order.agreement.company.thumb %}
+              <img class="rounded-circle border border-secondary shadow-sm thumb_min" src="{{ order.agreement.company.thumb.url }}"/>
+              {% endif %}
+              {{ order.agreement.company }}
+            </span>
+          </div>
+          <div class="col text-right">
+            {% if order.attachment %}
+          <a href="{{ order.attachment.url }}"><button data-toggle="tooltip" data-html="true" data-placement="top" title="Pobierz dokument" class="mb-1 btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-file" aria-hidden="true"></i>
+            </button></a>
+            {% endif %}
+            <a href="{% url 'order_detail' order.id %}"><button data-toggle="tooltip" data-html="true" data-placement="top" title="Edytuj" class="mb-1 btn btn-light shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_detail' order.id %}"><i class="fa fa-pencil" aria-hidden="true"></i></button></a>
+            <a href="{% url 'order_delete' order.id %}"><button data-toggle="tooltip" data-html="true" data-placement="top" title="Usuń" class="mb-1 btn btn-danger shadow-sm btn-sm" id="{{ order.id }}" url="{% url 'order_delete' order.id %}"><i class="fa fa-trash" aria-hidden="true"></i></button></a>
+          </div>
+          <div class="col-12 zlecenie_info">
+            <span>{{ order.title }}</span> / <span>{{ order.created_date|date:'' }}</span>
+
+            <!-- <div class="zlecenie_info_1 rounded">
+              
+              <span>Opiekun IT: {% if order.agreement.company.care.profile.thumb %}<img class="rounded-circle border border-secondary shadow-sm thumb_min" src="{{ order.agreement.company.care.profile.thumb.url }}"/>{% endif %}{{ order.agreement.company.care }}</span><br>
+            <span><i class="fa fa-arrow-up" aria-hidden="true"></i> Start: {{ order.start_datetime|date:'d-M h:m' }}</span>
+            <span><i class="fa fa-arrow-down" aria-hidden="true"></i>
+               Koniec: {{ order.end_datetime|date:'d-M h:m' }}</span><br>
+               <span><i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                 Komunikat: {% if order.komunikat %}<span class="zlecenie_komunikat">{{ order.komunikat }}</span>{% endif %}</span><br>
+                 <div class="zlecenie_status rounded">
+                 <span>Status: 
+                  <i class="fa fa-refresh fa-spin fa-1x fa-fw"></i> {{ order.order_status }}</span>
+                </div>
+              </div>
+               <hr>
+  
+               <div class="row">
+               
+  
+               
+  
+              
+  
+            </div> -->
+        </div>
+        </div>
+      </div>
+        {% endfor %}
+        {% endif %}
+        {% endif %}
+  </div>
+</div>
+
+
+
+</div>
+</section>
+{% endif %}
+
+
+
+
+
+<script src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
+<script>
+    var elem = document.getElementById("sekcja_charty");
+    function openFullscreen() {
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+      } else if (elem.mozRequestFullScreen) { /* Firefox */
+        elem.mozRequestFullScreen();
+      } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+        elem.webkitRequestFullscreen();
+      } else if (elem.msRequestFullscreen) { /* IE/Edge */
+        elem.msRequestFullscreen();
+      }
+    }
+    function closeFullscreen() {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      } else if (document.msExitFullscreen) {
+        document.msExitFullscreen();
+      }
+    }
+
+  $(document).ready(function () {
+    $api_url = "{% url 'stats' %}"
+
+    var $charts = []
+    function chart1(){
+
+      $json_url = "{% url 'stats' %}"
+      // Json
+      $.getJSON($json_url, function(data) {
+        // Współrzędne
+          var x=[]
+          var y=[]
+          var z=[]
+          
+          var x2=[]
+          var y2=[]
+          var z2=[]
+  
+        for (var key in data['orders_created_per_day']) {
+          //1
+          x.push(data['orders_created_per_day'][key].x)
+          y.push(data['orders_created_per_day'][key].y)
+          z.push(data['service_orders_created_per_day'][key].y)
+        }
+        //2
+        for (var key in data['orders_created_per_start']) {
+          x2.push(data['orders_created_per_start'][key].x)
+          y2.push(data['orders_created_per_start'][key].y)
+          z2.push(data['service_orders_created_per_start'][key].y)
+        }
+
+
+
+    // Selektor canvasa w template
+      var ctx = document.getElementById('myChart1').getContext('2d');
+
+        var all = x.concat(x2)
+        console.log(all)
+    // Instancja charta
+      var chart = new Chart(ctx, {
+
+        type: 'line',
+
+        data: {
+            labels: x,
+            datasets: [{
+                order: 1,
+                label: 'Utworzone zlecenia',
+                borderColor: 'rgb(255, 99, 132)',
+                data: y,
+                steppedLine: true
+            },
+            {
+              label: 'Wystartowane',
+              borderColor: 'rgb(255, 99, 132)',
+              data: y2,
+              steppedLine: true
+          }]
+        },
+
+        options: {
+          tooltips: {
+            mode: 'nearest'
+          },
+          scales: {
+            xAxes: [{
+              type: "time",
+              time: {
+                  parser: "YYYY-MM-DD",
+                  unit: 'day',
+              },
+
+          }],
+          yAxes: [{   
+            id: 'first-y-axis',
+            type: 'linear',
+            position: 'right',
+            ticks: {
+              stepSize: 1
+            }
+          },
+          ]
+          }
+        }
+        
+      });
+
+    //Wrzuć każdy obiekt chart do listy 'charty'
+      $charts.push(chart);
+
+    //Sanity Check
+      console.log("To jest instancja -> "+$charts)
+    
+    });
+
+    }
+    function chart2(){
+
+      $json_url = "{% url 'stats' %}"
+      // Współrzędne
+    
+
+      // Json
+      $.getJSON($json_url, function(data) {
+        $x=[]
+        $y=[]
+        $shift_times=[]
+        $processing_graph=[]
+        $completed_graph=[]
+        $completed=data['order_td_completed']
+        $processing=data['order_td_proccessing']
+        $cm=[]
+        $cm2=[]
+        $cmv=[]
+        $cm3=[]
+        $cmv3=[]
+
+        $timeline_month = []
+        $timeline_month_v1 = []
+        $timeline_month_v2 = []
+        $timeline_month_v3 = []
+        //for (var key in data['orders_created_per_time_today']) {
+        //  $x.push(data['orders_created_per_time_today'][key].x.split('.')[0])
+       //  $y.push(data['orders_created_per_time_today'][key].y)
+        //}
+        for (var key in data['shift_times']) {
+          $shift_times.push(data['shift_times'][key])
+        }
+        for (var key in data['processing_graph']) {
+          $processing_graph.push(data['processing_graph'][key])
+        }
+        for (var key in data['completed_graph']) {
+          $completed_graph.push(data['completed_graph'][key])
+        }
+        for (var key in data['cm']){
+          $cm.push(data['cm'][key])
+        }
+        for (var key in data['qs']){
+            $cm2.push(data['qs'][key].updated_date__date)
+            $cmv.push(data['qs'][key].n)
+        }
+        for (var key in data['qs2']){
+            $cm3.push(data['qs2'][key].updated_date__date)
+            $cmv3.push(data['qs2'][key].n)
+        }
+        for (var key in data['timeline_month_1']){
+          $timeline_month.push([key][0])
+          $timeline_month_v1.push(data['timeline_month_1'][key])
+      }
+        for (var key in data['timeline_month_2']){
+          $timeline_month_v2.push(data['timeline_month_2'][key])
+      }
+        for (var key in data['timeline_month_3']){
+          $timeline_month_v3.push(data['timeline_month_3'][key])
+      }
+
+
+      // Selektor canvasa w template
+      var ctx = document.getElementById('myChart2').getContext('2d');
+      var ctx_pie = document.getElementById('pie2').getContext('2d');
+      var ctx3 = document.getElementById('myChart3').getContext('2d');
+
+      var min = new Date()
+      min.setHours(7,30,00,000)
+      var max = new Date()
+      max.setHours(16,59,59,999)  
+
+
+
+      // Instancja charta
+      var chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: $shift_times,
+            datasets: [{
+                label: 'W realizacji',
+                borderColor: 'rgba(255, 99, 132,1)',
+                backgroundColor: 'rgba(255, 99, 132,0.7)',
+                data: $processing_graph,
+                //steppedLine: true,
+            },{
+              label: 'Zrealizowane',
+              borderColor: 'rgba(128, 219, 101,1)',
+              backgroundColor: 'rgba(128, 219, 101,0.7)',
+              data: $completed_graph,
+              //steppedLine: true,
+          },]
+        },
+        options: {
+          //barValueSpacing: 10,
+          tooltips: {
+            mode: 'nearest',
+            titleFontSize:14,
+          },
+          layout: {
+            padding: {
+                left: 32,
+                right: 32,
+                top: 32,
+                bottom: 32
+            }
+        },
+          legend: {
+            position: 'bottom',
+            display: true,
+            labels: {
+            },
+          },
+          scales: {
+            xAxes: [{
+              stacked: true,
+              //barPercentage: 0.5,
+              type: "time",
+              time: {
+                parser: 'h:mm:ss',
+                unit: 'hour',
+                minUnit:'hour',
+                min: min,
+                max: max,
+                stepSize: 1
+              },
+          }],
+          yAxes: [{
+            scaleLabel: {
+              display: true,
+              labelString: 'ilość',
+              fontSize: 13,
+              fontStyle: 'bold'
+          },   
+            stacked: true,
+            ticks: {
+              min:0,
+              stepSize: 1
+            }
+          },
+          ]
+          }
+        }
+        
+      });
+      $charts.push(chart);
+
+      var myPieChart = new Chart(ctx_pie, {
+        type: 'pie',
+        
+        data: {
+          datasets: [{
+            data: [$processing, $completed],
+            borderColor: 'rgba(255,255,255,0.0)',
+            backgroundColor: ['rgba(255,0,0,0.4)', 'rgba(0,255,0,0.4)'],
+          }],
+
+          labels: [
+              'W relizacji',
+              'Zrealizowane',
+          ]
+        },
+        options: {
+
+
+          tooltips: {
+
+
+            enabled: true
+          },
+          legend: {
+            position: 'bottom',
+            display: true,
+            labels: {
+
+
+            },
+          },
+          layout: {
+            padding: {
+                left: 32,
+                right: 32,
+                top: 32,
+                bottom: 32
+            }
+        },
+
+        }
+        
+        
+
+      });
+      $charts.push(myPieChart);
+
+      var chart3 = new Chart(ctx3, {
+        type: 'bar',
+        data: {
+            labels: $timeline_month,
+            datasets: [{
+                label: 'W realizacji',
+                borderColor: 'rgba(255,0,0,0.4)',
+                backgroundColor: 'rgba(255,0,0,0.4)',
+                data: $timeline_month_v1,
+                //steppedLine: true,
+
+            },{
+              label: 'Zrealizowane',
+              borderColor: 'rgba(0,255,0,0.4)',
+              backgroundColor: 'rgba(0,255,0,0.4)',
+              data: $timeline_month_v2,
+              //steppedLine: true,
+
+          },{
+            label: 'Wszystkie',
+            borderColor: 'rgba(17,17,17,0.2)',
+            backgroundColor: 'rgba(255,0,0,0.0)',
+            data: $timeline_month_v3,
+            //steppedLine: true,
+            lineTension: 0, 
+            type:'line',
+
+
+        },]
+        },
+        options: {
+          //barValueSpacing: 10,
+          tooltips: {
+            mode: 'nearest',
+            titleFontSize:14,
+          },
+          
+        //   animation: {
+        //     duration: 500,
+        //     onComplete: function() {
+        //         var ctx = this.chart.ctx;
+        //         ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontFamily, 'normal', Chart.defaults.global.defaultFontFamily);
+        //         ctx.fillStyle = "black";
+        //         ctx.textAlign = 'center';
+        //         ctx.textBaseline = 'bottom';
+    
+        //         this.data.datasets.forEach(function(dataset) {
+        //             for (var i = 0; i < dataset.data.length; i++) {
+        //                 for (var key in dataset._meta) {
+        //                     var model = dataset._meta[key].data[i]._model;
+        //                     ctx.fillText(dataset.data[i], model.x, model.y - 5);
+        //                 }
+        //             }
+        //         });
+        //     }
+        // },
+          scales: {
+            xAxes: [{
+              stacked: true,
+              barPercentage: 0.5,
+              type: "time",
+              time: {
+                parser: 'YYYY-MM-DD',
+                unit: 'day',
+                minUnit:'day',
+                //min: d,
+                //max: maxmonth,
+                stepSize: 1
+              },
+          }],
+          yAxes: [{   
+            stacked: true,
+            ticks: {
+
+              min:0,
+              stepSize: 1
+            },
+            scaleLabel: {
+              display: true,
+              labelString: 'ilość',
+              fontSize: 13,
+              fontStyle: 'bold'
+          },
+          },
+          ]
+          }
+        }
+        
+      });
+      $charts.push(chart3);
+    });
+    }
+    function updatecharts(){
+
+      console.log("TICK")
+      $json_url = "{% url 'stats' %}"
+
+    // Json
+      $.getJSON($json_url, function(data) {
+
+        $shift_times=[]
+        $processing_graph=[]
+        $completed_graph=[]
+
+        $timeline_month = []
+        $timeline_month_v1 = []
+        $timeline_month_v2 = []
+        $timeline_month_v3 = []
+
+        for (var key in data['shift_times']) {
+          $shift_times.push(data['shift_times'][key])
+        }
+        for (var key in data['processing_graph']) {
+          $processing_graph.push(data['processing_graph'][key])
+        }
+        for (var key in data['completed_graph']) {
+          $completed_graph.push(data['completed_graph'][key])
+        }
+
+        for (var key in data['timeline_month_1']){
+          $timeline_month.push([key][0])
+          $timeline_month_v1.push(data['timeline_month_1'][key])
+      }
+        for (var key in data['timeline_month_2']){
+          $timeline_month_v2.push(data['timeline_month_2'][key])
+      }
+        for (var key in data['timeline_month_3']){
+          $timeline_month_v3.push(data['timeline_month_3'][key])
+      }
+    
+       $charts[0].data.datasets[0].data = $processing_graph
+       $charts[0].data.datasets[1].data = $completed_graph
+
+       $charts[1].data.datasets[0].data[0] = $processing=data['order_td_proccessing']
+       $charts[1].data.datasets[0].data[1] = $processing=data['order_td_completed']
+
+       $charts[2].data.datasets[0].data = $timeline_month_v1
+       $charts[2].data.datasets[1].data = $timeline_month_v2
+       $charts[2].data.datasets[2].data = $timeline_month_v3
+
+
+
+       $charts[0].update();
+       $charts[1].update();
+       $charts[2].update();
+
+    });
+    }
+
+    //W realizacji search
+    $("#r_search").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    console.log(value)
+    $("#wrealizacjidiv .order").filter(function() {
+        $(this).toggle($(this).find('span').text().toLowerCase().indexOf(value) > -1)
+    });
+    });
+
+    $("#r2_search").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    console.log(value)
+    $(".lista_zlecen .zlecenie_w_realizacji").filter(function() {
+        $(this).toggle($(this).find('span').text().toLowerCase().indexOf(value) > -1)
+    });
+    });
+
+    //Zrealizowane search
+    $("#z_search").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    console.log(value)
+    $("#zrealizowanediv .order").filter(function() {
+        $(this).toggle($(this).find('span').text().toLowerCase().indexOf(value) > -1)
+    });
+    });
+
+    $("#z2_search").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    console.log(value)
+    $(".lista_zlecen .zlecenie_zrealizowane").filter(function() {
+        $(this).toggle($(this).find('span').text().toLowerCase().indexOf(value) > -1)
+    });
+    });
+        
+    //Klient search
+    $("#k_search").on("keyup", function() {
+      console.log("ggg")
+    var value = $(this).val().toLowerCase();
+    console.log(value)
+    $("#s_clients .ls_companies").filter(function() {
+        $(this).toggle($(this).find('span').text().toLowerCase().indexOf(value) > -1)
+    });
+    });
+
+    // Live -----------------------------------------------
+ 
+
+    //Sounds
+    function success_sound() {
+        var obj = document.createElement("audio");
+        obj.src = "{% static 'sounds/success.wav' %}";
+        obj.play();
+        console.log("success played!")
+      };
+    
+    //Reshreshe
+    function updateDiv(target) {
+        $(target).load(window.location.href + " " + target);
+    };
+
+
+
+    {% if user.is_staff %}
+    //Intervale
+    chart2();
+    setInterval(updatecharts, 5000);
+
+    {% else %}
+
+    {% endif %}
+   
+  });
+</script>
+
+{% endblock content %}
