@@ -29,7 +29,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import HttpResponseRedirect
 from HD_app.additionals.validationprintservice import *
 from django.db.models import F, Func, Avg, Sum
-
+import numpy as np
 # warnings off - Usuwanie warningów przy komunikacji po ssl
 import requests
 import urllib3
@@ -41,9 +41,17 @@ subiekt = Subiekt()
 
 from django.db.models.functions import ExtractDay,ExtractHour
 # Email backend -------------------------------------------
+def get_seconds_from_days(days,hours):
+    return ((days*hours)*60)*60
+def get_current_month_busdays():
+    current_datetime = datetime.datetime.now()
+    first_day = current_datetime.replace(day=1,hour=0,minute=0,second=0)
+    last_day = current_datetime.replace(day=1,hour=23,minute=59,second=59,month=current_datetime.month+1)-datetime.timedelta(days=1)
+    days = np.busday_count(first_day.date(),last_day.date())
+    return days
 def get_user_data(self):
     return "%s %s [%s]" % (self.first_name, self.last_name, self.email)
-def get_current_month_efficiency(self):
+def get_current_month_efficiency(self,max_efficiency_hours=8,shift_start=8,shift_end=16):
     current_datetime = datetime.datetime.now()
     orders = Order2.objects.filter(
         care__id=self.pk,
@@ -55,14 +63,14 @@ def get_current_month_efficiency(self):
             "time"
         ).annotate(
             sum=Sum("time")
+        ).values(
+            "sum"
         )
-    print("to sa ordersy")
-    print(list(orders))
-    max_efficiency = 8
-    return orders
-
-
-
+    busdays = get_current_month_busdays()
+    busday_shift_seconds = get_seconds_from_days(busdays,max_efficiency_hours)
+    my_time = list(orders)[0]['sum'].total_seconds()
+    my_efficiency = my_time*100/busday_shift_seconds
+    return "{:.2f}".format(my_efficiency)
 
 
 
@@ -151,10 +159,7 @@ def get_uptodate_model(*args,**kwargs):
     to_compare = kwargs.get("to_compare")
     objs = model.objects.all()
     for obj in objs:
-        print(f"\n[..] Porównuje model {model} \nwg daty {to_compare} w przedziale {obj.start} do {obj.end}")
         if obj.start < to_compare < obj.end:
-            print(f"[!!] {to_compare} znajduje sie w przedziale {obj.start} do {obj.end}")
-            print(f"[<-] zwracam obiekt: {obj}")
             return obj
 
 # Modele --------------------------------------------------
@@ -773,14 +778,8 @@ class Order2(models.Model):
     def calculate_order_with_distance(self):
         """ Kalkulator kosztów dojazdu dla zlecenia """
         distance_cost = self.getDistanceCalcProfileCosts()
-        print("PROFIL KOSZTOW DOJAZDU:")
-        print(distance_cost)
         distance_km = self.get_two_way_distance() if self.is_traveled() else 0
-        print("DYSTANS W KM DO PRZELICZENIA:")
-        print(distance_km)
         costs = (distance_km)*2*distance_cost
-        print("KOSZTA PO PRZELICZENIU:")
-        print(costs)
         return float("{:.2f}".format(self.calculate_order()+costs))
     def get_fuel_costs(self):
         distance_costs = self.getDistanceCalcProfileCosts()
@@ -788,33 +787,26 @@ class Order2(models.Model):
         costs = (distance_km)*2*distance_costs
         return float("{:.2f}".format(costs))
     def get_distance(self):
-        print("DYSTANS:")
-        print(self.is_distance())
         return float(self.address.distance) if self.is_distance() else self.get_google_km()
     def get_two_way_distance(self):
         two_way_distance = self.get_distance()*2
         return two_way_distance
     def get_google_km(self):
-        print("Przeliczam km przez google")
         api_key ='AIzaSyB7W8VWn3SxVUoDFbtyLoDAk7hpLP2LivA'
         origin = 'Gorzow+Poland+Gobit' 
         destination = self.address.city+"+"+self.address.street+"+"+self.address.nr_dom
         url ='https://maps.googleapis.com/maps/api/directions/json?'
         r = requests.get(url+'origin='+origin+'&destination='+destination+'&key='+api_key+"&avoid=tolls|highways")
         routes = r.json().get("routes")[0].get("legs")[0].get("distance").get("value")
-        print(f"ROUTES: {routes}")
         km = round((routes/1000),2)
         return km
     def is_distance(self):
         return True if self.address.distance else False
     def is_traveled(self):
-        print("Typ realizacji")
-        print(self.implementation_type)
         return True if self.implementation_type.is_traveled else False
     def get_view_fields(self):
         """ Pola widoczne na widoku """
         return [(field.verbose_name, field.value_to_string(self)) for field in self.__class__._meta.fields]
-
 class OrderCategory(models.Model):
     name = \
         models.CharField(\

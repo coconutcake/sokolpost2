@@ -1,7 +1,7 @@
 # Imports -------------------------------------------------
 from .imports import *
-
-
+from django.db.models import CharField,DurationField,DateTimeField, ExpressionWrapper, F
+import functools 
 # Klasy pomocnicze Subiekta API ---------------------------
 class SubiektFormOperations():
     """ Klasa operacji na ciele formularza ajax """
@@ -105,6 +105,7 @@ class DashboardView(LoginRequiredMixin,View):
             "get_month_orders_statuses":self.get_month_orders_statuses(),
             "get_month_orders_types":self.get_month_orders_types(),
             "get_not_completed_orders":self.get_not_completed_orders(),
+            "get_completed_orders":self.get_completed_orders(),
             "get_my_current_month_orders_counter_in_progress":self.get_my_current_month_orders_counter_in_progress(),
             "get_my_current_month_orders_counter_spent":self.get_my_current_month_orders_counter_spent(),
             "get_my_current_month_orders_counter_costs":self.get_my_current_month_orders_counter_costs(),
@@ -114,13 +115,15 @@ class DashboardView(LoginRequiredMixin,View):
             "get_orders_counter": self.get_orders_counter(),
             "get_orders_two_way_distance": self.get_orders_two_way_distance(),
             "get_orders_sum_time":self.get_orders_sum_time(),
-            "user":User.objects.get(pk=request.user.pk)
+            "user":User.objects.get(pk=request.user.pk),
+            "get_month_companies_spent":self.get_month_companies_spent()
         }
         return context 
 
     def get_objects(self):
         """ Zwraca obiekty modelu """
         return self.model_order.objects.filter(care=self.request.user)
+
     
     def get_current_month_days(self):
         """ Zwraca liste dni bierzacego miesiaca """
@@ -186,7 +189,7 @@ class DashboardView(LoginRequiredMixin,View):
 
         return li
     def get_my_current_month_orders_counter_notcompleted(self):
-        """ Zwraca liste zlecen niezakonczonych per dzien beirzacego miesiaca """
+        """ Zwraca liste zlecen oczekujacych na rozliczenie per dzien beirzacego miesiaca """
         current = datetime.datetime.now()
         
         # Queryset
@@ -278,7 +281,7 @@ class DashboardView(LoginRequiredMixin,View):
             value = ""
             for x in list(qs):
                 if x['day'] == day:
-                    value = float(x['t'].total_seconds()/60)/60
+                    value = "{:.2f}".format(float(x['t'].total_seconds()/60)/60)
                     flag = True
             if flag:
                 li.append(value)
@@ -392,6 +395,64 @@ class DashboardView(LoginRequiredMixin,View):
         return qs
     def get_not_completed_orders(self):
         return self.get_objects().exclude(order_status__id=6)
+    def get_completed_orders(self):
+        return self.get_objects().filter(order_status__id=6)
+    def get_month_companies_spent(self):
+        """ Zbiera dane czaasowe firm ze zleceniami """
+        current = datetime.datetime.now()
+         # Queryset
+        qs = self.get_objects().filter(
+            start_datetime__month = current.month,
+            start_datetime__year = current.year,
+        ).values(
+            'document__company_sfk',
+        ).annotate(
+            duration=ExpressionWrapper(F('end_datetime')-F('start_datetime'),output_field=DurationField(default=int(timedelta().total_seconds()))),
+        ).order_by("document__company_sfk")
+   
+
+        liobjs = []
+
+
+        
+
+        duration = 0
+
+        for x in list(qs):
+            if any(x['document__company_sfk'] == d['document__company_sfk'] for d in liobjs):
+                print("istnieje")
+                for d in liobjs:
+                    if d["document__company_sfk"] == x['document__company_sfk']:
+                        d['duration'] += x['duration']
+            else:
+                liobjs.append(x)
+                print("nieistnieje")
+        li = []
+        for x in liobjs:
+            d = x['duration']
+            f = x['document__company_sfk']
+            obj= {}
+            obj['nip'] = f
+            obj['firma'] = self.get_subiekt_company_name(f)
+            obj['czas'] = "{:.2f}".format(float(d.total_seconds()/60)/60)
+            li.append(obj)
+
+
+
+        print(li)
+
+
+        return li
+    def get_subiekt_company_name(self,company_nip):
+        endpoint = subiekt.get_absolute_endpoint("kontrahenci")
+        data = {"Nip":company_nip}
+        try:
+            r = requests.post(endpoint,data=json.dumps(data),headers=subiekt.get_header(),verify=False)
+            if r.status_code == 200:
+                return r.json().get("KontrahenciList")[0]['Nazwa']
+        except:
+            return "uruchom subiekta!"
+
 
     def get_orders_sum_costs(self):
         """ Zwraca sume kosztów wszytskich zleceń instancji"""
@@ -410,7 +471,8 @@ class DashboardView(LoginRequiredMixin,View):
         return sum([c.get_two_way_distance() for c in self.get_objects()])
     def get_orders_sum_time(self):
         """ Zwraca sume czasu zleceń instancji """
-        return sum([(c.calculate_timedelta()/60)/60 for c in self.get_objects()])
+        return "{:.1f}".format(sum([(c.calculate_timedelta()/60)/60 for c in self.get_objects()]))
+    
 
 def home(request):
     """ Przekierowanie na dashboard """

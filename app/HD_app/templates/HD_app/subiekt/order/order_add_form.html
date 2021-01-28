@@ -91,6 +91,11 @@
   <script>
   // Serailizery --------------------------------------
     // --- Forms serializer
+    function redirect_to_current(){
+      var current = window.location.href.split(/[?#]/)[0]
+      window.location.replace(current);
+    }
+
     
         function redirect(url){
         window.location.replace(url);
@@ -133,7 +138,8 @@
                 dissmis_modal($modal_window)
                 populate_modal_body($modal_body,data);
                 correct_checkboxes();
-                redirect($success_url)
+                //redirect($success_url)
+                redirect_to_current()
             }        
         }
       });

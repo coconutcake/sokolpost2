@@ -10,6 +10,19 @@ section {
   /* border: 1px solid rgb(128, 128, 128); */
 }
 
+
+.progress {
+  position: relative;
+}
+
+.progress span {
+  position: absolute;
+  display: block;
+  width: 100%;
+  color: black;
+}
+
+
 .form-control {
   margin-bottom: 0.7rem;
 }
@@ -938,7 +951,7 @@ ul li {
 }
 /* -------------------------------------------------------------- */
 /* Pola input,select,textarea */
-input,
+input:not([type='checkbox']),
 select,
 textarea {
   transition: all .2s !important;
@@ -975,7 +988,7 @@ input:-moz-read-only {
   /* pointer-events: none; */
 }
 
-input:read-only {
+input:not([type='checkbox']):read-only {
   background-color: rgb(177, 177, 177)!important;
   pointer-events: none;
 }
@@ -985,17 +998,7 @@ select {
   height: 2rem !important;
 }
 
-input[type=checkbox] {
-  /* Double-sized Checkboxes */
-  -ms-transform: scale(1.2) !important;
-  /* IE */
-  -moz-transform: scale(1.2) !important;
-  /* FF */
-  -webkit-transform: scale(1.2) !important;
-  /* Safari and Chrome */
-  -o-transform: scale(1.2) !important;
-  /* Opera */
-  transform: scale(1.2) !important;
+input[type='checkbox'] {
   vertical-align: bottom !important;
   margin-left: 8px !important;
 
@@ -1070,7 +1073,7 @@ input[type=checkbox] {
 
 @media (max-width: 768px) { 
   .first_elem {
-    background: rgb(255, 177, 60)!important;
+    background: rgb(255, 255, 255)!important;
   }
 }
 

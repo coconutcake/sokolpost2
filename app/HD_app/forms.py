@@ -241,6 +241,8 @@ class OrderCreateForm(forms.ModelForm):
         for field in self.fields:
             self.fields[field].widget.attrs['class'] = \
                 'shadow-sm form-control'
+            self.fields['start_datetime'].widget.attrs['autocomplete'] = "off"
+            self.fields['end_datetime'].widget.attrs['autocomplete'] = "off"
 class OrderDetailForm(forms.ModelForm):
     excluded = [4,6,7,9]
     order_status = forms.ModelChoiceField(label="Status",\
@@ -258,6 +260,8 @@ class OrderDetailForm(forms.ModelForm):
             self.fields[field].widget.attrs['class'] = \
                 'shadow-sm form-control'
             self.fields["created_date"].widget = forms.HiddenInput()
+            self.fields['start_datetime'].widget.attrs['autocomplete'] = "off"
+            self.fields['end_datetime'].widget.attrs['autocomplete'] = "off"
 class OrderSearchModelForm(forms.ModelForm):
 
     class Meta:
