@@ -146,6 +146,31 @@
     });
   </script>
 
+
+<script>
+      $("#id_order_template").on("change",function () {
+        console.log($(this))
+        var $url = "{% url 'JSON_load_order_template' %}"
+        var $ids = parseInt($(this).val());
+        $.ajax({
+          url: $url,
+          method : "post",
+          dataType: 'json',
+          data: {
+            't': $ids
+          },
+          success: function (data) {
+            console.log(data)
+            $("#id_description").empty().val(data.description)
+            $("#id_name").empty().val(data.name)
+            //$("#id_order_type option[value="+data.order_type+"]").prop("selected",true)
+            //$("#id_implementation_type option[value="+data.implementation_type+"]").prop("selected",true)
+            //$("#id_order_status option[value="+data.order_status+"]").prop("selected",true)
+          }
+        });
+      });
+    </script>
+
   <script>
     $("#id_receipt li").hide();
   // Szybkie szukanie po adresatach

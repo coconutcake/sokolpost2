@@ -149,28 +149,12 @@
       </div>
         <!-- LISTA -->
 
-<!--
-      <div class="ls">
+
         {% if documents %}
           {% for co in documents %}
-          <div class="row ls_elem animated fadeInDown fast markon" name="document" pk="{{ co.id }}" idf="">
-          {% for field,value in co.get_view_fields %}
-            {% if field == "ID" %}
-              <div class="col-12 col-md-2 first_elem">
-                <input type="checkbox" class="mark" url="" name="document" pk="{{ co.id }}">&nbsp;
-                <span class="ls_spans modal_button" url="{% url 'Document_detail' co.id %}" type="GET" pk="{{ co.id }}" data-toggle="modal" data-target="#modal_window"><i class="fas fa-clipboard-check"></i>&nbsp;<b>{{ co.get_subiekt_company_name }}</b></span>
-              </div>
-            {% else %}
-            <div class="col-6 d-md-none">
-              <span>{{ field }} {{ meta_fields }}</span>
-            </div>
-            <div class="col-6 col-md-2 elem middle_elem">
-              <span class="">{% if field == "Firma subiekta" %}{{ co.get_subiekt_company_name }}{% else %}{{ value }}{% endif %}</span>
-            </div>
-          {% endif %}
-          {% endfor %}
-          </div>
--->
+         
+          
+
 
 
 

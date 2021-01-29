@@ -67,20 +67,453 @@
           </div>
         </div>
 </nav>
-<!-- Section row #2 -->
+
+
+    <!-- Section row #1 -->
       <div class="row subiekt-section-row">
-        <div class="col-12 col-sm-12 subiekt-section-column">
+        <div class="col-12 col-xl-8 subiekt-section-column bg-white">
+          <div class="section-container">
+            <div class="section-header">
+              <span><i class="fas fa-clipboard-check"></i> Moje zlecenia z miesiąca bieżącego</span>
+              <hr>
+            </div>
+            <div class="section-content">
+            <canvas id="myorders-chart" width="" height="630"></canvas>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-12 col-xl-4 subiekt-section-column">
+  <div class="row section-container">
+  <div class="col-12">
+
+<!-- TABS -->
+  <ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item">
+      <a class="nav-link active" id="order-sheet-tab" data-toggle="tab" href="#order-sheet" role="tab" aria-controls="order-sheet" aria-selected="true"><i class="fas fa-clipboard-list"></i> Zestawienie</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="order-status-doughnut-tab" data-toggle="tab" href="#order-status-doughnut" role="tab" aria-controls="order-status-doughnut" aria-selected="true"><i class="fas fa-chart-pie"></i> Stany</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="company-tab" data-toggle="tab" href="#company-tab" role="tab" aria-controls="order-sheet" aria-selected="true"><i class="fas fa-clipboard-list"></i> Firmy</a>
+    </li>
+
+  </ul>
+                        
+</div>
+
+
+<div class="col-12">
+<!-- TABS: CONTENT-->
+  <div class="tab-content" id="myTabContent">
+  <!-- TAB -->
+    <div class="tab-pane fade show" id="order-status-doughnut" role="tabpanel" aria-labelledby="order-status-doughnut-tab">
+      <div class="row">
+        <div class="col-12">
+            <div class="section-content">
+            <canvas id="counter-status-chart" width="400" height="200"></canvas>
+            </div>
+            <div class="section-content">
+            <canvas id="counter-implementationtype-chart" width="400" height="200"></canvas>
+            </div>
+        </div>
+      </div>
+    </div>
+  <!-- TAB -->
+    <div class="tab-pane fade show active" id="order-sheet" role="tabpanel" aria-labelledby="order-sheet-tab">
+      <div class="row">
+        <div class="col-12">
+            <div class="section-content">
+            <div class="row">
+                <!-- Wiersz -->
+                <div class="col-6">
+                  <span class="font-weight-bold"><i class="fas fa-sort-amount-up-alt"></i> Ilość zleceń</span>
+                </div>
+                <div class="col-6 text-right">
+                  <span>{{ get_orders_counter }}</span>
+                </div>
+                <div class="col-12">
+                  <hr class="m-0">
+                </div>
+              <!-- Wiersz -->
+                <div class="col-6">
+                  <span class="font-weight-bold"><i class="fas fa-dollar-sign"></i> Koszta klienta</span>
+                </div>
+                <div class="col-6 text-right">
+                  <span>{{ get_orders_sum_costs|floatformat:2 }} PLN</span>
+                </div>
+                <div class="col-12">
+                  <hr class="m-0">
+                </div>
+              <!-- Wiersz -->
+                <div class="col-6">
+                  <span class="font-weight-bold"><i class="fas fa-dollar-sign"></i> Koszta klienta z dojazdem</span>
+                </div>
+                <div class="col-6 text-right">
+                  <span>{{ get_orders_sum_costs_with_travel|floatformat:2 }} PLN</span>
+                </div>
+                <div class="col-12">
+                  <hr class="m-0">
+                </div>
+              <!-- Wiersz -->
+                <div class="col-6">
+                  <span class="font-weight-bold"><i class="fas fa-car"></i> Koszta dojazdu</span>
+                </div>
+                <div class="col-6 text-right">
+                  <span>{{ get_orders_sum_travel_costs }} PLN</span>
+                </div>
+                <div class="col-12">
+                  <hr class="m-0">
+                </div>
+              <!-- Wiersz -->
+                <div class="col-6">
+                  <span class="font-weight-bold"><i class="fas fa-road"></i> Suma przebytych km</span>
+                </div>
+                <div class="col-6 text-right">
+                  <span>{{ get_orders_two_way_distance }} km</span>
+                </div>
+                <div class="col-12">
+                  <hr class="m-0">
+                </div>
+
+              <!-- Wiersz -->
+                <div class="col-6">
+                  <span class="font-weight-bold"><i class="far fa-clock"></i> Suma czasu</span>
+                </div>
+                <div class="col-6 text-right">
+                  <span>{{ get_orders_sum_time }} h</span>
+                </div>
+                <div class="col-12">
+                  <hr class="m-0">
+                </div>
+              <!-- Wiersz -->
+                <div class="col-6">
+                  <span class="font-weight-bold"><i class="far fa-clock"></i> Efektywność</span>
+                </div>
+                <div class="col-6 text-right">
+                  <div class="progress m-1">
+                  <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="{{ user.get_current_month_efficiency }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ user.get_current_month_efficiency }}%"><span>{{ user.get_current_month_efficiency }} %</span></div>
+                  </div>
+                </div>
+                <div class="col-12">
+                  <hr class="m-0">
+                </div>
+
+            </div>
+            
+
+
+            </div>
+            <div class="section-content">
+            <div class="row mt-3">
+            <!-- Wiersz -->
+                <div class="col-6">
+                  <span class="font-weight-bold"><i class="far fa-clock"></i> Godziny w firmach </span>
+                </div>
+                <div class="col-12">
+                  <hr class="m-0">
+                </div>
+                <div class="col-12 p-2 mt-2">
+                  <canvas id="counter-company-chart" width="400" height="160"></canvas>
+                </div>
+            <!-- Wiersz -->
+                <div class="col-6">
+                  <span class="font-weight-bold"><i class="fas fa-dollar-sign"></i> Koszta w firmach </span>
+                </div>
+                <div class="col-12">
+                  <hr class="m-0">
+                </div>
+                <div class="col-12 p-2 mt-2">
+                  <canvas id="counter-company-costs-chart" width="400" height="160"></canvas>
+                </div>
+            </div>
+            
+
+
+
+            </div>
+        </div>
+      </div>
+    </div>
+
+
+
+  </div>
+</div>
+
+</div>
+        </div>
+
+
+      </div>
+      
+
+
+
+
+
+<!-- LISTA -->
+
+
+
+      <!-- POCZATEK ROW -->
+      <div class="row subiekt-section-row">
+      <!-- POCZATEK KOLUMNY -->
+        <div class="col-12 col-sm-6 subiekt-section-column">
           <div class="section-container">
 
           <div class="d-flex justify-content-between">
             
             <div class="section-header">
+               <span><i class="fas fa-clipboard-list"></i> Zlecenia nierozliczone</span>
+              
+            </div>
+
+            <div class="section-action-bar">
+             
+              <ul class="action-bar-list">
+<!--
+                <li class="action-bar-item">
+                    <a href="#" class="btn btn-sm btn-primary action-bar-item-link subiekt-modal-form-create send-msg m-0" name="message" url="{% url 'Message_add' %}" type="GET" pk=""  data-toggle="modal" data-target="#modal_window" ><i class="fas fa-paper-plane"></i> Nowa</a>
+                </li>   
+-->
+                <li class="action-bar-item">
+                    <button class="btn btn-primary btn-sm dropdown-toggle" id="dropdown-msg-options" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-sliders-h"></i> Opcje</button>
+                    <div class="dropdown-menu p-0 m-0" aria-labelledby="dropdownd-msg-options">
+                    <a class="btn-block btn-sm btn-primary action-bar-item-link delete m-0"  name="order" url="{% url 'Order_delete_ajax' %}" successurl="{% url 'DashboardView' %}" href="#"><i class="fas fa-trash"></i> Usuń</a>
+                    </div>
+                </li>
+                
+              </ul>
+             
+
+
+            </div>
+          </div>
+          <hr class="section-header-hr mt-0">
+            <div class="section-content">
+
+ <div id="subiekt_order_list" >
+    
+    <!-- KOLUMNY -->
+      <div class="row ls ls_columns">
+          <div class="col-6 col-md-3 d-none d-md-block">
+            <span>Firma</span>
+          </div>
+          <div class="col-6 col-md-2 d-none d-md-block">
+            <span>Nazwa</span>
+          </div>
+          <div class="col-6 col-md-2 d-none d-md-block">
+            <span>Koszta</span>
+          </div>
+
+          <div class="col-6 col-md-3 d-none d-md-block">
+            <span>Status</span>
+          </div>
+          <div class="col-6 col-md-2 d-none d-md-block">
+            <span>Czas</span>
+          </div>
+          <div class="w-100"></div>
+      </div>
+        <!-- LISTA -->
+      <div class="ls subiekt_list" name="order">
+        {% if get_not_completed_orders %}
+          {% for co in get_not_completed_orders %}
+          <div class="row ls_elem animated fadeInDown fast markon {% if co.order_status.id == 5 %}not-yet-completed{% endif %}{% if co.order_status.id == 3 %}inprogress{% endif %}{% if co.order_status.id == 6 %}completed{% endif %}" name="order" pk="{{ co.id }}" idf="">
+
+            <div class="col-12 col-md-3 first_elem">
+              <input type="checkbox" class="mark" url="" name="order" pk="{{ co.id }}">&nbsp;
+              <span class="ls_spans modal_button" url="{% url 'Order_detail' co.id %}" type="GET" pk="{{ co.id }}" data-toggle="modal" data-target="#modal_window"><i class="fas fa-building"></i>&nbsp;<b>{{ co.document.get_subiekt_company_name }}</b></span>
+
+            </div>
+
+            <div class="col-6 d-md-none">
+              <span>Imie</span>
+            </div>
+            <div class="col-6 col-md-2 elem middle_elem">
+              <span class="">{{ co.name }}</span>
+            </div>
+
+            <div class="col-6 d-md-none">
+              <span>Koszta</span>
+            </div>
+            <div class="col-6 col-md-2 elem middle_elem">
+              <span>{{ co.calculate_order_with_distance }} PLN</span>
+            </div>
+
+
+
+            <div class="col-6 d-md-none">
+              <span>Status</span>
+            </div>
+            <div class="col-6 col-md-3 elem middle_elem">
+              <span class="font-weight-bold">{% if co.order_status.id == 3 %}<i class="fas fa-cog fa-spin"></i>&nbsp;{% endif %}{% if co.order_status.id == 5 %}<i class="fas fa-circle-notch fa-spin"></i>&nbsp;{% endif %}{% if co.order_status.id == 6 %}<i class="fas text-success fa-check"></i>&nbsp;{% endif %}&nbsp;{{ co.order_status }}</span>
+            </div>
+
+            <div class="col-6 d-md-none">
+              <span>Czas</span>
+            </div>
+            <div class="col-6 col-md-2 elem middle_elem">
+              <span>{{ co.end_datetime|timeuntil:co.start_datetime }}</span>
+            </div>
+
+
+            
+
+          </div>
+          {% endfor %}
+        {% else %}
+          <span>Brak danych</span>
+        {% endif %}
+        
+      
+      </div>
+      
+      </div>
+    </div>
+
+
+            </div>
+            </div>
+
+    <!-- KONIEC KOLUMNY -->
+
+     <!-- POCZATEK KOLUMNY -->
+
+        <div class="col-12 col-sm-6 subiekt-section-column">
+          <div class="section-container">
+
+          <div class="d-flex justify-content-between">
+            
+            <div class="section-header">
+               <span><i class="fas fa-clipboard-check"></i> Zlecenia rozliczone</span>
+              
+            </div>
+
+            <div class="section-action-bar">
+             
+              <ul class="action-bar-list">
+<!--
+                <li class="action-bar-item">
+                    <a href="#" class="btn btn-sm btn-primary action-bar-item-link subiekt-modal-form-create send-msg m-0" name="message" url="{% url 'Message_add' %}" type="GET" pk=""  data-toggle="modal" data-target="#modal_window" ><i class="fas fa-paper-plane"></i> Nowa</a>
+                </li>   
+-->
+                <li class="action-bar-item">
+                    <button class="btn btn-primary btn-sm dropdown-toggle" id="dropdown-msg-options" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-sliders-h"></i> Opcje</button>
+                    <div class="dropdown-menu p-0 m-0" aria-labelledby="dropdownd-msg-options">
+                    <a class="btn-block btn-sm btn-primary action-bar-item-link delete m-0"  name="order-rozliczone" url="{% url 'Order_delete_ajax' %}" successurl="{% url 'DashboardView' %}" href="#"><i class="fas fa-trash"></i> Usuń</a>
+                    </div>
+                </li>
+                
+              </ul>
+             
+
+
+            </div>
+          </div>
+          <hr class="section-header-hr mt-0">
+            <div class="section-content">
+
+ <div id="subiekt_order_rozliczone_list" >
+    
+    <!-- KOLUMNY -->
+      <div class="row ls ls_columns">
+          <div class="col-6 col-md-3 d-none d-md-block">
+            <span>Firma</span>
+          </div>
+          <div class="col-6 col-md-2 d-none d-md-block">
+            <span>Nazwa</span>
+          </div>
+          <div class="col-6 col-md-2 d-none d-md-block">
+            <span>Koszta</span>
+          </div>
+
+          <div class="col-6 col-md-3 d-none d-md-block">
+            <span>Status</span>
+          </div>
+          <div class="col-6 col-md-2 d-none d-md-block">
+            <span>Czas</span>
+          </div>
+          <div class="w-100"></div>
+      </div>
+        <!-- LISTA -->
+      <div class="ls subiekt_list" name="order-rozliczone">
+        {% if get_completed_orders %}
+          {% for co in get_completed_orders %}
+          <div class="row ls_elem animated fadeInDown fast markon {% if co.order_status.id == 5 %}not-yet-completed{% endif %}{% if co.order_status.id == 3 %}inprogress{% endif %}{% if co.order_status.id == 6 %}completed{% endif %}" name="order-rozliczone" pk="{{ co.id }}" idf="">
+
+<div class="col-12 col-md-3 first_elem">
+              <input type="checkbox" class="mark" url="" name="order-rozliczone" pk="{{ co.id }}">&nbsp;
+              <span class="ls_spans modal_button" url="{% url 'Order_detail' co.id %}" type="GET" pk="{{ co.id }}" data-toggle="modal" data-target="#modal_window"><i class="fas fa-building"></i>&nbsp;<b>{{ co.document.get_subiekt_company_name }}</b></span>
+
+            </div>
+
+            <div class="col-6 d-md-none">
+              <span>Imie</span>
+            </div>
+            <div class="col-6 col-md-2 elem middle_elem">
+              <span class="">{{ co.name }}</span>
+            </div>
+
+            <div class="col-6 d-md-none">
+              <span>Koszta</span>
+            </div>
+            <div class="col-6 col-md-2 elem middle_elem">
+              <span>{{ co.calculate_order_with_distance|floatformat:2 }} PLN</span>
+            </div>
+
+
+
+            <div class="col-6 d-md-none">
+              <span>Status</span>
+            </div>
+            <div class="col-6 col-md-3 elem middle_elem">
+              <span class="font-weight-bold">{% if co.order_status.id == 3 %}<i class="fas fa-cog fa-spin"></i>&nbsp;{% endif %}{% if co.order_status.id == 5 %}<i class="fas fa-circle-notch fa-spin"></i>&nbsp;{% endif %}{% if co.order_status.id == 6 %}<i class="fas text-success fa-check"></i>&nbsp;{% endif %}&nbsp;{{ co.order_status }}</span>
+            </div>
+
+            <div class="col-6 d-md-none">
+              <span>Czas</span>
+            </div>
+            <div class="col-6 col-md-2 elem middle_elem">
+              <span>{{ co.end_datetime|timeuntil:co.start_datetime }}</span>
+            </div>
+
+
+
+            
+
+          </div>
+          {% endfor %}
+        {% else %}
+          <span>Brak danych</span>
+        {% endif %}
+        <div class="col-12 col-sm-6">
+        </div>
+      
+      </div>
+      
+      </div>
+    </div>
+
+
+            </div>
+            </div>
+<!-- KONIEC KOLUMNY -->
+
+            </div>
+<!-- KONIEC ROW -->
+
+<!-- POCZATEK: ROW -->
+      <div class="row subiekt-section-row">
+        <div class="col-12 col-sm-12 subiekt-section-column">
+          <div class="section-container">
+          <div class="d-flex justify-content-between">
+                        <div class="section-header">
                <span><i class="fas fa-envelope"></i> Wiadomości</span>
                 
             </div>
-            
-
-            <div class="section-action-bar">
+                        <div class="section-action-bar">
              
               <ul class="action-bar-list">
 
@@ -148,442 +581,8 @@
 
       </div>
 
-    <!-- Section row #1 -->
-      <div class="row subiekt-section-row">
-        <div class="col-12 col-xl-8 subiekt-section-column bg-white">
-          <div class="section-container">
-            <div class="section-header">
-            
-            
-              <span><i class="fas fa-clipboard-check"></i> Moje zlecenia z miesiąca bieżącego</span>
-              <hr>
+<!-- KONIEC ROW -->
 
-
-
-
-            </div>
-            <div class="section-content">
-            <canvas id="myorders-chart" width="400" height="200"></canvas>
-            </div>
-          </div>
-        </div>
-        
-        <div class="col-12 col-xl-4 subiekt-section-column">
-<div class="row section-container">
-<div class="col-12">
-
-<!-- TABS -->
-  <ul class="nav nav-tabs" id="myTab" role="tablist">
-    <li class="nav-item">
-      <a class="nav-link active" id="order-sheet-tab" data-toggle="tab" href="#order-sheet" role="tab" aria-controls="order-sheet" aria-selected="true"><i class="fas fa-clipboard-list"></i> Zestawienie</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" id="order-status-doughnut-tab" data-toggle="tab" href="#order-status-doughnut" role="tab" aria-controls="order-status-doughnut" aria-selected="true"><i class="fas fa-chart-pie"></i> Stany</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" id="company-tab" data-toggle="tab" href="#company-tab" role="tab" aria-controls="order-sheet" aria-selected="true"><i class="fas fa-clipboard-list"></i> Firmy</a>
-    </li>
-
-  </ul>
-                        
-</div>
-
-
-<div class="col-12">
-<!-- TABS: CONTENT-->
-  <div class="tab-content" id="myTabContent">
-  <!-- TAB -->
-    <div class="tab-pane fade show" id="order-status-doughnut" role="tabpanel" aria-labelledby="order-status-doughnut-tab">
-      <div class="row">
-        <div class="col-12">
-            <div class="section-content">
-            <canvas id="counter-status-chart" width="400" height="200"></canvas>
-            </div>
-            <div class="section-content">
-            <canvas id="counter-implementationtype-chart" width="400" height="200"></canvas>
-            </div>
-        </div>
-      </div>
-    </div>
-  <!-- TAB -->
-    <div class="tab-pane fade show active" id="order-sheet" role="tabpanel" aria-labelledby="order-sheet-tab">
-      <div class="row">
-        <div class="col-12">
-            <div class="section-content">
-            <div class="row">
-                <!-- Wiersz -->
-                <div class="col-6">
-                  <span class="font-weight-bold"><i class="fas fa-sort-amount-up-alt"></i> Ilość zleceń</span>
-                </div>
-                <div class="col-6 text-right">
-                  <span>{{ get_orders_counter }}</span>
-                </div>
-                <div class="col-12">
-                  <hr class="m-0">
-                </div>
-              <!-- Wiersz -->
-                <div class="col-6">
-                  <span class="font-weight-bold"><i class="fas fa-dollar-sign"></i> Koszta klienta</span>
-                </div>
-                <div class="col-6 text-right">
-                  <span>{{ get_orders_sum_costs }} PLN</span>
-                </div>
-                <div class="col-12">
-                  <hr class="m-0">
-                </div>
-              <!-- Wiersz -->
-                <div class="col-6">
-                  <span class="font-weight-bold"><i class="fas fa-dollar-sign"></i> Koszta klienta z dojazdem</span>
-                </div>
-                <div class="col-6 text-right">
-                  <span>{{ get_orders_sum_costs_with_travel }} PLN</span>
-                </div>
-                <div class="col-12">
-                  <hr class="m-0">
-                </div>
-              <!-- Wiersz -->
-                <div class="col-6">
-                  <span class="font-weight-bold"><i class="fas fa-car"></i> Koszta dojazdu</span>
-                </div>
-                <div class="col-6 text-right">
-                  <span>{{ get_orders_sum_travel_costs }} PLN</span>
-                </div>
-                <div class="col-12">
-                  <hr class="m-0">
-                </div>
-              <!-- Wiersz -->
-                <div class="col-6">
-                  <span class="font-weight-bold"><i class="fas fa-road"></i> Suma przebytych km</span>
-                </div>
-                <div class="col-6 text-right">
-                  <span>{{ get_orders_two_way_distance }} km</span>
-                </div>
-                <div class="col-12">
-                  <hr class="m-0">
-                </div>
-
-              <!-- Wiersz -->
-                <div class="col-6">
-                  <span class="font-weight-bold"><i class="far fa-clock"></i> Suma czasu</span>
-                </div>
-                <div class="col-6 text-right">
-                  <span>{{ get_orders_sum_time }} h</span>
-                </div>
-                <div class="col-12">
-                  <hr class="m-0">
-                </div>
-              <!-- Wiersz -->
-                <div class="col-6">
-                  <span class="font-weight-bold"><i class="far fa-clock"></i> Efektywność</span>
-                </div>
-                <div class="col-6 text-right">
-                  <div class="progress m-1">
-                  <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="{{ user.get_current_month_efficiency }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ user.get_current_month_efficiency }}%"><span>{{ user.get_current_month_efficiency }} %</span></div>
-                  </div>
-                </div>
-                <div class="col-12">
-                  <hr class="m-0">
-                </div>
-
-            </div>
-            
-
-
-            </div>
-            <div class="section-content">
-            <div class="row mt-3">
-            <!-- Wiersz -->
-                <div class="col-6">
-                  <span class="font-weight-bold"><i class="far fa-clock"></i> Godziny w firmach </span>
-                </div>
-                <div class="col-12">
-                  <hr class="m-0">
-                </div>
-                <div class="col-12 p-2 mt-2">
-                  <canvas id="counter-company-chart" width="400" height="200"></canvas>
-                </div>
-            </div>
-            
-
-
-
-            </div>
-        </div>
-      </div>
-    </div>
-
-
-
-  </div>
-</div>
-
-</div>
-        </div>
-
-
-      </div>
-      
-
-
-
-
-
-<!-- LISTA -->
-      <!-- Section row #2 -->
-      <div class="row subiekt-section-row">
-        <div class="col-12 col-sm-12 subiekt-section-column">
-          <div class="section-container">
-
-          <div class="d-flex justify-content-between">
-            
-            <div class="section-header">
-               <span><i class="fas fa-clipboard-list"></i> Zlecenia nierozliczone</span>
-              
-            </div>
-
-            <div class="section-action-bar">
-             
-              <ul class="action-bar-list">
-<!--
-                <li class="action-bar-item">
-                    <a href="#" class="btn btn-sm btn-primary action-bar-item-link subiekt-modal-form-create send-msg m-0" name="message" url="{% url 'Message_add' %}" type="GET" pk=""  data-toggle="modal" data-target="#modal_window" ><i class="fas fa-paper-plane"></i> Nowa</a>
-                </li>   
--->
-                <li class="action-bar-item">
-                    <button class="btn btn-primary btn-sm dropdown-toggle" id="dropdown-msg-options" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-sliders-h"></i> Opcje</button>
-                    <div class="dropdown-menu p-0 m-0" aria-labelledby="dropdownd-msg-options">
-                    <a class="btn-block btn-sm btn-primary action-bar-item-link delete m-0"  name="order" url="{% url 'Order_delete_ajax' %}" successurl="{% url 'DashboardView' %}" href="#"><i class="fas fa-trash"></i> Usuń</a>
-                    </div>
-                </li>
-                
-              </ul>
-             
-
-
-            </div>
-          </div>
-          <hr class="section-header-hr mt-0">
-            <div class="section-content">
-
- <div id="subiekt_order_list" >
-    
-    <!-- KOLUMNY -->
-      <div class="row ls ls_columns">
-          <div class="col-6 col-md-2 d-none d-md-block">
-            <span>Firma</span>
-          </div>
-          <div class="col-6 col-md-2 d-none d-md-block">
-            <span>Nazwa</span>
-          </div>
-          <div class="col-6 col-md-2 d-none d-md-block">
-            <span>Koszt</span>
-          </div>
-          <div class="col-6 col-md-2 d-none d-md-block">
-            <span>Opiekun</span>
-          </div>
-          <div class="col-6 col-md-2 d-none d-md-block">
-            <span>Status</span>
-          </div>
-          <div class="col-6 col-md-2 d-none d-md-block">
-            <span>Utworzono</span>
-          </div>
-          <div class="w-100"></div>
-      </div>
-        <!-- LISTA -->
-      <div class="ls subiekt_list" name="order">
-        {% if get_not_completed_orders %}
-          {% for co in get_not_completed_orders %}
-          <div class="row ls_elem animated fadeInDown fast markon {% if co.order_status.id == 5 %}not-yet-completed{% endif %}{% if co.order_status.id == 3 %}inprogress{% endif %}{% if co.order_status.id == 6 %}completed{% endif %}" name="order" pk="{{ co.id }}" idf="">
-
-            <div class="col-12 col-md-2 first_elem">
-              <input type="checkbox" class="mark" url="" name="order" pk="{{ co.id }}">&nbsp;
-              <span class="ls_spans modal_button" url="{% url 'Order_detail' co.id %}" type="GET" pk="{{ co.id }}" data-toggle="modal" data-target="#modal_window"><i class="fas fa-building"></i>&nbsp;<b>{{ co.document.get_subiekt_company_name }}</b></span>
-
-            </div>
-
-            <div class="col-6 d-md-none">
-              <span>Imie</span>
-            </div>
-            <div class="col-6 col-md-2 elem middle_elem">
-              <span class="">{{ co.name }}</span>
-            </div>
-
-            <div class="col-6 d-md-none">
-              <span>Koszt/+Dojazd</span>
-            </div>
-            <div class="col-6 col-md-2 elem middle_elem">
-              <span>{{ co.calculate_order }} PLN / {{ co.calculate_order_with_distance }} PLN</span>
-            </div>
-
-            <div class="col-6 d-md-none">
-              <span>Opiekun</span>
-            </div>
-            <div class="col-6 col-md-2 elem middle_elem">
-              <span>{{ co.care }}</span>
-            </div>
-
-            <div class="col-6 d-md-none">
-              <span>Status</span>
-            </div>
-            <div class="col-6 col-md-2 elem middle_elem">
-                             <span class="font-weight-bold">{% if co.order_status.id == 3 %}<i class="fas fa-cog fa-spin"></i>&nbsp;{% endif %}{% if co.order_status.id == 5 %}<i class="fas fa-circle-notch fa-spin"></i>&nbsp;{% endif %}{% if co.order_status.id == 6 %}<i class="fas text-success fa-check"></i>&nbsp;{% endif %}&nbsp;{{ co.order_status }}</span>
-            </div>
-
-            <div class="col-6 d-md-none">
-              <span>Utworzono</span>
-            </div>
-            <div class="col-6 col-md-2 elem middle_elem">
-              <span>{{ co.created_date|date:"Y-m-d" }} - {{ co.end_datetime|timeuntil:co.start_datetime }}</span>
-            </div>
-
-
-            
-
-          </div>
-          {% endfor %}
-        {% else %}
-          <span>Brak danych</span>
-        {% endif %}
-        <div class="col-12 col-sm-6">
-        </div>
-      
-      </div>
-      
-      </div>
-    </div>
-
-
-            </div>
-            </div>
-            </div>
-<!-- LISTA -->
-      <!-- Section row #2 -->
-      <div class="row subiekt-section-row">
-        <div class="col-12 col-sm-12 subiekt-section-column">
-          <div class="section-container">
-
-          <div class="d-flex justify-content-between">
-            
-            <div class="section-header">
-               <span><i class="fas fa-clipboard-check"></i> Zlecenia rozliczone</span>
-              
-            </div>
-
-            <div class="section-action-bar">
-             
-              <ul class="action-bar-list">
-<!--
-                <li class="action-bar-item">
-                    <a href="#" class="btn btn-sm btn-primary action-bar-item-link subiekt-modal-form-create send-msg m-0" name="message" url="{% url 'Message_add' %}" type="GET" pk=""  data-toggle="modal" data-target="#modal_window" ><i class="fas fa-paper-plane"></i> Nowa</a>
-                </li>   
--->
-                <li class="action-bar-item">
-                    <button class="btn btn-primary btn-sm dropdown-toggle" id="dropdown-msg-options" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-sliders-h"></i> Opcje</button>
-                    <div class="dropdown-menu p-0 m-0" aria-labelledby="dropdownd-msg-options">
-                    <a class="btn-block btn-sm btn-primary action-bar-item-link delete m-0"  name="order-rozliczone" url="{% url 'Order_delete_ajax' %}" successurl="{% url 'DashboardView' %}" href="#"><i class="fas fa-trash"></i> Usuń</a>
-                    </div>
-                </li>
-                
-              </ul>
-             
-
-
-            </div>
-          </div>
-          <hr class="section-header-hr mt-0">
-            <div class="section-content">
-
- <div id="subiekt_order_rozliczone_list" >
-    
-    <!-- KOLUMNY -->
-      <div class="row ls ls_columns">
-          <div class="col-6 col-md-2 d-none d-md-block">
-            <span>Firma</span>
-          </div>
-          <div class="col-6 col-md-2 d-none d-md-block">
-            <span>Nazwa</span>
-          </div>
-          <div class="col-6 col-md-2 d-none d-md-block">
-            <span>Koszt</span>
-          </div>
-          <div class="col-6 col-md-2 d-none d-md-block">
-            <span>Opiekun</span>
-          </div>
-          <div class="col-6 col-md-2 d-none d-md-block">
-            <span>Status</span>
-          </div>
-          <div class="col-6 col-md-2 d-none d-md-block">
-            <span>Utworzono</span>
-          </div>
-          <div class="w-100"></div>
-      </div>
-        <!-- LISTA -->
-      <div class="ls subiekt_list" name="order-rozliczone">
-        {% if get_completed_orders %}
-          {% for co in get_completed_orders %}
-          <div class="row ls_elem animated fadeInDown fast markon {% if co.order_status.id == 5 %}not-yet-completed{% endif %}{% if co.order_status.id == 3 %}inprogress{% endif %}{% if co.order_status.id == 6 %}completed{% endif %}" name="order-rozliczone" pk="{{ co.id }}" idf="">
-
-            <div class="col-12 col-md-2 first_elem">
-              <input type="checkbox" class="mark" url="" name="order-rozliczone" pk="{{ co.id }}">&nbsp;
-              <span class="ls_spans modal_button" url="{% url 'Order_detail' co.id %}" type="GET" pk="{{ co.id }}" data-toggle="modal" data-target="#modal_window"><i class="fas fa-building"></i>&nbsp;<b>{{ co.document.get_subiekt_company_name }}</b></span>
-
-            </div>
-
-            <div class="col-6 d-md-none">
-              <span>Imie</span>
-            </div>
-            <div class="col-6 col-md-2 elem middle_elem">
-              <span class="">{{ co.name }}</span>
-            </div>
-
-            <div class="col-6 d-md-none">
-              <span>Koszt/+Dojazd</span>
-            </div>
-            <div class="col-6 col-md-2 elem middle_elem">
-              <span>{{ co.calculate_order }} PLN / {{ co.calculate_order_with_distance }} PLN</span>
-            </div>
-
-            <div class="col-6 d-md-none">
-              <span>Opiekun</span>
-            </div>
-            <div class="col-6 col-md-2 elem middle_elem">
-              <span>{{ co.care }}</span>
-            </div>
-
-            <div class="col-6 d-md-none">
-              <span>Status</span>
-            </div>
-            <div class="col-6 col-md-2 elem middle_elem">
-                             <span class="font-weight-bold">{% if co.order_status.id == 3 %}<i class="fas fa-cog fa-spin"></i>&nbsp;{% endif %}{% if co.order_status.id == 5 %}<i class="fas fa-circle-notch fa-spin"></i>&nbsp;{% endif %}{% if co.order_status.id == 6 %}<i class="fas text-success fa-check"></i>&nbsp;{% endif %}&nbsp;{{ co.order_status }}</span>
-            </div>
-
-            <div class="col-6 d-md-none">
-              <span>Utworzono</span>
-            </div>
-            <div class="col-6 col-md-2 elem middle_elem">
-              <span>{{ co.created_date|date:"Y-m-d" }} - {{ co.end_datetime|timeuntil:co.start_datetime }}</span>
-            </div>
-
-
-            
-
-          </div>
-          {% endfor %}
-        {% else %}
-          <span>Brak danych</span>
-        {% endif %}
-        <div class="col-12 col-sm-6">
-        </div>
-      
-      </div>
-      
-      </div>
-    </div>
-
-
-            </div>
-            </div>
-            </div>
             </div>
     
    
@@ -647,6 +646,32 @@
 
 
 <script>
+
+// Linie
+
+//  Chart.plugins.register({
+//    afterDatasetsDraw: function(chart) {
+//        if (chart.tooltip._active && chart.tooltip._active.length) {
+//          var activePoint = chart.tooltip._active[0],
+//              ctx = chart.ctx,
+//              y_axis = chart.scales['y-axis-0'],
+//              x = activePoint.tooltipPosition().x,
+//              topY = y_axis.top,
+//              bottomY = y_axis.bottom;
+//          // draw line
+//          ctx.save();
+//          ctx.beginPath();
+//          ctx.moveTo(x, topY);
+//          ctx.lineTo(x, bottomY);
+//          ctx.lineWidth = 1;
+//          ctx.strokeStyle = '#f54e42';
+//          ctx.stroke();
+//          ctx.restore();
+//        }
+//    }
+//  });
+//
+
   // Charts
     var ctx = document.getElementById('myorders-chart').getContext('2d');
     var completed = {{ get_my_current_month_orders_counter_completed }}
@@ -664,49 +689,63 @@
             {
                 label: 'Rozliczone ',
                 data: completed,
-                backgroundColor:'rgba(47, 244, 155, 0.5)',
-                borderColor: 'rgba(47, 244, 155, 1)',
+                backgroundColor:'rgba(47, 244, 155, 0.6)',
+                borderColor: 'rgba(0, 0, 0, 0.6)',
                 borderWidth: 2,
+                
                 stack: "Base",
                 steppedLine: true, 
+
                 fill: true
             },
             {
                 label: 'Oczekujące na rozliczenie ',
                 data: notcompleted,
-                backgroundColor: 'rgba(254, 216, 77, 0.5)',
-                borderColor: 'rgba(254, 216, 77, 1)',
+                backgroundColor: 'rgba(254, 216, 77, 0.6)',
+                borderColor: 'rgba(0, 0, 0, 0.6)',
                 borderWidth: 2,
                 stack: "Base",
                 steppedLine: true, 
+
                 fill: true
             },
             {
                 label: 'W trakcie realizacji ',
                 data: inprogres,
-                backgroundColor: 'rgba(50, 182, 226, 0.5)',
-                borderColor: 'rgba(50, 182, 226, 1)',
+                backgroundColor: 'rgba(50, 182, 226, 0.6)',
+                borderColor: 'rgba(0, 0, 0, 0.6)',
                 borderWidth: 2,
                 stack: "Base",
-                steppedLine: true, 
+                steppedLine: true,
+
                 fill: true
             },
             {
                 label: 'Czas spędzony ',
                 yAxisID: "times",
                 data: time_spent,
-                backgroundColor: 'rgba(220, 50, 226, 0.5)',
+                backgroundColor: 'rgba(220, 50, 226, 1)',
                 borderColor: 'rgba(220, 50, 226, 1)',
                 borderWidth: 2,
                 steppedLine: false, 
+                pointStyle:'circle',
+                pointRadius:4,
+                radius:7,
+                lineTension: 0, 
+                hoverRadius:8,
                 type: 'line',
                 fill: false
             },
             {
                 label: 'Koszta z dojazdem',
                 yAxisID: "koszta",
+                pointRadius:4,
+                radius:7,
+                pointStyle:'rect',
+                lineTension: 0, 
+                hoverRadius:8,
                 data: costs,
-                backgroundColor: 'rgba(235, 135, 20, 0.5)',
+                backgroundColor: 'rgba(235, 135, 20, 1)',
                 borderColor: 'rgba(235, 135, 20, 1)',
                 borderWidth: 2,
                 steppedLine: false, 
@@ -716,20 +755,49 @@
             
             ]
         },
+        
         options: {
+                tooltips: {
+         intersect: false
+      },
+          legend:{
+            position:'bottom',
+            align: "end"
+            
+          },  
+          plugins: {
+              datalabels: {
+                anchor: 'center',
+                align: 'end',
+                offset: 3,
+                display:false,
+                display: function(context) {
+                    return context.chart.width > 2000;
+                  }
+              }
+          },
+          
+          //responsive:false,
+          responsive: true,
+    maintainAspectRatio: false,
           animation: {
               duration: 1000,
-              easing:'easeInOutElastic',
+              easing:'easeInOutExpo',
               
           },
     scales: {
       xAxes: [{
         //stacked: true,
         stacked: true,
+        scaleLabel: {
+          display: true,
+          labelString: 'dni miesiąca'
+        },
         ticks: {
           beginAtZero: true,
           maxRotation: 0,
           minRotation: 0
+
         }
       }],
       yAxes: [
@@ -765,6 +833,11 @@
         stacked: true,
         display: true, //optional if both yAxes use the same scale
         ticks: {
+          
+          fontColor: "violet",
+          callback: function(value, index, values) {
+              return value + "h";
+          },
           beginAtZero: true,
           suggestedMin: 0,
           suggestedMax: 8,
@@ -780,10 +853,18 @@
         stacked: true,
         display: true, //optional if both yAxes use the same scale
         ticks: {
+          
+          fontColor: "orange",
+             callback: function(value, index, values) {
+                return value + "PLN";
+          },
+
+
           beginAtZero: true,
           suggestedMin: 0,
           suggestedMax: 500,
         },
+
       type: 'linear'
       }
       ]
@@ -816,13 +897,13 @@
         },
         options: {
 
-          cutoutPercentage: 70,
-          responsive: false,
+          //cutoutPercentage: 70,
+          //responsive: false,
           layout: {
           },
           legend:{
-            position:'left',
-            align: "start"
+            position:'top',
+            //align: "start"
             
           },          
           animation: {
@@ -871,11 +952,11 @@
             }]
         },
         options: {
-          cutoutPercentage: 70,
-          responsive: false,
+          //cutoutPercentage: 70,
+          //responsive: false,
           legend:{
             
-            position:'left',
+            position:'top',
 
           },
           animation: {
@@ -908,28 +989,28 @@ var dynamicColors = function() {
 
     return "rgba(" + r + "," + g + "," + b + "," + a + ")";
 }
+
   
     var ctx = document.getElementById('counter-company-chart').getContext('2d');
-    var keys = "{% for c in get_month_companies_spent %}{{ c.firma|safe }}  {% endfor %}".split("  ")
-    var values = "{% for c in get_month_companies_spent %}{{ c.czas|safe }}  {% endfor %}".split("  ")
+    var keys = '{% for c in get_month_companies_spent %}{{ c.firma|safe }}  {% endfor %}'.split("  ")
+    var values = '{% for c in get_month_companies_spent %}{{ c.czas|floatformat:2|safe }}  {% endfor %}'.split("  ")
     //var values = "{{ get_month_orders_statuses.values|join:", "|safe}}".split(",")
     console.log(keys.length)
     var colors = []
     for(x=0;x<keys.length;x++){
       colors.push(dynamicColors())
     }
+    console.log(colors)
+
     var myChart = new Chart(ctx, {
-        type: 'doughnut',
+        type: 'pie',
         data: {
             labels: keys,
             datasets: [{
                 label: 'czas',
                 data: values,
                 backgroundColor: colors,
-                borderColor: [
-                    'rgba(0, 0, 0, 0.5)',
-                    
-                ],
+                borderColor: 'rgba(0, 0, 0, 0.5)', 
                 borderWidth: 2,
             }]
         },
@@ -959,6 +1040,55 @@ var dynamicColors = function() {
             
         }
     });
+
+    var ctx = document.getElementById('counter-company-costs-chart').getContext('2d');
+    var keys = '{% for c in get_month_companies_costs %}{{ c.firma|safe }}  {% endfor %}'.split("  ")
+    var values = '{% for c in get_month_companies_costs %}{{ c.koszta|floatformat:2|safe }}  {% endfor %}'.split("  ")
+    //var values = "{{ get_month_orders_statuses.values|join:", "|safe}}".split(",")
+    console.log(keys.length)
+
+    var myChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: keys,
+            datasets: [{
+                label: 'czas',
+                data: values,
+                backgroundColor: colors,
+                borderColor: 'rgba(0, 0, 0, 0.5)',
+                borderWidth: 2,
+            }]
+        },
+        options: {
+          layout: {
+          },
+          legend:{
+            position:'left'
+            
+          },          
+          animation: {
+              duration: 1300,
+              easing:'easeInOutExpo',
+              
+          },
+            scales: {
+                yAxes: [{
+                    display:false,
+                    gridLines: {
+                      display:false
+                    },
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+            
+        }
+    });
+
+
+
+
   </script>
 
 

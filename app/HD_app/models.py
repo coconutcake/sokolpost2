@@ -5,6 +5,7 @@ from django.db import models
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
 import json
+from django.db.models import CharField,DurationField,DateTimeField, ExpressionWrapper, F
 from django.utils import timezone
 from django.urls import reverse
 from django.contrib.auth.models import \
@@ -58,22 +59,23 @@ def get_current_month_efficiency(self,max_efficiency_hours=8,shift_start=8,shift
         start_datetime__month=current_datetime.month,
         start_datetime__year=current_datetime.year
         ).annotate(
-            time=F('end_datetime')-F('start_datetime')
+            time=ExpressionWrapper(F('end_datetime')-F('start_datetime'),output_field=DurationField(default=int(timedelta().total_seconds()))),
         ).values(
             "time"
-        ).annotate(
-            sum=Sum("time")
-        ).values(
-            "sum"
         )
+
+    # agregacja czaasu
+    my_time = 0
+    for each in list(orders):
+        for k,v in each.items():
+            if k == "time":
+                my_time += v.total_seconds()
+
+
     busdays = get_current_month_busdays()
     busday_shift_seconds = get_seconds_from_days(busdays,max_efficiency_hours)
-    my_time = list(orders)[0]['sum'].total_seconds()
     my_efficiency = my_time*100/busday_shift_seconds
     return "{:.2f}".format(my_efficiency)
-
-
-
 def count_orders(self):
     p = Profile.objects.get(user=self.id)
     if Order.objects.filter(care__id=self.id).exists():
@@ -779,18 +781,30 @@ class Order2(models.Model):
         """ Kalkulator kosztów dojazdu dla zlecenia """
         distance_cost = self.getDistanceCalcProfileCosts()
         distance_km = self.get_two_way_distance() if self.is_traveled() else 0
-        costs = (distance_km)*2*distance_cost
+        costs = distance_km*distance_cost
+
         return float("{:.2f}".format(self.calculate_order()+costs))
     def get_fuel_costs(self):
         distance_costs = self.getDistanceCalcProfileCosts()
         distance_km = self.get_two_way_distance() if self.is_traveled() else 0
-        costs = (distance_km)*2*distance_costs
+        costs = distance_km*distance_costs
         return float("{:.2f}".format(costs))
     def get_distance(self):
         return float(self.address.distance) if self.is_distance() else self.get_google_km()
     def get_two_way_distance(self):
         two_way_distance = self.get_distance()*2
         return two_way_distance
+
+    def get_subiekt_company_name(self):
+        endpoint = subiekt.get_absolute_endpoint("kontrahenci")
+        data = {"Nip":self.document.company_sfk}
+        try:
+            r = requests.post(endpoint,data=json.dumps(data),headers=subiekt.get_header(),verify=False)
+            if r.status_code == 200:
+                return r.json().get("KontrahenciList")[0]['Nazwa']
+        except:
+            return "uruchom subiekta!"
+
     def get_google_km(self):
         api_key ='AIzaSyB7W8VWn3SxVUoDFbtyLoDAk7hpLP2LivA'
         origin = 'Gorzow+Poland+Gobit' 

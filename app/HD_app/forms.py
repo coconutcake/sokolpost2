@@ -216,6 +216,9 @@ class RaportSearchForm(forms.ModelForm):
     
 class OrderCreateForm(forms.ModelForm):
     excluded = [4,6,7,9]
+
+    order_template = forms.ModelChoiceField(label="Wybierz szablon",\
+        queryset=OrderTemplate.objects.all(),required=False)
     order_status = forms.ModelChoiceField(label="Status",\
         queryset=OrderStatus.objects.all().exclude(id__in=excluded))
     class Meta:
@@ -245,6 +248,8 @@ class OrderCreateForm(forms.ModelForm):
             self.fields['end_datetime'].widget.attrs['autocomplete'] = "off"
 class OrderDetailForm(forms.ModelForm):
     excluded = [4,6,7,9]
+    order_template = forms.ModelChoiceField(label="Wybierz szablon",\
+        queryset=OrderTemplate.objects.all(),required=False)
     order_status = forms.ModelChoiceField(label="Status",\
         queryset=OrderStatus.objects.all().exclude(id__in=excluded))
     class Meta:

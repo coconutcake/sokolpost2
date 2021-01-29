@@ -116,7 +116,9 @@ class DashboardView(LoginRequiredMixin,View):
             "get_orders_two_way_distance": self.get_orders_two_way_distance(),
             "get_orders_sum_time":self.get_orders_sum_time(),
             "user":User.objects.get(pk=request.user.pk),
-            "get_month_companies_spent":self.get_month_companies_spent()
+            "get_month_companies_spent":self.get_month_companies_spent(),
+            "get_month_companies_costs":self.get_month_companies_costs()
+            
         }
         return context 
 
@@ -404,54 +406,59 @@ class DashboardView(LoginRequiredMixin,View):
         qs = self.get_objects().filter(
             start_datetime__month = current.month,
             start_datetime__year = current.year,
-        ).values(
-            'document__company_sfk',
         ).annotate(
             duration=ExpressionWrapper(F('end_datetime')-F('start_datetime'),output_field=DurationField(default=int(timedelta().total_seconds()))),
-        ).order_by("document__company_sfk")
-   
+        ).order_by(
+            "document__company_sfk"
+        )
 
-        liobjs = []
 
-
-        
-
-        duration = 0
-
-        for x in list(qs):
-            if any(x['document__company_sfk'] == d['document__company_sfk'] for d in liobjs):
-                print("istnieje")
-                for d in liobjs:
-                    if d["document__company_sfk"] == x['document__company_sfk']:
-                        d['duration'] += x['duration']
-            else:
-                liobjs.append(x)
-                print("nieistnieje")
         li = []
-        for x in liobjs:
-            d = x['duration']
-            f = x['document__company_sfk']
+        for x in qs:
             obj= {}
-            obj['nip'] = f
-            obj['firma'] = self.get_subiekt_company_name(f)
-            obj['czas'] = "{:.2f}".format(float(d.total_seconds()/60)/60)
+            obj['nip'] = x.document.company_sfk
+            obj['firma'] = x.get_subiekt_company_name()
+            obj['czas'] = float(x.duration.total_seconds()/60)/60
             li.append(obj)
 
+        aggregated_list = self.get_aggregated_list(lista=li,key="firma",value="czas")
+        print(aggregated_list)
+
+        return aggregated_list
+    def get_month_companies_costs(self):
+        """ Zbiera dane z kosztów per firma """
+        current = datetime.datetime.now()
+         # Queryset
+        qs = self.get_objects().filter(
+            start_datetime__month = current.month,
+            start_datetime__year = current.year,
+        ).order_by(
+            "document__company_sfk"
+        )
+        companies_costs = self.get_companies_costs(orders=qs)
+        return companies_costs
 
 
-        print(li)
+    def get_aggregated_list(self,lista,key,value):
+        """ Agreguje dane listy slowników wg key """
+        import itertools as it
+        keyfunc = lambda x: x[key]
+        groups = it.groupby(sorted(lista, key=keyfunc), keyfunc)
+        return [{key:k, value:sum(x[value] for x in g)} for k, g in groups]
+
+    def get_companies_costs(self,orders):
+        lista = []
+        for each in orders:
+            costs = {
+                "firma":each.get_subiekt_company_name(),
+                "koszta":each.calculate_order_with_distance()
+                }
+            lista.append(costs)
+
+        aggregated_list = self.get_aggregated_list(lista=lista,key="firma",value="koszta")
+        return aggregated_list
 
 
-        return li
-    def get_subiekt_company_name(self,company_nip):
-        endpoint = subiekt.get_absolute_endpoint("kontrahenci")
-        data = {"Nip":company_nip}
-        try:
-            r = requests.post(endpoint,data=json.dumps(data),headers=subiekt.get_header(),verify=False)
-            if r.status_code == 200:
-                return r.json().get("KontrahenciList")[0]['Nazwa']
-        except:
-            return "uruchom subiekta!"
 
 
     def get_orders_sum_costs(self):
@@ -917,6 +924,7 @@ order_modal_sections = {
                 "tab_id":"podstawowe",
                 "active":True,
                 "fields":[
+                    "order_template",
                     "name",
                     "document",
                     "description",
