@@ -10,7 +10,7 @@ from django.conf.urls.static import static
 from django.views.generic import RedirectView
 from django.conf.urls.static import static
 from django.views.static import serve 
-
+from HD_app.settings import SIMULATION_MODE
 from django.contrib.auth import views as auth_views
 # Ruter API ---------------------------------------------------------
 router = routers.DefaultRouter()
@@ -204,3 +204,10 @@ if settings.DEBUG:
 else:
     urlpatterns += re_path(r'^media/(?P<path>.*)$', serve,{'document_root': settings.MEDIA_ROOT}), 
     urlpatterns += re_path(r'^static/(?P<path>.*)$', serve,{'document_root': settings.STATIC_ROOT}),
+
+
+from django.views.decorators.csrf import csrf_exempt
+
+if SIMULATION_MODE:
+    urlpatterns.append(url(r'^simulation/kontrahenci', csrf_exempt(views.SimulationKontrahenci.as_view()), name='SimulationKontrahenci'))
+    

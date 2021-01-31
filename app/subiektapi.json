@@ -1,1 +1,42 @@
-{"address": "10.1.1.83:44555", "header": {"Authorization": "Basic Z29iaXQ6U0JeXmVnYUBkbWlu", "Content-Type": "application/json", "Accept": "application/json"}, "https": 1, "urls": [{"name": "kontrahenci", "url": "api/kontrahenci"}, {"name": "kontrahencicrm", "url": "api/kontrahenci/crm"}, {"name": "status", "url": "api/status"}, {"name": "accounts", "url": "api/accounts"}, {"name": "uzytkownicy", "url": "api/uzytkownicy"}, {"name": "firmy", "url": "api/firmy"}]}
+{
+    "address": "10.1.1.83:44555",
+    "address_simulation":"192.168.1.10:4433",
+    "header": {
+        "Authorization": "Basic Z29iaXQ6U0JeXmVnYUBkbWlu",
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+    },
+    "https": 1,
+    "urls": [
+        {
+            "name": "kontrahenci",
+            "url": "api/kontrahenci",
+            "url_simulation":"simulation/kontrahenci"
+        },
+        {
+            "name": "kontrahencicrm",
+            "url": "api/kontrahenci/crm",
+            "url_simulation":"simulation/kontrahencicrm"
+        },
+        {
+            "name": "status",
+            "url": "api/status",
+            "url_simulation":"simulation/status"
+        },
+        {
+            "name": "accounts",
+            "url": "api/accounts",
+            "url_simulation":"simulation/accounts"
+        },
+        {
+            "name": "uzytkownicy",
+            "url": "api/uzytkownicy",
+            "url_simulation":"simulation/uzytkownicy"
+        },
+        {
+            "name": "firmy",
+            "url": "api/firmy",
+            "url_simulation":"simulation/firmy"
+        }
+    ]
+}

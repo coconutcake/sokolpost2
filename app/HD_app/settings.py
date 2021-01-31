@@ -25,7 +25,7 @@ SECRET_KEY = 'xob941-2y8wq*pjv0a!lf90_6hhhb%*fpf1#cp3b-5^%@@_!zg'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
+SIMULATION_MODE = True
 # Debug
 CSRF_COOKIE_SECURE = True
 SECURE_HSTS_SECONDS = 31536000

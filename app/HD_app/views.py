@@ -2,6 +2,7 @@
 from .imports import *
 from django.db.models import CharField,DurationField,DateTimeField, ExpressionWrapper, F
 import functools 
+from HD_app.settings import SIMULATION_MODE
 # Klasy pomocnicze Subiekta API ---------------------------
 class SubiektFormOperations():
     """ Klasa operacji na ciele formularza ajax """
@@ -38,15 +39,24 @@ class SubiektFormOperations():
     def get_subiekt_object(self,request, *args, **kwargs):
         """ Wysyla dane otrzymane przez ajax do subiekta i zwraca odebrane dane """
         endpoint = kwargs['endpoint']
+        print(f"endpoint {endpoint}")
         data = self.get_ajax_data(request,*args,**kwargs)
+        print(f"data")
+        print(data)
         print(f"{get_current_datetime()} - Wysyłam do {endpoint}\n{data}")
+            
         obj = requests.post(endpoint,data=json.dumps(data),headers=subiekt.get_header(),verify=False)
         print(f"{get_current_datetime()} - Odebrano: \n{obj.json()}")
 
         # Musi byc 1 obiekt 
         # q = QueryDict(obj)
         return obj.json().get("KontrahenciList")
-
+    def get_simulated_object(self,request,*args,**kwargs):
+        endpoint = kwargs['endpoint']
+        data = self.get_ajax_data(request,*args,**kwargs)
+        print(f"{get_current_datetime()} - Wysyłam do {endpoint}\n{data}")
+        
+        
     def get_ajax_data(self,request,*args,**kwargs):
         """ Zwraca 'data' z ajax """
         return json.loads(request.GET.get("data",""))
@@ -1590,7 +1600,7 @@ class SubiektCompanyCreateView(LoginRequiredMixin,View):
         return render(request, self.template_name, context)
                 
     def post(self, request, pk=None, *args, **kwargs):
-
+    
     # search form
         if self.sf.is_form_in_data(request,formid="company-search-form"):
             search_form = self.search_form(self.sf.get_form_data(request,form="company-search-form"))
@@ -1599,7 +1609,6 @@ class SubiektCompanyCreateView(LoginRequiredMixin,View):
                     subiekt_data = self.sf.get_subiekt_data(request,endpoint=self.search_endpoint,form=search_form)
                     if request.is_ajax():
                         return render(request,self.template_search_list,context={"data":[subiekt_data.json()]})  
-                        # return JsonResponse({"status":subiekt_data.status_code,"Message":subiekt_data.json().get("Message")})
                 else:
                     print(print("{0} - Błąd: Subiekt offline!".format(get_current_datetime())))
                     if request.is_ajax():
@@ -1670,8 +1679,11 @@ class SubiektCompanyDetailView(LoginRequiredMixin,View):
             if request.method == "GET":
                 if self.sf.is_data(request,*args,**kwargs):
                     if subiekt.is_up():
+
                         obj = self.sf.get_subiekt_object(request,endpoint=self.endpoint,*args,**kwargs)
+                        
                         form = self.form_class(obj[0])
+                        print(form)
                         context = self.get_context(request,*args,**kwargs)
                         context['form'] = form
                         return render(request,self.template_name,context)
@@ -1682,11 +1694,70 @@ class SubiektCompanyDetailView(LoginRequiredMixin,View):
     
 
 
-
-
-
-
-
+class SimulationKontrahenci(View):
+    def __init__(self):
+        self.printservice = ValidationPrintService("%s: %s" % ("CBV",self.__class__.__name__),"CBV")
+    def get_context(self):
+        context = {
+            "KontrahenciList":[
+                {
+                    "Nazwa":"P.I.E.S.E. Gobit",
+                    "Symbol":5991005402,
+                    "Nip":"5991005402",
+                    "Typ":"Firma",
+                    "NazwaPelna":"firma",
+                    "KodPocztowy":"66-300",
+                    "Ulica":"Walczaka",
+                    "NrDomu":5,
+                    "Nrlokalu":4
+                },
+                {
+                    "Nazwa":"GuruIT",
+                    "Symbol":5991005401,
+                    "Nip":"5991005401",
+                    "Typ":"Firma",
+                    "NazwaPelna":"firma",
+                    "KodPocztowy":"66-300",
+                    "Ulica":"Walczaka",
+                    "NrDomu":5,
+                    "Nrlokalu":4
+                },
+                {
+                    "Nazwa":"Comsat",
+                    "Symbol":5991005405,
+                    "Nip":"5991005405",
+                    "Typ":"Firma",
+                    "NazwaPelna":"firma",
+                    "KodPocztowy":"66-300",
+                    "Ulica":"Walczaka",
+                    "NrDomu":5,
+                    "Nrlokalu":4
+                }
+            ]
+        }
+        return context
+    def get(self,request,*args,**kwargs):
+        print(request)
+        return JsonResponse(self.get_context())
+    def post(self,request,*args,**kwargs):
+        payload = json.loads(request.body)
+        print(f"Otrzymałem: {payload}")
+        for x in self.get_context()['KontrahenciList']:
+            try:
+                if x['Nip'] == payload['Nip']:
+                    print("ZWRACAM:::")
+                    context = self.get_context()
+                    context["KontrahenciList"] = [x]
+                    print(context)
+                    return JsonResponse(context)
+            except:
+                if x['Nip'] == payload['nip']:
+                    print("ZWRACAM:::")
+                    context = self.get_context()
+                    context["KontrahenciList"] = [x]
+                    print(context)
+                    return JsonResponse(context)
+        return JsonResponse(self.get_context())
 
 
 
