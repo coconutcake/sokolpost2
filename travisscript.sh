@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
-printf "\nUruchamam traviscript\n"
-docker-compose run app sh -c "python manage.py migrate" \
-&& printf "\nUruchamiam testy jednostkowe\n" \
-&& printf "\nWylaczam uslugi\n" \
+printf "\n[..] Uruchamam traviscript...\n"
+docker-compose run app sh -c "python3 manage.py migrate" \
+&& printf "\n[..] Uruchamiam testy jednostkowe...\n" \
+docker-compose run app sh -c "python3 manage.py test" \
+&& printf "\n[OK] Testy wykonane\n" \
+&& printf "\n[OK] Kontenery uruchomione\n" \
+&& printf "\n[..] Wylaczam kontenery...\n" \
 && docker-compose down \
-&& printf "\nWylaczone!\n"
+&& printf "\n[OK] Wylaczone! Brak błędów\n"
