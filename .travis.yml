@@ -8,4 +8,4 @@ services:
 before_script: pip install docker-compose
 
 script:
-    - docker-compose run django sh -c 'coverage run app/manage.py test app && coverage report && python3 /app/manage.py makemigrations && python3 /app/manage.py migrate'
+    - docker-compose run app sh -c 'coverage run app/manage.py test app && coverage report && python3 /app/manage.py makemigrations && python3 /app/manage.py migrate'
